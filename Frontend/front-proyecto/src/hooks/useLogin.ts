@@ -10,7 +10,7 @@ interface Logindata {
 interface Loginresponse {
     token: string;
     user: {
-        Email: string;
+        Email: string;          //sapear el back para cambiar esto en login
         Name: string;
     };
 }
