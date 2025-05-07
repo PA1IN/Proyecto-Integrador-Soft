@@ -18,7 +18,7 @@ export class AsignaturaService {
     async createAsignatura(CreateAsignaturaDto: CreateAsignaturaDto) {
         return await this.asignaturarepository.save(CreateAsignaturaDto); // Save a new asignatura to the database
     }
-    async getbynivel(nivel:String){
+    async getbynivel(nivel:Number){
         return this.asignaturarepository.findOneBy({nivel});
     }
     async getbyNRC(NRC:String){

@@ -20,7 +20,7 @@ export class AsignaturaController {
         return this.asignaturaService.createAsignatura(createAsignaturaDto); 
     }
     @Get(':nivel')
-    getAsignaturaByNivel(@Param('nivel') nivel: string) {
+    getAsignaturaByNivel(@Param('nivel') nivel: Number) {
         return this.asignaturaService.getbynivel(nivel); 
     }
     @Get(':NRC')

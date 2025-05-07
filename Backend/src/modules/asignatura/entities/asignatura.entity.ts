@@ -17,7 +17,7 @@ export class Asignatura {
     @Column()
     AlumnosTea: Number;
     @Column()
-    nivel: String;
+    nivel: Number;
     //@ManyToMany(() => Profesor, (profesor) => profesor.asignaturas)
     //@JoinTable()
     //Profesores: Profesor[];
