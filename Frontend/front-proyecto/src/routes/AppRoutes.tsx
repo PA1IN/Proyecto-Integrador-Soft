@@ -3,6 +3,7 @@ import {Login} from '../pages/Login';
 import {Register} from '../pages/Register';
 import {Home} from '../pages/Home';
 import {PrivateRoute} from './PrivateRoute';
+import ForgotPassword from '../pages/ForgotPassword';
 
 
 export const AppRoutes = () => {
@@ -10,6 +11,7 @@ export const AppRoutes = () => {
     <Routes>
       <Route path = '/Login' element = {<Login/>}/>
       <Route path = '/Register' element = {<Register/>}/>
+      <Route path = '/ForgotPassword' element={<ForgotPassword/>}/>
 
       <Route path='/Home'element={<PrivateRoute> <Home/> </PrivateRoute>}/>
 
