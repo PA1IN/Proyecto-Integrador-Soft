@@ -56,10 +56,10 @@ export class UserService {
     const user = await this.userRepository.findOne({ where: { rut } });
 
     if (!user) {
-      throw new HttpException(
-        { message: 'No hay usuario registrado', error: 'NOT_FOUND' },
-        HttpStatus.NOT_FOUND,
-      );
+      //throw new HttpException(
+       // { message: 'No hay usuario registrado', error: 'NOT_FOUND' },
+        //HttpStatus.NOT_FOUND,
+      //);
     }
 
     return user;
