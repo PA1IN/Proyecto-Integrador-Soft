@@ -14,7 +14,7 @@ interface Forgotresponse{
 export function useForgotPassword(onSuccess: () => void,onFail: (error: string) => void) {
     return useMutation<Forgotresponse,AxiosError,Forgotdata>({
         mutationFn: async ({correo}:Forgotdata): Promise<Forgotresponse> => {
-            const respuesta = await api.post('/forgotpassword',{correo});
+            const respuesta = await api.post('/api/v1/auth/forgotpassword',{correo});
             return respuesta.data;
         },
         onSuccess: () => {

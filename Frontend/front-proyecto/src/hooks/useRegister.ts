@@ -17,7 +17,7 @@ interface Registerresponse
 export function useRegister(onSuccess: () => void, onFail:(error:string)=>void) {
     return useMutation<Registerresponse,AxiosError,Registerdata>({
         mutationFn: async ({name, email, password}:Registerdata): Promise<Registerresponse> => {
-            const respuesta = await api.post('/register',{name, email, password});
+            const respuesta = await api.post('/api/v1/auth/register',{name, email, password});
             return respuesta.data;
         },
         onSuccess: () => {
