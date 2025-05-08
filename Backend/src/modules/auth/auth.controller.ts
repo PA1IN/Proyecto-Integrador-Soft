@@ -22,9 +22,9 @@ export class AuthController {
         return this.authService.register(registerDto); 
     }
     @UseGuards(AuthGuard('jwt'))
-    @Get('userbyToken')
-    userbyToken(@Body('token') token: string) {
-        return this.authService.userbyToken(token);
+    @Get('profile')
+    profile(@Body('token') token: string) {
+        return this.authService.profile(token);
     }
     
 
