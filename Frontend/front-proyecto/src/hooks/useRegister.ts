@@ -4,8 +4,9 @@ import { AxiosError } from 'axios';
 
 interface Registerdata
 {
+    rut: string;
+    correo: string;
     name: string;
-    email: string;
     password: string;
 }
 
@@ -16,8 +17,8 @@ interface Registerresponse
 
 export function useRegister(onSuccess: () => void, onFail:(error:string)=>void) {
     return useMutation<Registerresponse,AxiosError,Registerdata>({
-        mutationFn: async ({name, email, password}:Registerdata): Promise<Registerresponse> => {
-            const respuesta = await api.post('/api/v1/auth/register',{name, email, password});
+        mutationFn: async ({rut, correo, name, password}:Registerdata): Promise<Registerresponse> => {
+            const respuesta = await api.post('/auth/register',{rut, correo, name, password});
             return respuesta.data;
         },
         onSuccess: () => {

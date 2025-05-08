@@ -3,22 +3,18 @@ import api from '../api/axios';
 import { AxiosError } from 'axios';
 
 interface Logindata {
-    email: string;
+    rut: string;
     password: string;
 }
 
 interface Loginresponse {
     token: string;
-    user: {
-        Email: string;          //sapear el back para cambiar esto en login
-        Name: string;
-    };
 }
 
 export function useLogin(onSuccess: (token: string)=> void, onFail:(error:string)=> void) {
     return useMutation<Loginresponse,AxiosError,Logindata>({
-        mutationFn: async ({email,password}: Logindata): Promise<Loginresponse> => {
-            const respuesta = await api.post('/api/v1/auth/login', {email,password});
+        mutationFn: async ({rut,password}: Logindata): Promise<Loginresponse> => {
+            const respuesta = await api.post('/auth/login', {rut,password});
             return respuesta.data;
         },
         onSuccess: (data) => {
