@@ -49,14 +49,7 @@ export class AuthService {
             password: await bcryptjs.hash(password, 10)});
         
     }
-    async userbyToken(token: string) {  
-        const payload = this.jwtService.verify(token);
-        const user = await this.userService.getUserByRut(payload.rut);
-        if (!user) {
-            throw new BadRequestException('Usuario no encontrado');
-        }
-        return user;
-    }
+   
 
 
 
