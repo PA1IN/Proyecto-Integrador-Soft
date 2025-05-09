@@ -9,6 +9,11 @@ interface Logindata {
 
 interface Loginresponse {
     token: string;
+    user:{
+        rut: string;
+        name: string;
+        correo: string;
+    }
 }
 
 export function useLogin(onSuccess: (token: string)=> void, onFail:(error:string)=> void) {
@@ -19,6 +24,8 @@ export function useLogin(onSuccess: (token: string)=> void, onFail:(error:string
         },
         onSuccess: (data) => {
             onSuccess(data.token);
+            console.log(data.token);
+            console.log(data.user);
         },
         onError:(error) => {
             const mensaje = (error.response?.data as {message?: string})?.message || 'no se pudo identificar el error xd';
