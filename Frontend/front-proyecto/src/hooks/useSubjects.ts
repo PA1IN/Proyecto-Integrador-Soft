@@ -1,7 +1,7 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import api from '../api/axios';
 
-export interface Subject{
+interface Subject{
     nrc: number;
     nombre: string;
     nivel: string;
@@ -22,8 +22,8 @@ export function useSubjects() {
 export function useCrearSubjects() {
     const clienteQuery = useQueryClient();
     return useMutation({
-        mutationFn: async (nuevaSubject:{nrc: number,nombre: string,nivel:string}) => {
-            const respuesta = await api.post('/api/v1/auth/asigntatura',nuevaSubject); //sapear backend pa cambiar el endpoint
+        mutationFn: async ({nrc,nombre,nivel}:Subject) => {
+            const respuesta = await api.post('/api/v1/auth/asigntatura',{nrc,nombre,nivel}); //sapear backend pa cambiar el endpoint
             return respuesta.data;
         },
         onSuccess: () => {
