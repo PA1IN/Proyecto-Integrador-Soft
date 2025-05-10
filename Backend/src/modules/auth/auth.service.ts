@@ -22,7 +22,7 @@ export class AuthService {
         if (!isPasswordValid) {
             throw new BadRequestException('credenciales invalidas');
         }
-        const payload = { rut: user.rut, name: user.name };
+        const payload = { rut: user.rut, name: user.name, correo: user.correo };
         const  token = await this.jwtService.signAsync(payload);
         return {
             token
