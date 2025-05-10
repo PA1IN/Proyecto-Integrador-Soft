@@ -36,7 +36,7 @@ export const Home = () => {
 
     return (
     <div> 
-        <h2> Bienvenido: {user?.Name}, tu correo es: {user?.Email} </h2>
+        <h2> Bienvenido: {user?.rut}, tu correo es: {user?.name} </h2>
         <button onClick={()=> navigate('/Calendar')}>Ver las asignaturas definidas</button>
         <button onClick={logout}>Cerrar la sesion 🤑</button>
     </div>
