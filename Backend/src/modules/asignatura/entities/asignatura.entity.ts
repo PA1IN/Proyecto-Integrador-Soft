@@ -5,7 +5,7 @@ import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryColumn } from 
 
 @Entity()
 export class Asignatura {
-    @PrimaryColumn("uuid")
+    @PrimaryColumn()
     NRC: String;
 
     @Column()
