@@ -12,7 +12,7 @@ export function useSubjects() {
     return useQuery({
         queryKey: ['subjects'],
         queryFn: async () => {
-            const res = await api.get('/api/v1/auth/asignatura');
+            const res = await api.get('/asignatura');
             return res.data; // tiene que venir un array de asignaturas pa q funcione
         }
     });
@@ -23,7 +23,7 @@ export function useCrearSubjects() {
     const clienteQuery = useQueryClient();
     return useMutation({
         mutationFn: async ({nrc,nombre,nivel}:Subject) => {
-            const respuesta = await api.post('/api/v1/auth/asigntatura',{nrc,nombre,nivel}); //sapear backend pa cambiar el endpoint
+            const respuesta = await api.post('asigntatura',{nrc,nombre,nivel}); //sapear backend pa cambiar el endpoint
             return respuesta.data;
         },
         onSuccess: () => {
