@@ -4,6 +4,7 @@ import {Register} from '../pages/Register';
 import {Home} from '../pages/Home';
 import {PrivateRoute} from './PrivateRoute';
 import ForgotPassword from '../pages/ForgotPassword';
+//import { TreeSubjects } from '../pages/TreeSubjects';
 import { Calendar } from '../pages/Calendar';
 
 
@@ -16,6 +17,7 @@ export const AppRoutes = () => {
 
       <Route path='/Home'element={<PrivateRoute> <Home/> </PrivateRoute>}/>
       <Route path='/Calendar'element={<PrivateRoute> <Calendar/> </PrivateRoute>}/>
+
 
 
     </Routes>
