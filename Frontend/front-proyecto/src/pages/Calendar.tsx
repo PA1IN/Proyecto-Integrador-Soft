@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {useSubjects} from '../hooks/useSubjects'
+import {useAsignaturas} from '../hooks/useCalendar'
 import '../styles/calendar.css'
 
 const dias = ['Jueves 24/04','Viernes 25/04', 'Sabado 26/04', 'Lunes 28/04', 'Martes 29/04', 'Miercoles 30/04']; // moldeable
@@ -10,7 +10,7 @@ const horarios: {[key: string]: string[]} = {
 };
 
 export const Calendar = () => {
-    const {data: subjects} = useSubjects();
+    const {data: subjects} = useAsignaturas();
     const [calendario, setCalendario] = useState<{[key:string]:any[]}>({});
     const [dragnrc, setDragnrc] = useState<number | null>(null);
 

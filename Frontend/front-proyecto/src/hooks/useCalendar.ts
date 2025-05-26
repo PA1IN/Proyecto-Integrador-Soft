@@ -2,7 +2,56 @@ import {useQuery,useMutation,useQueryClient} from '@tanstack/react-query';
 import api from '../api/axios';
 
 
-export function useAsignaturas(){
+
+export function useAsignaturas() {
+  return {
+    data: [
+      {
+        nrc: 101,
+        nombre: 'Álgebra Lineal',
+        nivel: 1,
+        profesor: 'Prof. Daniel perez',
+        horario: '08:10-09:20',
+        sala: 'A101'
+      },
+      {
+        nrc: 102,
+        nombre: 'Programación I',
+        nivel: 1,
+        profesor: 'Ing. Boris rubio',
+        horario: '09:55-13:10',
+        sala: 'B204'
+      },
+      {
+        nrc: 201,
+        nombre: 'Física I',
+        nivel: 2,
+        profesor: 'Prof. Vicente ruiz',
+        horario: '09:55-11:20',
+        sala: 'C301'
+      },
+      {
+        nrc: 301,
+        nombre: 'Bases de Datos',
+        nivel: 3,
+        profesor: 'Ing. Americo pucio',
+        horario: '08:10-20:00',
+        sala: 'online'
+      },
+      {
+        nrc: 302,
+        nombre: 'Redes de Computadores',
+        nivel: 3,
+        profesor: 'Ing. Carlos Ramírez',
+        horario: '16:15-17:45',
+        sala: 'D112'
+      }
+    ]
+  };
+}
+
+
+/*export function useAsignaturas(){
     return useQuery({
         queryKey:['asignaturas'],
         queryFn: async () => {
@@ -10,7 +59,7 @@ export function useAsignaturas(){
             return respuesta.data;
         }
     })
-}
+}*/
 
 export function useCrearAsignatura() {
     const clienteQuery = useQueryClient();
