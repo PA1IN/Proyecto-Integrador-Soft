@@ -87,3 +87,32 @@ export function useEliminarAsignatura() {
 }
 
 //metodos post,get y delete para las asignaturas que se van a modificar
+interface Diacalendario {
+    dia: number;
+    fecha: string;
+}
+
+
+export function useDias() {
+    return useQuery<Diacalendario[]>({
+        queryKey:['dias'],
+        queryFn: async () => {
+            const respuesta = await api.get('/columna');
+            return respuesta.data; //poner el endpoint q deje el dono pa la tabla de columna pa que el json sea un array de objetos de esa tabla{{dia: number, fecha:date}}
+        }
+    })
+}
+
+
+export function useActualizarDias() {
+    const clienteQuery = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (dias: {dia: number; fecha: string}[]) => {
+            await api.post('/columna', dias); // cambiar el endpoint pal q tenga el dono
+        },
+        onSuccess:() => {
+            clienteQuery.invalidateQueries({queryKey: ['dias']});
+        }
+    });
+}

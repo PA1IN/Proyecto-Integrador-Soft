@@ -1,8 +1,10 @@
-import React, {useState} from 'react';
-import {useAsignaturas} from '../hooks/useCalendar'
+import React, {useEffect, useState} from 'react';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+import {useActualizarDias, useAsignaturas, useDias} from '../hooks/useCalendar'
 import '../styles/calendar.css'
 
-const dias = ['Jueves 24/04','Viernes 25/04', 'Sabado 26/04', 'Lunes 28/04', 'Martes 29/04', 'Miercoles 30/04']; // moldeable
+/*const dias = ['Jueves 24/04','Viernes 25/04', 'Sabado 26/04', 'Lunes 28/04', 'Martes 29/04', 'Miercoles 30/04']; // moldeable */
 const bloques = ['Mañana', 'Tarde'];
 const horarios: {[key: string]: string[]} = {
     Mañana: ['08:10-09:20','09:55-11:20','11:40-13:10'],
@@ -10,9 +12,49 @@ const horarios: {[key: string]: string[]} = {
 };
 
 export const Calendar = () => {
+    const {data: dias, isLoading: cargandoDias} = useDias();
+    const actualizarDias = useActualizarDias();
+
+    const [fechas, setFechas] =useState<{dia: number; fecha: Date | null}[]>([
+      {dia: 1, fecha: null},
+      {dia: 2, fecha: null},
+      {dia: 3, fecha:null},
+      {dia: 4, fecha: null},
+      {dia: 5, fecha:null},
+      {dia: 6, fecha: null},
+      {dia: 7, fecha: null} //pal dia que quieran hacer las semanas de prueba con 7 dias
+    ]);
+    
+    const [mostrarClmnaextra,setMostrarClmnextra ] = useState(false);
     const {data: subjects} = useAsignaturas();
     const [calendario, setCalendario] = useState<{[key:string]:any[]}>({});
     const [dragnrc, setDragnrc] = useState<number | null>(null);
+
+    useEffect(() => {
+      if(dias) {
+        const diasCargados = dias.map((d: {dia: number; fecha: string}) => ({
+          dia: d.dia,
+          fecha: new Date(d.fecha),
+        }));
+        setFechas((prev) => 
+          prev.map((fechaActual) => diasCargados.find((diascargados) => diascargados.dia === fechaActual.dia)|| fechaActual)
+        );
+      }
+    }, [dias]);
+
+    const cambiofechas = (fecha: Date, dia:number) => {
+      const fechasnuevas = fechas.map((f) => {
+        return f.dia === dia ? {...f, fecha} : f
+        }
+      );
+      setFechas(fechasnuevas);
+      actualizarDias.mutate([
+        {
+          dia,
+          fecha: fecha.toISOString().split("T")[0]
+        },
+      ]);
+    };
 
     const drag = (nrc:number) => {
         setDragnrc(nrc);
@@ -68,9 +110,34 @@ export const Calendar = () => {
         });
     };
 
+    const fechasvisibles = fechas.filter((f) => {
+        if(mostrarClmnaextra){
+          return true;
+        }
+        else {
+          if(f.dia <= 6) {
+            return true;
+          }else {
+            return false;
+          }
+        }
+      }
+    );
+
+    if (cargandoDias) {
+      return <div> Cargando fechas... </div>
+    }
+
+
    return (
     <div className="calendar-container">
       <h2 className="calendar-titulo">Calendario de pruebas</h2>
+      
+      <label>
+        <input type="checkbox" checked={mostrarClmnaextra} onChange={()=> setMostrarClmnextra((prev)=> !prev)}/>
+        Columna adicional (dia 7)
+      </label>
+
 
       <div className="calendar-layout">
         <div className="categorias">
@@ -95,19 +162,21 @@ export const Calendar = () => {
         <div className="calendar-grilla">
           <div className="fila fila-header">
             <div className="celda-hora"></div>
-            {dias.map((dia) => (
-              <div key={dia} className="celda-dia">{dia}</div>
+            {fechasvisibles.map((f)=> (
+              <div key = {f.dia} className="celda-dia">
+                <DatePicker selected={f.fecha} onChange={(fechanueva) => cambiofechas(fechanueva as Date,f.dia)} dateFormat="EEEE dd/MM" placeholderText="seleccionar fecha"/>
+              </div>
             ))}
           </div>
 
           {bloques.map((bloque) => (
             <div key={bloque} className="fila">
               <div className="celda-hora">{bloque}</div>
-              {dias.map((dia) => (
-                <div key={`${dia}-${bloque}`} className="celda-multiple">
+              {fechasvisibles.map((f) => (
+                <div key={`${f.dia}-${bloque}`} className="celda-multiple">
                   {(horarios[bloque] || []).map((horario, i) => {
                     const slot = i + 1;
-                    const celdaid = `${dia}-${bloque}-slot${slot}`;
+                    const celdaid = `${f.dia}-${bloque}-slot${slot}`;
                     return (
                       <div
                         key={celdaid}
