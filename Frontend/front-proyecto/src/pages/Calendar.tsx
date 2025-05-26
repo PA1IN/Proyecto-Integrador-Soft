@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {useSubjects} from '../hooks/useSubjects'
 import '../styles/calendar.css'
 
-const dias = ['Jueves 24/04','Viernes 25/04', 'Sabado 26/04', 'Lunes 28/04', 'Martes 29/04', 'Miercoles 30/04'];
+const dias = ['Jueves 24/04','Viernes 25/04', 'Sabado 26/04', 'Lunes 28/04', 'Martes 29/04', 'Miercoles 30/04']; // moldeable
 const bloques = ['Mañana', 'Tarde'];
 const horarios: {[key: string]: string[]} = {
     Mañana: ['08:10-09:20','09:55-11:20','11:40-13:10'],

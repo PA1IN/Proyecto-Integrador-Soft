@@ -27,8 +27,7 @@ export function useSubjects() {
         nivel: 1,
         profesor: 'Prof. Daniel perez',
         horario: '08:10-09:20',
-        sala: 'A101',
-        lab: 'N/A'
+        sala: 'A101'
       },
       {
         nrc: 102,
@@ -36,8 +35,7 @@ export function useSubjects() {
         nivel: 1,
         profesor: 'Ing. Boris rubio',
         horario: '09:55-13:10',
-        sala: 'B204',
-        lab: 'Lab C'
+        sala: 'B204'
       },
       {
         nrc: 201,
@@ -45,8 +43,7 @@ export function useSubjects() {
         nivel: 2,
         profesor: 'Prof. Vicente ruiz',
         horario: '09:55-11:20',
-        sala: 'C301',
-        lab: 'Lab F'
+        sala: 'C301'
       },
       {
         nrc: 301,
@@ -54,8 +51,7 @@ export function useSubjects() {
         nivel: 3,
         profesor: 'Ing. Americo pucio',
         horario: '08:10-20:00',
-        sala: 'online',
-        lab: '-'
+        sala: 'online'
       },
       {
         nrc: 302,
@@ -63,8 +59,7 @@ export function useSubjects() {
         nivel: 3,
         profesor: 'Ing. Carlos Ramírez',
         horario: '16:15-17:45',
-        sala: 'D112',
-        lab: 'Lab Net'
+        sala: 'D112'
       }
     ]
   };
