@@ -10,7 +10,7 @@ export const ForgotPassword = () => {
 
   const recuperarPassword = useForgotPassword(
     () => {
-        setErrorMsg('correo enviado con exito, revisa la bandeja xd');
+        setErrorMsg('correo enviado con exito, revisa la bandeja');
     },
     (error) => 
     {
