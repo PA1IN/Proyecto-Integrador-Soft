@@ -2,7 +2,7 @@ import {useQuery,useMutation,useQueryClient} from '@tanstack/react-query';
 import api from '../api/axios';
 import { AxiosError } from 'axios';
 
-interface ProfesorData
+interface SalaData
 {
     nombre: string;
 }
@@ -12,25 +12,25 @@ interface CrearResponse
     message : string;
 }
 
-export function useProfesores() {    //pa listar los profesores.
+export function useSalas() {    //pa listar las salas.
     return useQuery({
-        queryKey: ['profesores'],
+        queryKey: ['salas'],
         queryFn: async () => {
-            const respuesta = await api.get('api/v1/profesor');
+            const respuesta = await api.get('api/v1/sala');
             return respuesta.data;
         }
     });
 }
 
-export function useCrearProfesor(onSuccess: () => void, onFail:(error:string)=>void){ 
+export function useCrearSala(onSuccess: () => void, onFail:(error:string)=>void){ 
     const clienteQuery = useQueryClient();
-    return useMutation<CrearResponse,AxiosError,ProfesorData>({
-        mutationFn: async ({nombre}:ProfesorData): Promise<CrearResponse>  => {
-            const respuesta = await api.post('api/v1/profesor',{nombre});
+    return useMutation<CrearResponse,AxiosError,SalaData>({
+        mutationFn: async ({nombre}:SalaData): Promise<CrearResponse>  => {
+            const respuesta = await api.post('api/v1/sala',{nombre});
             return respuesta.data
         },
         onSuccess: () => {
-            clienteQuery.invalidateQueries({queryKey:['profesor']});
+            clienteQuery.invalidateQueries({queryKey:['sala']});
             onSuccess();
         },
         onError:(error) => {
@@ -40,16 +40,15 @@ export function useCrearProfesor(onSuccess: () => void, onFail:(error:string)=>v
     });
 }
 
-export function useEliminarProfe(){   //pa "eliminar" un profesor
+export function useEliminarSala(){   //pa "eliminar" una sala
     const clienteQuery = useQueryClient();
     return useMutation({
         mutationFn: async (id: number) => {
-            await api.patch(`api/v1/profesor/${id}`)
+            await api.patch(`api/v1/sala/${id}`)
         },
         onSuccess: () => {
-            clienteQuery.invalidateQueries({queryKey:['profesor']});
+            clienteQuery.invalidateQueries({queryKey:['sala']});
         }                        
     });
 
 }
-

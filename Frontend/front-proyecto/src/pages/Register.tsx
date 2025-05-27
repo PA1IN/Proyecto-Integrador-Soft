@@ -5,7 +5,7 @@ import '../styles/login.css'
 
 export const Register = () => { //Hooks
   const [rut, setRut] = useState('');
-  const [name, setName] = useState('');
+  const [nombre, setName] = useState('');
   const [correo,setCorreo] = useState('');
   const [password,setPassword] = useState('');
   const [errorMsg,setErrorMsg] = useState('');
@@ -22,7 +22,7 @@ export const Register = () => { //Hooks
   const enviar = (e: SyntheticEvent) => {
     e.preventDefault();
     setErrorMsg('');
-    register.mutate({rut,name,correo,password});
+    register.mutate({nombre,correo,rut,password});
   };
 
   return (
@@ -41,7 +41,7 @@ export const Register = () => { //Hooks
 
           <div className = "form-group">
               <label htmlFor = "name">Ingrese su Nombre: </label>
-              <input type = "username" id = "name" placeholder = 'Ingrese su nombre...' required value={name} onChange={e => setName(e.target.value)}/>
+              <input type = "username" id = "name" placeholder = 'Ingrese su nombre...' required value={nombre} onChange={e => setName(e.target.value)}/>
           </div>
 
           <div className = "form-group">
