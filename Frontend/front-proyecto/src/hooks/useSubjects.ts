@@ -3,8 +3,8 @@ import api from '../api/axios';
 
 interface Subject{
     nrc: number;
-    nombre: string;
     nivel: string;
+    nombre: string;
 }
 
 
@@ -23,8 +23,8 @@ interface Subject{
 export function useCrearSubjects() {
     const clienteQuery = useQueryClient();
     return useMutation({
-        mutationFn: async ({nrc,nombre,nivel}:Subject) => {
-            const respuesta = await api.post('asignatura',{nrc,nombre,nivel}); //sapear backend pa cambiar el endpoint
+        mutationFn: async ({nrc,nivel,nombre}:Subject) => {
+            const respuesta = await api.post('asignatura',{nrc,nivel,nombre}); //sapear backend pa cambiar el endpoint
             return respuesta.data;
         },
         onSuccess: () => {
