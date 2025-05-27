@@ -1,0 +1,103 @@
+import React, {SyntheticEvent,useState} from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useUserProfile } from '../hooks/useUserProfile';
+import { useAsignaturas, useAsignaturasCreadas, useCrearAsignatura, useEliminarAsignatura } from '../hooks/useAsignaturas';
+
+
+export const Asignaturas = () => 
+{
+    
+    const {token, setToken} = useAuth();
+    const {data: user, isLoading: cargauser, isError} = useUserProfile();
+    const navigate = useNavigate();
+    const {data: asignaturas,isLoading: cargaAsignaturas} = useAsignaturas();
+    const {data: asignaturasCreadas,isLoading: cargaAsignaturasCreadas} = useAsignaturasCreadas();
+    const eliminarAsignatura = useEliminarAsignatura();
+    const crearAsignatura = useCrearAsignatura();
+
+    const [codigoNrc, setNrc] = useState('');
+    const [niv, setNivel] = useState('');
+    const [name, setNombre] = useState('');
+
+    if(!token)
+    {
+        navigate('/Login');
+        return null;
+    }
+
+    if(cargauser)
+    {
+        return <div> Cargando... </div>;
+    }
+    
+    if(isError)
+    {
+        setToken(null);
+        navigate('/Login');
+        return null;
+    }
+      
+    const crear = (e:SyntheticEvent) => {
+        e.preventDefault();
+        crearAsignatura.mutate({nrc: codigoNrc, nivel: Number(niv) ,nombre: name});
+        setNombre('');
+    };
+    
+    return (
+        <div>
+            <h1>Menú de Asignaturas</h1>
+
+            <h3>Agregar Asignatura: </h3>
+            <form onSubmit={crear}>
+                <input type = "text" placeholder="Ingrese el nombre de la asignatura." value={name} onChange={(e)=> setNombre(e.target.value)} required />
+                <input type = "number" placeholder="Ingrese el número del semestre (o nivel) al que pertenece la asignatura (ej: 4)." value={niv} onChange={(e)=> setNivel(e.target.value)} required />
+                <input type = "text" placeholder="Ingrese el NRC de la asignatura." value={codigoNrc} onChange={(e)=> setNrc(e.target.value)} required />
+                <button type="submit">Agregar</button>
+            </form>
+
+            {cargaAsignaturasCreadas ? (<p>Cargando tus asignaturas...</p>)
+            : (
+            <>
+                <h2>Tus asignaturas creadas: </h2>
+                {asignaturasCreadas?.length > 0 ? (
+                    <ul>
+                        {asignaturasCreadas.map((ac: any) => (
+                            <li key = {ac.id}>
+                                <p>NRC: </p> {ac.nrc}
+                                <p>Nombre de asignatura: </p> {ac.nombre}
+                                <p>Nivel/Número de Semestre: </p> {ac.nivel}
+                                <button onClick={() => eliminarAsignatura.mutate(ac.id)}>Eliminar asignatura</button>
+                                <p>-------</p>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (<p>No creaste ninguna asignatura.</p>)
+                }
+            </>
+            )}
+
+            {cargaAsignaturas ? (<p>Cargando las asignaturas...</p>)
+            : (
+            <>
+                <h2>Asignaturas en el sistema: </h2>
+                {asignaturas?.length > 0 ? (
+                    <ul>
+                        {asignaturas.map((a: any) => (
+                            <li key = {a.id}>
+                                <p>NRC: </p> {a.nrc}
+                                <p>Nombre de asignatura: </p> {a.nombre}
+                                <p>Nivel/Número de Semestre: </p> {a.nivel}
+                                <p>-------</p>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (<p>No hay asignaturas.</p>)
+                }
+            </>
+            )}
+        
+            <button onClick={()=> navigate('/Home')}>Volver al menú principal</button>
+        </div>
+  );
+};

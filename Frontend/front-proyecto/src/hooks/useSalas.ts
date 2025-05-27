@@ -7,10 +7,6 @@ interface SalaData
     nombre: string;
 }
 
-interface CrearResponse
-{
-    message : string;
-}
 
 export function useSalas() {    //pa listar las salas.
     return useQuery({

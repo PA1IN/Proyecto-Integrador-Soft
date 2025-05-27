@@ -32,6 +32,7 @@ export function useCrearcolumna(onSuccess: () => void, onFail:(error:string)=>vo
     });
 }
 
+/*
 export function useActualizarColumna(){   //en base al día y al id del calendario se modifica la fecha.
     const clienteQuery = useQueryClient();
     return useMutation({
@@ -44,6 +45,7 @@ export function useActualizarColumna(){   //en base al día y al id del calendar
     });
 
 }
+*/
 
 export function useCargarColumnas(id: number) {   //Carga las columnas del calendario (en base al id del calendario) en una lista para asignar sus datos en la matriz.
     return useQuery({

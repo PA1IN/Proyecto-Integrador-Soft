@@ -38,8 +38,8 @@ export const Home = () => {
     <div> 
         <h2> Bienvenido: {user?.name}, tu correo es: {user?.correo} </h2>
         <button onClick={()=> navigate('/Calendar')}>Armar calendario</button>
-        <button onClick={()=> navigate('/TreeSubjects')}>Ver las asignaturas definidas</button>
-        <button onClick={()=> navigate('/Profesores')}>Administrar profesores en el sistema</button>
+        <button onClick={()=> navigate('/Asignaturas')}>Administrar Asignaturas en el sistema</button>
+        <button onClick={()=> navigate('/Profesores')}>Administrar Profesores en el sistema</button>
         <button onClick={()=> navigate('/Salas')}>Administrar Salas en el sistema</button>
 
         <button onClick={logout}>Cerrar la sesion</button>
