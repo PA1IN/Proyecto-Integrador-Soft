@@ -2,8 +2,8 @@ import React, {useEffect, useState} from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { useCargarColumnas } from '../hooks/useColumna';
-import {useAsignaturas} from '../hooks/useCalendar'
-import '../styles/calendar.css'
+import {useAsignaturas} from '../hooks/useAsignaturas';
+import '../styles/calendar.css';
 import { useProfesores } from '../hooks/useProfesores';
 import { useSalas } from '../hooks/useSalas';
 import { useUserProfile } from '../hooks/useUserProfile';
