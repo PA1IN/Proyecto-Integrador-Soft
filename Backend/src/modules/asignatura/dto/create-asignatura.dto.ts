@@ -22,8 +22,8 @@ export class CreateAsignaturaDto {
     @IsOptional()
     AlumnosTea: number;
 
-    @IsString()
-    nivel: string;
+    @IsNumber()
+    nivel: number;
 
     @IsOptional()
     @IsArray()

@@ -7,11 +7,11 @@ async function bootstrap() {
 
   
   app.enableCors({
-    origin: 'http://localhost:5173', // Cambia esto según tu frontend
+    origin: 'http://localhost:3000', // Cambia esto según tu frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
     credentials: true,
   });
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 8080);
 }
 bootstrap();
