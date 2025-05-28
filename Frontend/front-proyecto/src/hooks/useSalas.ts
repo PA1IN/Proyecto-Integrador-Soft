@@ -12,7 +12,7 @@ export function useSalas() {    //pa listar las salas.
     return useQuery({
         queryKey: ['salas'],
         queryFn: async () => {
-            const respuesta = await api.get('api/v1/sala');
+            const respuesta = await api.get('/sala');
             return respuesta.data;
         }
     });
@@ -22,7 +22,7 @@ export function useCrearSala(){
     const clienteQuery = useQueryClient();
     return useMutation({
         mutationFn: async ({nombre}:SalaData)  => {
-            const respuesta = await api.post('api/v1/sala',{nombre});
+            const respuesta = await api.post('/sala',{nombre});
             return respuesta.data
         },
         onSuccess: () => {
@@ -35,7 +35,7 @@ export function useEliminarSala(){   //pa "eliminar" una sala
     const clienteQuery = useQueryClient();
     return useMutation({
         mutationFn: async (id: number) => {
-            await api.patch(`api/v1/sala/${id}`)
+            await api.patch(`/sala/${id}`)
         },
         onSuccess: () => {
             clienteQuery.invalidateQueries({queryKey:['sala']});

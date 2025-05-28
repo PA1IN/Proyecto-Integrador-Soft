@@ -33,11 +33,11 @@ export function useCrearAsignatura() {
     const clienteQuery = useQueryClient();
     return useMutation({
         mutationFn: async ({nrc, nivel, nombre}: AsignaturaCreadaData) => {
-            const respuesta = await api.post('api/v1/asignaturaCreada',{nrc,nivel,nombre});
+            const respuesta = await api.post('/asignaturaCreada',{nrc,nivel,nombre});
             return respuesta.data;
         },
         onSuccess: () => {
-            clienteQuery.invalidateQueries({queryKey:['asignaturaCreada']});
+            clienteQuery.invalidateQueries({queryKey:['/asignaturaCreada']});
         },
     });
 }

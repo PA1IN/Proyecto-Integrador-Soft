@@ -23,7 +23,7 @@ export interface Resultadoerrores {
 export function useCalcularErrores() {
     return useMutation<Resultadoerrores,Error,Pruebahorario[]>({
         mutationFn: async (pruebas: Pruebahorario[]) => {
-            const respuesta = await api.post('/calendario/errores', {pruebas});
+            const respuesta = await api.patch('/calendario/analizar-errores', {pruebas});
             return respuesta.data;
         },
     });
