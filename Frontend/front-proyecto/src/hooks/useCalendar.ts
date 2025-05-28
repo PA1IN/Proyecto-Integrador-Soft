@@ -65,7 +65,7 @@ export function useCrearAsignatura() {
     const clienteQuery = useQueryClient();
     return useMutation({
         mutationFn: async (nuevaAsignatura:{nrc: number, nombre: string, nivel: string}) => {
-            const respuesta = await api.post('/asignaturas',nuevaAsignatura);
+            const respuesta = await api.post('/asignaturascreadas',nuevaAsignatura);
             return respuesta.data;
         },
         onSuccess: () => {
@@ -87,7 +87,7 @@ export function useEliminarAsignatura() {
 }
 
 //metodos post,get y delete para las asignaturas que se van a modificar
-interface Diacalendario {
+/*interface Diacalendario {
     dia: number;
     fecha: string;
 }
@@ -115,4 +115,4 @@ export function useActualizarDias() {
             clienteQuery.invalidateQueries({queryKey: ['dias']});
         }
     });
-}
+}*/

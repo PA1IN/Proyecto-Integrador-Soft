@@ -1,19 +1,28 @@
 import React, {useEffect, useState} from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import {useActualizarDias, useAsignaturas, useDias} from '../hooks/useCalendar'
+import { useActualizarColumna, useCargarColumnas } from '../hooks/useColumna';
+import {useAsignaturas} from '../hooks/useCalendar'
 import '../styles/calendar.css'
+import { useProfesores } from '../hooks/useProfesores';
+import { useSalas } from '../hooks/useSalas';
 
 /*const dias = ['Jueves 24/04','Viernes 25/04', 'Sabado 26/04', 'Lunes 28/04', 'Martes 29/04', 'Miercoles 30/04']; // moldeable */
 const bloques = ['Mañana', 'Tarde'];
-const horarios: {[key: string]: string[]} = {
-    Mañana: ['08:10-09:20','09:55-11:20','11:40-13:10'],
-    Tarde: ['14:30-16:00','16:15-17:45','18:00-19:30']
-};
+/*const horarios: {[key: string]: string[]} = {
+    Mañana: ['','',''],
+    Tarde: ['','','']
+};*/
+
+const id_actual = 1; //pa dsp usar el id del calendario q este global
 
 export const Calendar = () => {
-    const {data: dias, isLoading: cargandoDias} = useDias();
-    const actualizarDias = useActualizarDias();
+    const {data: columnas, isLoading: cargandoColumnas} = useCargarColumnas(id_actual);
+    const actualizarColumna = useActualizarColumna();
+    const {data: subjects} = useAsignaturas();
+    const {data: profesores} = useProfesores();
+    const {data: salas} = useSalas();
+
 
     const [fechas, setFechas] =useState<{dia: number; fecha: Date | null}[]>([
       {dia: 1, fecha: null},
@@ -26,21 +35,27 @@ export const Calendar = () => {
     ]);
     
     const [mostrarClmnaextra,setMostrarClmnextra ] = useState(false);
-    const {data: subjects} = useAsignaturas();
     const [calendario, setCalendario] = useState<{[key:string]:any[]}>({});
     const [dragnrc, setDragnrc] = useState<number | null>(null);
+    const [formVisible, setFormvisible] = useState(false);
+    const [datosForm,setDatosform] = useState<{nrc: number, celdaid: string, asignatura: any} | null>(null);
+
+    const [profesorForm, setProfesorform] = useState<number | null>(null);
+    const [salaForm, setSalaform] = useState<number | null>(null);
+    const [horario, setHorario] = useState("");
+    const [profesorAsig,setProfesorasig] = useState(true);
 
     useEffect(() => {
-      if(dias) {
-        const diasCargados = dias.map((d: {dia: number; fecha: string}) => ({
-          dia: d.dia,
-          fecha: new Date(d.fecha),
+      if(columnas) {
+        const columnasCargadas = columnas.map((col: {dia: number; fecha: string}) => ({
+          dia: col.dia,
+          fecha: new Date(col.fecha),
         }));
         setFechas((prev) => 
-          prev.map((fechaActual) => diasCargados.find((diascargados) => diascargados.dia === fechaActual.dia)|| fechaActual)
+          prev.map((fechaActual) => columnasCargadas.find((c) => c.dia === fechaActual.dia)|| fechaActual)
         );
       }
-    }, [dias]);
+    }, [columnas]);
 
     const cambiofechas = (fecha: Date, dia:number) => {
       const fechasnuevas = fechas.map((f) => {
@@ -48,12 +63,13 @@ export const Calendar = () => {
         }
       );
       setFechas(fechasnuevas);
-      actualizarDias.mutate([
+      actualizarColumna.mutate(
         {
           dia,
-          fecha: fecha.toISOString().split("T")[0]
+          fecha: fecha.toISOString().split("T")[0],
+          id_calendario: id_actual,
         },
-      ]);
+      );
     };
 
     const drag = (nrc:number) => {
@@ -73,28 +89,52 @@ export const Calendar = () => {
             return;
         }
 
-        setCalendario((prev) => {
-            const nuevo = { ...prev};
-            if (!nuevo[celdaid])
-            {
-                nuevo[celdaid] = [];
-            }
-
-            if(nuevo[celdaid].some((a)=> a.nrc === asignatura.nrc))
-            {
-                return nuevo;
-            }
-
-            if(nuevo[celdaid].length >= 1) //cambiar pa poner pruebas q choquen
-            {
-                return nuevo;
-            }
-
-            nuevo[celdaid].push(asignatura);
-            return nuevo;
-        });
-
+        setDatosform({nrc: dragnrc, celdaid, asignatura});
+        setFormvisible(true);
         setDragnrc(null);
+
+    };    
+
+
+    const guardarPrueba = () => {
+      
+      if (!datosForm) {
+        return;
+      }
+
+      const prueba = {
+        ...datosForm.asignatura,
+        profesor:profesorForm,
+        sala: salaForm,
+        profesor_error: !profesorAsig,
+      };
+
+      setCalendario((prev) => {
+          const nuevo = { ...prev};
+          if (!nuevo[datosForm.celdaid])
+          {
+              nuevo[datosForm.celdaid] = [];
+          }
+
+          if(nuevo[datosForm.celdaid].some((a)=> a.nrc === prueba.nrc))
+          {
+              return nuevo;
+          }
+
+          if(nuevo[datosForm.celdaid].length >= 1) //cambiar pa poner pruebas q choquen
+          {
+              return nuevo;
+          }
+
+          nuevo[datosForm.celdaid].push(prueba);
+          return nuevo;
+      });
+
+      //setDragnrc(null);
+
+      localStorage.setItem("calendario", JSON.stringify(calendario));
+      setFormvisible(false);
+      setDatosform(null);
 
     };
 
@@ -124,7 +164,7 @@ export const Calendar = () => {
       }
     );
 
-    if (cargandoDias) {
+    if (cargandoColumnas) {
       return <div> Cargando fechas... </div>
     }
 
@@ -138,6 +178,36 @@ export const Calendar = () => {
         Columna adicional (dia 7)
       </label>
 
+      {formVisible && datosForm && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>Datos de la prueba</h3>
+            <select onChange={(e) => setProfesorform(Number(e.target.value))}>
+              <option>Seleccione un docente para la evaluacion</option>
+              {profesores?.map((p:any) => (
+                <option key={p.id} value={p.id}>{p.nombre}</option>
+              ))}
+            </select>
+
+            <select onChange={(e)=> setSalaform(Number(e.target.value))}>
+              <option>Seleccione una sala para la evaluacion</option>
+              {salas?.map((s:any) => (
+                <option key={s.id} value={s.id}>{s.nombre}</option>
+              ))}
+            </select>
+
+            <input type="text" placeholder="horario (09:00 - 10:30)" onChange={(e)=>setHorario(e.target.value)}/>
+            <label>
+              <input type="checkbox" checked={profesorAsig} onChange={()=>setProfesorasig(!profesorAsig)}/>
+              ¿El docente es el mismo de la asignatura? 
+            </label>
+
+            
+            <button onClick={guardarPrueba}>Guardar</button>
+            <button onClick={()=> setFormvisible(false)}>Cancelar</button>
+          </div> 
+        </div>
+      )}
 
       <div className="calendar-layout">
         <div className="categorias">
@@ -170,11 +240,11 @@ export const Calendar = () => {
           </div>
 
           {bloques.map((bloque) => (
-            <div key={bloque} className="fila">
-              <div className="celda-hora">{bloque}</div>
-              {fechasvisibles.map((f) => (
-                <div key={`${f.dia}-${bloque}`} className="celda-multiple">
-                  {(horarios[bloque] || []).map((horario, i) => {
+            <React.Fragment key={bloque}>
+              {[...Array(6)].map((_, i) => (
+                <div key={`${bloque}-fila-${i}`} className="fila">
+                  <div className="celda-hora">{i === 0 ? bloque : ''}</div>
+                  {fechasvisibles.map((f) => {
                     const slot = i + 1;
                     const celdaid = `${f.dia}-${bloque}-slot${slot}`;
                     return (
@@ -184,7 +254,6 @@ export const Calendar = () => {
                         onDrop={(e) => drop(e, celdaid)}
                         onDragOver={dragTermino}
                       >
-                        <div className="horario-slot">{horario}</div>
                         {calendario[celdaid]?.map((asig, idx) => (
                           <div key={idx} className="bloque-asignatura asignatura-agendada">
                             <div><strong>Sem.:</strong> {asig.nivel}</div>
@@ -192,7 +261,6 @@ export const Calendar = () => {
                             <div><strong>Asig:</strong> {asig.nombre}</div>
                             <div><strong>Horario:</strong> {asig.horario}</div>
                             <div><strong>Sala:</strong> {asig.sala}</div>
-                            <div><strong>Lab:</strong> {asig.lab}</div>
                             <button
                               className="eliminar-boton"
                               onClick={() => eliminar(celdaid, asig.nrc)}
@@ -206,8 +274,9 @@ export const Calendar = () => {
                   })}
                 </div>
               ))}
-            </div>
+            </React.Fragment>
           ))}
+
         </div>
       </div>
     </div>

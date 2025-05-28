@@ -5,7 +5,7 @@ import { AxiosError } from 'axios';
 interface ColumnaData
 {
     dia: number;
-    fecha: Date;
+    fecha: string;
     id_calendario: number;
 }
 
@@ -35,7 +35,7 @@ export function useCrearcolumna(onSuccess: () => void, onFail:(error:string)=>vo
 export function useActualizarColumna(){   //en base al día y al id del calendario se modifica la fecha.
     const clienteQuery = useQueryClient();
     return useMutation({
-        mutationFn: async (data: {dia: number, fecha: Date, id_calendario: number}) => {
+        mutationFn: async (data: {dia: number, fecha: string, id_calendario: number}) => {
             await api.patch('api/v1/columna',{dia: data.dia, fecha: data.fecha ,id_calendario: data.id_calendario})
         },
         onSuccess: () => {
@@ -46,7 +46,7 @@ export function useActualizarColumna(){   //en base al día y al id del calendar
 }
 
 export function useCargarColumnas(id: number) {   //Carga las columnas del calendario (en base al id del calendario) en una lista para asignar sus datos en la matriz.
-    return useQuery({
+    return useQuery<ColumnaData[]>({
         queryKey: ['columnas', id],
         queryFn: async () => {
             const respuesta = await api.get('api/v1/columna',{params:{id_calendario: id}});
