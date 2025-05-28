@@ -32,12 +32,19 @@ export class ColumnasService {
 
   }
 
-  findAll() {
-    return `This action returns all columnas`;
+  async findAll() {
+    return await this.columnaRepository.find();
   }
-
-  findOne(id: number) {
-    return `This action returns a #${id} columna`;
+  async findByCalendario(calendarioId: number) {
+    const calendario = await this.calendarioRepository.findOne({
+      where: { id: calendarioId },
+      relations: ['columnas'],
+    });
+  }
+  async findOne(id: number) {
+    const columna = await this.columnaRepository.findOne({
+      where: { id },})
+    return ;
   }
 
   update(id: number, updateColumnaDto: UpdateColumnaDto) {
