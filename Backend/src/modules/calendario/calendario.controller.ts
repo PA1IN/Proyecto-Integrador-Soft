@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { CalendarioService } from './calendario.service';
 import { CreateCalendarioDto } from './dto/create-calendario.dto';
 import { UpdateCalendarioDto } from './dto/update-calendario.dto';
+import { CheckErroresDto } from './dto/checkerrores.dto';
 
 @Controller('calendario')
 export class CalendarioController {
@@ -16,6 +17,10 @@ export class CalendarioController {
   findAll() {
     return this.calendarioService.findAll();
   }
+  @Patch('analizar-errores')
+  analizarErrores(@Body() dto: CheckErroresDto) {
+  return this.calendarioService.analizarErrores(dto);
+}
 
   @Get(':id')
   findOne(@Param('id') id: string) {

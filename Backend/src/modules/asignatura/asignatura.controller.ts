@@ -11,9 +11,13 @@ export class AsignaturaController {
         private readonly asignaturaService: AsignaturaService, // Inject your service here
     ) {}
     
-    @Get()
-    getAsignaturas() {
-        return this.asignaturaService.getAsignaturas(); 
+    @Get('creadas')
+    getAsignaturasc() {
+        return this.asignaturaService.getAsignaturasc(); 
+    }
+    @Get('fijas')
+    getAsignaturasFijas() {
+        return this.asignaturaService.getAsignaturasf(); 
     }
     //@Post()
     //createAsignatura(@Body() createAsignaturaDto: CreateAsignaturaDto) {
