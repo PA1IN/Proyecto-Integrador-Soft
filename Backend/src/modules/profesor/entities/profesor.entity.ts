@@ -1,16 +1,14 @@
-import { Asignatura } from "src/modules/asignatura/entities/asignatura.entity";
-import { Evaluacion } from "src/modules/evaluacion/entities/evaluacion.entity";
-import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
-
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { RelacionPruebaProfesor } from '../../evaluacion/entities/relacion-prueba-profesor.entity';
 
 @Entity()
 export class Profesor {
-    @PrimaryColumn("uuid")
-    nombre: string;
-    @Column()
-    asignaturas: Asignatura[];
-    @Column()
-    Disponibilidad: String;
-    //@OneToMany(() => Evaluacion, (evaluacion) => evaluacion.profesor)
-    //evaluaciones: Evaluacion[];
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  nombre: string;
+
+  @OneToMany(() => RelacionPruebaProfesor, rpp => rpp.profesor)
+  relaciones: RelacionPruebaProfesor[];
 }

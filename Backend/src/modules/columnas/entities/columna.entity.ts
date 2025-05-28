@@ -1,0 +1,17 @@
+
+import { Calendario } from 'src/modules/calendario/entities/calendario.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+
+export class Columna {
+@PrimaryGeneratedColumn()
+id: number;
+@Column()
+dia:number;
+@Column()
+fecha: Date;
+@ManyToOne(() => Calendario, calendario => calendario.columnas, { onDelete: 'CASCADE' })
+calendario: Calendario;
+
+
+
+}
