@@ -15,10 +15,10 @@ export class AsignaturaController {
     getAsignaturas() {
         return this.asignaturaService.getAsignaturas(); 
     }
-    @Post()
-    createAsignatura(@Body() createAsignaturaDto: CreateAsignaturaDto) {
-        return this.asignaturaService.createAsignatura(createAsignaturaDto); 
-    }
+    //@Post()
+    //createAsignatura(@Body() createAsignaturaDto: CreateAsignaturaDto) {
+      //  return this.asignaturaService.createAsignatura(createAsignaturaDto); 
+    //}
     @Get(':nivel')
     getAsignaturaByNivel(@Param('nivel') nivel: Number) {
         return this.asignaturaService.getbynivel(nivel); 
@@ -35,13 +35,7 @@ export class AsignaturaController {
     getAsignaturaByHorario(@Param('Horario') Horario: string) {
         return this.asignaturaService.getbyHorario(Horario); 
     }
-    @Patch(':nrc/horario')
-  async actualizarHorario(
-    @Param('nrc') nrc: string,
-    @Body() dto: HorarioAsignaturaDto,
-  ) {
-    return this.asignaturaService.actualizarHorario(nrc, dto);
-  }
+    
 
   
 }

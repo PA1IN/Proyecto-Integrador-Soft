@@ -10,7 +10,7 @@ export class AsignaturaFija {
   NRC: string;
 
   @Column()
-  nivel: string;
+  nivel: number;
 
   @Column()
   nombre: string;

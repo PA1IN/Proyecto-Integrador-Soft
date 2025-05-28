@@ -1,9 +1,26 @@
 import { Module } from '@nestjs/common';
-import { EvaluacionService } from './evaluacion.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Prueba } from './entities/prueba.entity';
+import { RelacionPruebaCalendario } from './entities/relacion-prueba-calendario.entity';
 import { EvaluacionController } from './evaluacion.controller';
+import { EvaluacionService } from './evaluacion.service';
+import { SalaDeClases } from '../sala/entities/sala.entity';
+import { Calendario } from '../calendario/entities/calendario.entity';
+import { AsignaturaCreada } from '../asignatura/entities/asignatura-creada.entity';
+import { AsignaturaFija } from '../asignatura/entities/asignatura-fija.entity';
+import { Profesor } from '../profesor/entities/profesor.entity';
 
 @Module({
-  providers: [EvaluacionService],
-  controllers: [EvaluacionController]
+    imports: [TypeOrmModule.forFeature([Prueba,RelacionPruebaCalendario,SalaDeClases,Calendario,AsignaturaCreada,
+        AsignaturaFija,Profesor
+    ])], // Import TypeOrmModule with your entities
+    controllers: [EvaluacionController],
+    providers: [EvaluacionService],
+    exports: [EvaluacionService, TypeOrmModule], // Export the service and TypeOrmModule if needed in other modules
 })
-export class EvaluacionModule {}
+export class EvaluacionModule {
+
+    
+    
+    
+}

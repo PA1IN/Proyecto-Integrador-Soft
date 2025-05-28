@@ -20,7 +20,9 @@ export class SalaService {
     }
 
 
-
+    async obtenerSalas(): Promise<SalaDeClases[]> {
+        return await this.salaRepository.find();
+    }
 
 
 }

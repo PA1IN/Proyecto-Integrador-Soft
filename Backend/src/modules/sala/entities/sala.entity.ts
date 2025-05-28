@@ -1,21 +1,18 @@
-import { Asignatura } from "src/modules/asignatura/entities/asignatura.entity";
-import { Entity, PrimaryColumn, Column, ManyToOne } from "typeorm";
+import { Prueba } from 'src/modules/evaluacion/entities/prueba.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 
 
 @Entity()
 export class SalaDeClases {
-  @PrimaryColumn()
-  sala: string; // Llave primaria
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
-  disponibilidad: string;
+  nombre: string;
+  @Column( )
+  eliminada: boolean; 
 
-  @Column({ default: false })
-  laboratorio: boolean;
-
-  @ManyToOne(() => Asignatura)
-  nrcPrueba: Asignatura;
-
-  @Column()
-  capacidad: number;
+  @OneToOne(() => Prueba)
+  @JoinColumn()
+  prueba: Prueba;
 }

@@ -2,6 +2,8 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'ty
 import { User } from 'src/modules/user/entities/user.entity';
 import { RelacionPruebaCalendario } from 'src/modules/evaluacion/entities/relacion-prueba-calendario.entity';
 import { Columna } from 'src/modules/columnas/entities/columna.entity';
+
+@Entity()
 export class Calendario {
     @PrimaryGeneratedColumn()
     id: number;

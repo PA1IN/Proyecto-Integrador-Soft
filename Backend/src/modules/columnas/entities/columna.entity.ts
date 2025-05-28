@@ -1,7 +1,7 @@
 
 import { Calendario } from 'src/modules/calendario/entities/calendario.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
-
+@Entity()
 export class Columna {
 @PrimaryGeneratedColumn()
 id: number;

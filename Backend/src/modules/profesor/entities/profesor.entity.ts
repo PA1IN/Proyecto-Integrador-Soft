@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { RelacionPruebaProfesor } from '../../evaluacion/entities/relacion-prueba-profesor.entity';
+
 
 @Entity()
 export class Profesor {
@@ -8,7 +8,6 @@ export class Profesor {
 
   @Column()
   nombre: string;
-
-  @OneToMany(() => RelacionPruebaProfesor, rpp => rpp.profesor)
-  relaciones: RelacionPruebaProfesor[];
+  @Column()
+  Eliminado: boolean;
 }

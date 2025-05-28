@@ -1,45 +1,35 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository} from 'typeorm';
-import { Asignatura } from './entities/asignatura.entity';
+
 import { CreateAsignaturaDto } from './dto/create-asignatura.dto';
 import { HorarioAsignaturaDto } from './dto/horario-asignatura.dto';
+import { AsignaturaCreada } from './entities/asignatura-creada.entity';
 @Injectable()
 export class AsignaturaService {
     constructor(
-        @InjectRepository(Asignatura)
-        private readonly asignaturarepository: Repository<Asignatura> // Inject your repository here
+        @InjectRepository(AsignaturaCreada)
+        private readonly asignaturaCrepository: Repository<AsignaturaCreada> // Inject your repository here
     ) {}
 
     async getAsignaturas(){
-        return await  this.asignaturarepository.find(); // Fetch all asignaturas from the database
+        return await  this.asignaturaCrepository.find(); // Fetch all asignaturas from the database
     }
  
-    async createAsignatura(CreateAsignaturaDto: CreateAsignaturaDto) {
-        return await this.asignaturarepository.save(CreateAsignaturaDto); // Save a new asignatura to the database
-    }
+    
     async getbynivel(nivel:Number){
-        return this.asignaturarepository.findOneBy({nivel});
+        return this.asignaturaCrepository.findOneBy({});
     }
     async getbyNRC(NRC:String){
-        return this.asignaturarepository.findOneBy({NRC});
+        return this.asignaturaCrepository.findOneBy({});
     }
     async getbyNombre(nombre:String){
-        return this.asignaturarepository.findOneBy({nombre});
+        return this.asignaturaCrepository.findOneBy({});
     }
     async getbyHorario(Horario:String){
-        return this.asignaturarepository.findOneBy({Horario}); 
+        return this.asignaturaCrepository.findOneBy({}); 
     }
-    async actualizarHorario(nrc: string, dto: HorarioAsignaturaDto): Promise<Asignatura> {
-        const asignatura = await this.asignaturarepository.findOne({ where: { NRC: nrc } });
-        
-        if (!asignatura) {
-          throw new NotFoundException('Asignatura no encontrada');
-        }
-      
-        asignatura.Horario = dto.horario;
-        return this.asignaturarepository.save(asignatura);
-      }
+    
 
       
 

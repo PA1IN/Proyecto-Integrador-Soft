@@ -14,40 +14,31 @@ export class CalendarioService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>, 
   ) {}
-  create(createCalendarioDto: CreateCalendarioDto) {
-    const user = this.userRepository.findOneBy({id: createCalendarioDto.user_id})
-    if (!user) {
+  async create(createCalendarioDto: CreateCalendarioDto) {
+    const usuario = await this.userRepository.findOneBy({id: createCalendarioDto.user_id})
+    if (!usuario) {
       throw new Error('User not found');
     }
    const newCalendario = this.calendarioRepository.create(
     {
       nombre: createCalendarioDto.nombre,
       fecha: createCalendarioDto.fecha_creacion,
-      user,
+      usuario,
       errores_leves: 0,
       errores_graves: 0,
       errores_moderados: 0,
       calidad: 100,
-      
-      
-
-
-
     }
-
-      
    );
+   const savedCalendario = await this.calendarioRepository.save(newCalendario);
 
     
-
-
-
-
-    return 'This action adds a new calendario';
+  return savedCalendario.id;
   }
 
-  findAll() {
-    return `This action returns all calendario`;
+  async findAll() {
+    return await this.calendarioRepository.find({
+      relations: ['usuario', 'relaciones', 'columnas'],});
   }
 
   findOne(id: number) {
