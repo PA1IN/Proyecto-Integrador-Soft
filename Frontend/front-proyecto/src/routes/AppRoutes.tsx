@@ -6,6 +6,9 @@ import {PrivateRoute} from './PrivateRoute';
 import ForgotPassword from '../pages/ForgotPassword';
 //import { TreeSubjects } from '../pages/TreeSubjects';
 import { Calendar } from '../pages/Calendar';
+import { Profesores } from '../pages/Profesores';
+import { Salas } from '../pages/Salas';
+import { Asignaturas } from '../pages/Asignaturas';
 
 
 export const AppRoutes = () => {
@@ -17,9 +20,9 @@ export const AppRoutes = () => {
 
       <Route path='/Home'element={<PrivateRoute> <Home/> </PrivateRoute>}/>
       <Route path='/Calendar'element={<PrivateRoute> <Calendar/> </PrivateRoute>}/>
-
-
-
+      <Route path='/Profesores'element={<PrivateRoute> <Profesores/> </PrivateRoute>}/>
+      <Route path='/Salas'element={<PrivateRoute> <Salas/> </PrivateRoute>}/>
+      <Route path='/Asignaturas'element={<PrivateRoute> <Asignaturas/> </PrivateRoute>}/>
     </Routes>
   );
 };

@@ -7,12 +7,9 @@ interface ProfesorData
     nombre: string;
 }
 
-interface CrearResponse
-{
-    message : string;
-}
 
-export function useProfesores() {    //pa listar los profesores.
+
+export function useProfesores() {    //pa listar los profesores que no estén eliminados.
     return useQuery({
         queryKey: ['profesores'],
         queryFn: async () => {
@@ -22,21 +19,16 @@ export function useProfesores() {    //pa listar los profesores.
     });
 }
 
-export function useCrearProfesor(onSuccess: () => void, onFail:(error:string)=>void){ 
+export function useCrearProfesor(){ 
     const clienteQuery = useQueryClient();
-    return useMutation<CrearResponse,AxiosError,ProfesorData>({
-        mutationFn: async ({nombre}:ProfesorData): Promise<CrearResponse>  => {
+    return useMutation({
+        mutationFn: async ({nombre}:ProfesorData)  => {
             const respuesta = await api.post('api/v1/profesor',{nombre});
             return respuesta.data
         },
         onSuccess: () => {
             clienteQuery.invalidateQueries({queryKey:['profesor']});
-            onSuccess();
-        },
-        onError:(error) => {
-            const mensaje = (error.response?.data as {message?: string})?.message || 'no se pudo identificar el error...';
-            onFail(mensaje);
-        }                           
+        }                          
     });
 }
 
