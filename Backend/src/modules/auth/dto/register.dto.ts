@@ -15,7 +15,7 @@ export class RegistroDto {
 
     @IsString({ message: "El nombre debe ser una cadena de texto." })
     @IsNotEmpty({ message: "El nombre no puede estar vacío." })
-    name: string;
+    nombre: string;
 
     @Transform(({ value }) => value.trim())
     @IsString({ message: "La contraseña debe ser una cadena de texto." })

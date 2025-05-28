@@ -13,7 +13,7 @@ export function useAsignaturas(){
     return useQuery({
         queryKey:['asignaturas'],
         queryFn: async () => {
-            const respuesta = await api.get('api/v1/asignatura');  
+            const respuesta = await api.get('/asignatura');  
             return respuesta.data;
         }
     });
@@ -23,7 +23,7 @@ export function useAsignaturasCreadas(){
     return useQuery({
         queryKey:['asignaturasCreadas'],
         queryFn: async () => {
-            const respuesta = await api.get('api/v1/asignaturaCreada');  
+            const respuesta = await api.get('/asignaturaCreada');  
             return respuesta.data;
         }
     });
@@ -46,7 +46,7 @@ export function useEliminarAsignatura(){   //pa "eliminar" una asignatura creada
     const clienteQuery = useQueryClient();
     return useMutation({
         mutationFn: async (id: number) => {
-            await api.patch(`api/v1/asignaturaCreada/${id}`)
+            await api.patch(`/asignaturaCreada/${id}`)
         },
         onSuccess: () => {
             clienteQuery.invalidateQueries({queryKey:['asignaturaCreada']});

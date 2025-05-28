@@ -37,14 +37,14 @@ export class AuthService {
         
     }
 
-    async register({rut, name, correo, password}: RegistroDto) {
+    async register({rut, nombre, correo, password}: RegistroDto) {
         const user = await this.userService.getUserByRut(rut);
         if (user) {
             throw new BadRequestException('El usuario ya existe');
         }
         return await this.userService.createUser({
             rut, 
-            name, 
+            name:nombre, 
             correo, 
             password: await bcryptjs.hash(password, 10)});
         
