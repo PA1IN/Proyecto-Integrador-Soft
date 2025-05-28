@@ -7,7 +7,7 @@ export function useAsignaturas() {
   return {
     data: [
       {
-        nrc: 101,
+        id_asignatura: 101,
         nombre: 'Álgebra Lineal',
         nivel: 1,
         profesor: 'Prof. Daniel perez',
@@ -15,7 +15,7 @@ export function useAsignaturas() {
         sala: 'A101'
       },
       {
-        nrc: 102,
+        id_asignatura: 102,
         nombre: 'Programación I',
         nivel: 1,
         profesor: 'Ing. Boris rubio',
@@ -23,7 +23,7 @@ export function useAsignaturas() {
         sala: 'B204'
       },
       {
-        nrc: 201,
+        id_asignatura: 201,
         nombre: 'Física I',
         nivel: 2,
         profesor: 'Prof. Vicente ruiz',
@@ -31,7 +31,7 @@ export function useAsignaturas() {
         sala: 'C301'
       },
       {
-        nrc: 301,
+        id_asignatura: 301,
         nombre: 'Bases de Datos',
         nivel: 3,
         profesor: 'Ing. Americo pucio',
@@ -39,7 +39,7 @@ export function useAsignaturas() {
         sala: 'online'
       },
       {
-        nrc: 302,
+        id_asignatura: 302,
         nombre: 'Redes de Computadores',
         nivel: 3,
         profesor: 'Ing. Carlos Ramírez',

@@ -38,7 +38,7 @@ export function useConfirmarCalendario() {
             }
 
 
-            for (const [celdaid, pruebas] of Object.values(calendario)) {
+            for (const [pruebas] of Object.values(calendario)) {
                 for (const prueba of pruebas) {
                     const respuestaPrueba = await api.post('/prueba', {
                         nrc: prueba.nrc,
@@ -50,7 +50,7 @@ export function useConfirmarCalendario() {
                         dia: prueba.dia,
                         profesor_error: prueba.profesor_error,
                         asignatura: prueba.id,
-                        eliminado: false,
+                        eliminado: prueba.eliminado ?? false,
                         id_calendario
                     });
                 }

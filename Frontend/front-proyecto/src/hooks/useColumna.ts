@@ -14,7 +14,7 @@ interface CrearColumnaResponse
     message : string;
 }
 
-export function useCrearcolumna(onSuccess: () => void, onFail:(error:string)=>void){ 
+/*export function useCrearcolumna(onSuccess: () => void, onFail:(error:string)=>void){ 
     const clienteQuery = useQueryClient();
     return useMutation<CrearColumnaResponse,AxiosError,ColumnaData>({
         mutationFn: async ({dia,fecha,id_calendario}:ColumnaData): Promise<CrearColumnaResponse>  => {
@@ -30,7 +30,7 @@ export function useCrearcolumna(onSuccess: () => void, onFail:(error:string)=>vo
             onFail(mensaje);
         }                           
     });
-}
+}*/
 
 /*
 export function useActualizarColumna(){   //en base al día y al id del calendario se modifica la fecha.
