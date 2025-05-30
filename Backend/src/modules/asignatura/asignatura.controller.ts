@@ -19,10 +19,10 @@ export class AsignaturaController {
     getAsignaturasFijas() {
         return this.asignaturaService.getAsignaturasf(); 
     }
-    //@Post()
-    //createAsignatura(@Body() createAsignaturaDto: CreateAsignaturaDto) {
-      //  return this.asignaturaService.createAsignatura(createAsignaturaDto); 
-    //}
+    @Post()
+    createAsignatura(@Body() createAsignaturaDto: CreateAsignaturaDto) {
+        return this.asignaturaService.createAsignatura(createAsignaturaDto); 
+    }
     @Get(':nivel')
     getAsignaturaByNivel(@Param('nivel') nivel: Number) {
         return this.asignaturaService.getbynivel(nivel); 

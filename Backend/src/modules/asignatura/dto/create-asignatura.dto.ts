@@ -10,24 +10,9 @@ export class CreateAsignaturaDto {
     @IsString()
     nombre: string;
     
-    @IsOptional()
-    @IsString()
-    Horario?: string;
-    
-    @IsNumber()
-    @IsOptional()
-    Alumnos: number;
-
-    @IsNumber()
-    @IsOptional()
-    AlumnosTea: number;
-
     @IsNumber()
     nivel: number;
 
-    @IsOptional()
-    @IsArray()
-    @Type(() => String)
-    profesores?: string[];
+   
 
 }

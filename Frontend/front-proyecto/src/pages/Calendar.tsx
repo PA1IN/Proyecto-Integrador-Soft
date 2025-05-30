@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { useCargarColumnas } from '../hooks/useColumna';
-import {useAsignaturas} from '../hooks/useAsignaturas';
+import {useAsignaturasCreadas} from '../hooks/useAsignaturas';
 import '../styles/calendar.css';
 import { useProfesores } from '../hooks/useProfesores';
 import { useSalas } from '../hooks/useSalas';
@@ -18,7 +18,7 @@ export const Calendar = () => {
     //const actualizarColumna = useActualizarColumna();
     const confirmarCalendario = useConfirmarCalendario();
     const calcularErrores = useCalcularErrores();
-    const {data: subjects} = useAsignaturas();
+    const {data: subjects} = useAsignaturasCreadas();
     const asignaturasFijas = subjects?.filter((a:any) => !a.creada);
     const asignaturasCreadas = subjects?.filter((a:any)=> a.creada);
     const {data: profesores} = useProfesores();

@@ -9,6 +9,7 @@ export class UserController {
   @Post("createUser")
     create(@Body() createUserDto: CreateUserDto) {
     const {name, rut, password, correo} = createUserDto
+    console.log(name);
     return this.userService.createUser({name, rut, correo, password});
   }
   @Get("user/:rut") 

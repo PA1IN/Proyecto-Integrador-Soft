@@ -51,7 +51,7 @@ export function useCargarColumnas(id: number) {   //Carga las columnas del calen
     return useQuery<ColumnaData[]>({
         queryKey: ['columnas', id],
         queryFn: async () => {
-            const respuesta = await api.get('api/v1/columna',{params:{id_calendario: id}});
+            const respuesta = await api.get('/columna',{params:{id_calendario: id}});
             return respuesta.data;
         }
     });

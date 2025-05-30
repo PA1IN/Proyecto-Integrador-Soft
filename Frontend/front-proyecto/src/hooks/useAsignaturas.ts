@@ -13,7 +13,7 @@ export function useAsignaturas(){
     return useQuery({
         queryKey:['asignaturas'],
         queryFn: async () => {
-            const respuesta = await api.get('/asignatura');  
+            const respuesta = await api.get('/asignatura/fijas');  
             return respuesta.data;
         }
     });
@@ -23,7 +23,7 @@ export function useAsignaturasCreadas(){
     return useQuery({
         queryKey:['asignaturasCreadas'],
         queryFn: async () => {
-            const respuesta = await api.get('/asignaturaCreada');  
+            const respuesta = await api.get('/asignatura/creadas');  
             return respuesta.data;
         }
     });
@@ -33,11 +33,11 @@ export function useCrearAsignatura() {
     const clienteQuery = useQueryClient();
     return useMutation({
         mutationFn: async ({nrc, nivel, nombre}: AsignaturaCreadaData) => {
-            const respuesta = await api.post('/asignaturaCreada',{nrc,nivel,nombre});
+            const respuesta = await api.post('/asignatura/creadas',{nrc,nivel,nombre});
             return respuesta.data;
         },
         onSuccess: () => {
-            clienteQuery.invalidateQueries({queryKey:['/asignaturaCreada']});
+            clienteQuery.invalidateQueries({queryKey:['/asignatura/creadas']});
         },
     });
 }
