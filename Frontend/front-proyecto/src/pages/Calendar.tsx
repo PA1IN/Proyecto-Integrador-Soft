@@ -81,7 +81,7 @@ export const Calendar = () => {
     const drag = (id:number) => {
         setDragid(id);
     };
-
+    
     const drop = (e: React.DragEvent<HTMLDivElement>, celdaid: string) => {
         e.preventDefault();
         if (dragid === null || !subjects)
@@ -149,7 +149,16 @@ export const Calendar = () => {
           nuevo[datosForm.celdaid].push(prueba);
           
           
-            
+          
+          localStorage.setItem("calendario", JSON.stringify(nuevo));
+
+          const pruebas: Pruebahorario[] = Object.values(nuevo).flat();
+          calcularErrores.mutate(pruebas, {
+            onSuccess: (data) => {
+              setErrores(data);
+            }
+          });
+
           //console.log(nuevo[datosForm.celdaid])
           //console.log(prueba.nrc, prueba.nombre);
           /*for(nuevo[datosForm.celdaid] of Object.values(calendario)) {
@@ -164,7 +173,7 @@ export const Calendar = () => {
       
       //setDragnrc(null);
 
-      localStorage.setItem("calendario", JSON.stringify(calendario));
+      //localStorage.setItem("calendario", JSON.stringify(calendario));
       setFormvisible(false);
       setDatosform(null);
 
