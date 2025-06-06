@@ -6,8 +6,8 @@ import { Calendario } from './entities/calendario.entity';
 import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { PruebaDto } from '../evaluacion/dto/crear-prueba.dto';
-import { AsignaturaCreada } from '../asignatura/entities/asignatura-creada.entity';
-import { AsignaturaFija } from '../asignatura/entities/asignatura-fija.entity';
+import { Asignatura } from '../asignatura/entities/asignatura-creada.entity';
+
 import { CheckErroresDto } from './dto/checkerrores.dto';
 
 @Injectable()
@@ -17,10 +17,9 @@ export class CalendarioService {
     private readonly calendarioRepository: Repository<Calendario>, 
     @InjectRepository(User)
     private readonly userRepository: Repository<User>, 
-    @InjectRepository(AsignaturaCreada)
-    private readonly asignaturaCreadaRepository: Repository<AsignaturaCreada>,
-    @InjectRepository(AsignaturaFija)
-    private readonly asignaturaFijaRepository: Repository<AsignaturaFija>,
+    @InjectRepository(Asignatura)
+    private readonly asignaturaCreadaRepository: Repository<Asignatura>,
+    
   ) {}
   async create(createCalendarioDto: CreateCalendarioDto) {
     const usuario = await this.userRepository.findOneBy({id: createCalendarioDto.user_id})
@@ -52,16 +51,9 @@ export class CalendarioService {
       }
       const nivel = asignaturaCreada.nivel; 
       return nivel;
-    } else if (prueba.asignaturaFijaId) {
-      const asignaturaFija = await this.asignaturaFijaRepository.findOneBy({ id: prueba.asignaturaFijaId });
-      if (!asignaturaFija) {
-        throw new Error('Asignatura fija no encontrada');
-      }
-      const nivel = asignaturaFija.nivel;
-      return nivel;
-    } else {
-      throw new Error('Prueba debe tener asignatura creada o fija');
-    }
+    } 
+      throw new Error('Prueba debe tener asignatura');
+    
   }
 
   private async contarErroresGraves(pruebas: PruebaDto[]) {

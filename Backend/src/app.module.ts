@@ -8,8 +8,8 @@ import { UserModule } from './modules/user/user.module';
 import { User } from './modules/user/entities/user.entity';
 import { AsignaturaModule } from './modules/asignatura/asignatura.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { AsignaturaCreada } from './modules/asignatura/entities/asignatura-creada.entity';
-import { AsignaturaFija } from './modules/asignatura/entities/asignatura-fija.entity';
+import { Asignatura } from './modules/asignatura/entities/asignatura-creada.entity';
+
 import { Calendario } from './modules/calendario/entities/calendario.entity';
 import { Prueba } from './modules/evaluacion/entities/prueba.entity';
 import { Columna } from './modules/columnas/entities/columna.entity';
@@ -21,6 +21,10 @@ import { ColumnasModule } from './modules/columnas/columnas.module';
 import { CalendarioModule } from './modules/calendario/calendario.module';
 import { EvaluacionModule } from './modules/evaluacion/evaluacion.module';
 import { ProfesorModule } from './modules/profesor/profesor.module';
+import { CarreraModule } from './modules/carrera/carrera.module';
+import { Carrera } from './modules/carrera/entities/carrera.entity';
+import { CarreraAsignatura } from './modules/carrera/entities/Carrera-Asignatura.entity';
+
 
 @Module({
   imports: [
@@ -33,7 +37,7 @@ import { ProfesorModule } from './modules/profesor/profesor.module';
       password: getEnvValue('DATABASE_PASSWORD'),
       database: getEnvValue('DATABASE_NAME'),
       synchronize: true,
-      entities: [User,AsignaturaCreada,AsignaturaFija,Calendario,Prueba,Columna,RelacionPruebaCalendario,Profesor,SalaDeClases], 
+      entities: [User,Asignatura,Calendario,Prueba,Columna,RelacionPruebaCalendario,Profesor,SalaDeClases,Carrera,CarreraAsignatura], 
     }),
     UserModule, 
     AsignaturaModule,
@@ -42,7 +46,9 @@ import { ProfesorModule } from './modules/profesor/profesor.module';
     ColumnasModule,
     CalendarioModule,
     EvaluacionModule,
-    ProfesorModule
+    ProfesorModule,
+    CarreraModule,
+    
     
   ],
   controllers: [],

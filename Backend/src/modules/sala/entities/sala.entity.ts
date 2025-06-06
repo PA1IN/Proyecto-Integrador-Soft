@@ -11,6 +11,8 @@ export class SalaDeClases {
   nombre: string;
   @Column( )
   eliminada: boolean; 
+  @Column({ default: false })
+  creada: boolean;
 
   @OneToOne(() => Prueba)
   @JoinColumn()

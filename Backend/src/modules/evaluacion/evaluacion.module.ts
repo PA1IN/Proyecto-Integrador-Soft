@@ -6,13 +6,12 @@ import { EvaluacionController } from './evaluacion.controller';
 import { EvaluacionService } from './evaluacion.service';
 import { SalaDeClases } from '../sala/entities/sala.entity';
 import { Calendario } from '../calendario/entities/calendario.entity';
-import { AsignaturaCreada } from '../asignatura/entities/asignatura-creada.entity';
-import { AsignaturaFija } from '../asignatura/entities/asignatura-fija.entity';
+import { Asignatura } from '../asignatura/entities/asignatura-creada.entity';
+
 import { Profesor } from '../profesor/entities/profesor.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Prueba,RelacionPruebaCalendario,SalaDeClases,Calendario,AsignaturaCreada,
-        AsignaturaFija,Profesor
+    imports: [TypeOrmModule.forFeature([Prueba,RelacionPruebaCalendario,SalaDeClases,Calendario,Asignatura,Profesor
     ])], // Import TypeOrmModule with your entities
     controllers: [EvaluacionController],
     providers: [EvaluacionService],

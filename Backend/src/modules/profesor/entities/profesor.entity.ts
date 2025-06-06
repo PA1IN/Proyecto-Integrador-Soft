@@ -10,4 +10,6 @@ export class Profesor {
   nombre: string;
   @Column()
   Eliminado: boolean;
+  @Column({ default: false })
+  creado: boolean;
 }

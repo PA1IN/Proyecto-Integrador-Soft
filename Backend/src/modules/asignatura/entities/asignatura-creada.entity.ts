@@ -1,8 +1,9 @@
+import { CarreraAsignatura } from 'src/modules/carrera/entities/Carrera-Asignatura.entity';
 import { Prueba } from 'src/modules/evaluacion/entities/prueba.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity()
-export class AsignaturaCreada {
+export class Asignatura {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -16,6 +17,8 @@ export class AsignaturaCreada {
   nombre: string;
   @Column()
   eliminada: boolean;
-  @OneToMany(() => Prueba, prueba => prueba.asignaturaCreada)
+  @OneToMany(() => Prueba, prueba => prueba.asignatura)
   pruebas: Prueba[];
+  @OneToMany(() => CarreraAsignatura, (ca) => ca.asignatura)
+  carreraAsignaturas: CarreraAsignatura[];
 }

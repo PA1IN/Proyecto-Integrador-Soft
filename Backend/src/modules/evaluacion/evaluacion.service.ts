@@ -4,8 +4,8 @@ import { Prueba } from './entities/prueba.entity';
 import { Repository } from 'typeorm';
 import { RelacionPruebaCalendario } from './entities/relacion-prueba-calendario.entity';
 import { SalaDeClases } from '../sala/entities/sala.entity';
-import { AsignaturaCreada } from '../asignatura/entities/asignatura-creada.entity';
-import { AsignaturaFija } from '../asignatura/entities/asignatura-fija.entity';
+import { Asignatura } from '../asignatura/entities/asignatura-creada.entity';
+
 import { Profesor } from '../profesor/entities/profesor.entity';
 import { PruebaDto } from './dto/crear-prueba.dto';
 import e from 'express';
@@ -20,10 +20,9 @@ export class EvaluacionService {
         private readonly relacionPruebaCalendarioRepository: Repository<RelacionPruebaCalendario>, 
         @InjectRepository(SalaDeClases)
         private readonly salaDeClasesRepository: Repository<SalaDeClases>,
-        @InjectRepository(AsignaturaCreada)
-        private readonly asignaturaCreadaRepository: Repository<AsignaturaCreada>, // Inject your repository here
-        @InjectRepository(AsignaturaFija)
-        private readonly asignaturaFijaRepository: Repository<AsignaturaFija>, // Inject your repository here
+        @InjectRepository(Asignatura)
+        private readonly asignaturaCreadaRepository: Repository<Asignatura>, // Inject your repository here
+         // Inject your repository here
         @InjectRepository(Profesor)
         private readonly profesorRepository: Repository<Profesor>, // Inject your repository here
         @InjectRepository(Calendario)
@@ -55,20 +54,9 @@ export class EvaluacionService {
         if (dto.asignaturaCreadaId) {
     const asignaturaCreada = await this.asignaturaCreadaRepository.findOneBy({ id: dto.asignaturaCreadaId });
     if (!asignaturaCreada) throw new Error('Asignatura creada no encontrada');
-    prueba.asignaturaCreada = asignaturaCreada;
-    prueba.nivelAsignatura = asignaturaCreada.nivel;
-    prueba.nombreAsignatura = asignaturaCreada.nombre;
-    prueba.NRC = asignaturaCreada.NRC;
-        } else if (dto.asignaturaFijaId) {
-    const asignaturaFija = await this.asignaturaFijaRepository.findOneBy({ id: dto.asignaturaFijaId });
-    if (!asignaturaFija) throw new Error('Asignatura fija no encontrada');
-    prueba.asignaturaFija = asignaturaFija;
-    prueba.nivelAsignatura = asignaturaFija.nivel;
-    prueba.nombreAsignatura = asignaturaFija.nombre;
-    prueba.NRC = asignaturaFija.NRC;
-        } else {
-    throw new Error('Debe indicar una asignatura creada o fija');
-  }
+    prueba.asignatura = asignaturaCreada;
+   
+        } 
         
         const sala = await this.salaDeClasesRepository.findOneBy({ id: dto.salaId });
         if (!sala) {
@@ -83,7 +71,7 @@ export class EvaluacionService {
         prueba.horario = dto.horario;
         prueba.dia = dto.Dia;
         prueba.profesorError = dto.profesorError || false;
-        prueba.eliminada = dto.eliminado || false;
+        prueba.eliminado = dto.eliminado || false;
         
         return await this.pruebaRepository.save(prueba);
     }

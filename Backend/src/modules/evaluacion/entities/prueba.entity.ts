@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { RelacionPruebaCalendario } from './relacion-prueba-calendario.entity';
-import { AsignaturaCreada } from 'src/modules/asignatura/entities/asignatura-creada.entity';
-import { AsignaturaFija } from 'src/modules/asignatura/entities/asignatura-fija.entity';
+import { Asignatura } from 'src/modules/asignatura/entities/asignatura-creada.entity';
+
 import { Profesor } from 'src/modules/profesor/entities/profesor.entity';
 import { SalaDeClases } from 'src/modules/sala/entities/sala.entity';
 
@@ -11,15 +11,6 @@ import { SalaDeClases } from 'src/modules/sala/entities/sala.entity';
 export class Prueba {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column()
-  NRC: string;
-
-  @Column()
-  nivelAsignatura: number;
-
-  @Column()
-  nombreAsignatura: string;
 
   @ManyToOne(() => Profesor)
   @JoinColumn({ name: 'id_profesor' })
@@ -36,14 +27,13 @@ export class Prueba {
   dia: number;
   @Column({ name: 'profesor_error' })
   profesorError: boolean;
+  @Column({ default: false })
+  eliminado: boolean;
 
   @OneToMany(() => RelacionPruebaCalendario, rpc => rpc.prueba)
   relacionesCalendario: RelacionPruebaCalendario[];
-  @ManyToOne(() => AsignaturaCreada, { nullable: true })
-  asignaturaCreada: AsignaturaCreada;
+  
+  @ManyToOne(() => Asignatura, { nullable: true })
+  asignatura: Asignatura;
 
-  @ManyToOne(() => AsignaturaFija, { nullable: true })
-  asignaturaFija: AsignaturaFija;
-  @Column({ default: false })
-  eliminada: boolean;
 }

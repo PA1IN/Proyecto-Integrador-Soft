@@ -4,15 +4,14 @@ import { Repository} from 'typeorm';
 
 import { CreateAsignaturaDto } from './dto/create-asignatura.dto';
 import { HorarioAsignaturaDto } from './dto/horario-asignatura.dto';
-import { AsignaturaCreada } from './entities/asignatura-creada.entity';
-import { AsignaturaFija } from './entities/asignatura-fija.entity';
+import { Asignatura } from './entities/asignatura-creada.entity';
+
 @Injectable()
 export class AsignaturaService {
     constructor(
-        @InjectRepository(AsignaturaCreada)
-        private readonly asignaturaCrepository: Repository<AsignaturaCreada>, // Inject your repository here
-        @InjectRepository(AsignaturaFija)
-        private readonly asignaturaFrepository: Repository<AsignaturaFija> // Inject your repository here
+        @InjectRepository(Asignatura)
+        private readonly asignaturaCrepository: Repository<Asignatura>, // Inject your repository here
+        
     ) {}
 
     async getAsignaturasc(){
@@ -25,16 +24,8 @@ export class AsignaturaService {
         eliminada: a.eliminada,
     })); // Fetch all asignaturas from the database
     }
-    async getAsignaturasf(){
-        const asignaturas = await this.asignaturaFrepository.find(); // Fetch all asignaturas from the database
-        return asignaturas.map((a) => ({
-        id_asignatura: a.id,
-        NRC: a.NRC,
-        nivel: a.nivel,
-        nombre: a.nombre,
-        
-    })); 
-    }
+    
+    
 
     async createAsignatura(createAsignaturaDto: CreateAsignaturaDto) {
         
@@ -45,7 +36,7 @@ export class AsignaturaService {
             eliminada: false
 
         });
-         const asignaturaguardada = await this.asignaturaFrepository.save(asignatura)
+         const asignaturaguardada = await this.asignaturaCrepository.save(asignatura)
         return{
             id_asignatura: asignaturaguardada.id, 
             NRC: asignaturaguardada.NRC,
