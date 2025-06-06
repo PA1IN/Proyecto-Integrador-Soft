@@ -2,13 +2,14 @@ import React, {useEffect, useState} from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { useCargarColumnas } from '../hooks/useColumna';
-import {useAsignaturasCreadas} from '../hooks/useAsignaturas';
+import {useAsignaturas} from '../hooks/useCalendar';
 import '../styles/calendar.css';
 import { useProfesores } from '../hooks/useProfesores';
 import { useSalas } from '../hooks/useSalas';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { useConfirmarCalendario } from '../hooks/useConfirmarCalendario';
 import { Pruebahorario, Resultadoerrores, useCalcularErrores } from '../hooks/useCalcularErrores';
+import { Asignaturas } from './Asignaturas';
 
 const bloques = ['Mañana', 'Tarde'];
 //const id_actual = 1;
@@ -18,7 +19,7 @@ export const Calendar = () => {
     //const actualizarColumna = useActualizarColumna();
     const confirmarCalendario = useConfirmarCalendario();
     const calcularErrores = useCalcularErrores();
-    const {data: subjects} = useAsignaturasCreadas();
+    const {data: subjects} = useAsignaturas();
     const asignaturasFijas = subjects?.filter((a:any) => !a.creada);
     const asignaturasCreadas = subjects?.filter((a:any)=> a.creada);
     const {data: profesores} = useProfesores();
@@ -50,6 +51,8 @@ export const Calendar = () => {
     const [profesorAsig,setProfesorasig] = useState(true);
     const [semestreSeleccionado, setSemestreseleccionado] = useState(0);
     const [errores, setErrores] = useState<Resultadoerrores | null>(null);
+    const [dragPruebaHorario,setDragPruebaHorario] = useState<any | null>(null);
+    const [celdaOrigen,setCeldaOrigen] = useState<string | null>(null);
 
     useEffect(() => {
       if(columnas) {
@@ -81,9 +84,41 @@ export const Calendar = () => {
     const drag = (id:number) => {
         setDragid(id);
     };
+
+    const dragAsignaturaAgendada = (asignatura: any, celdaid: string) => {
+      setDragPruebaHorario(asignatura);
+      setCeldaOrigen(celdaid);
+    }
     
     const drop = (e: React.DragEvent<HTMLDivElement>, celdaid: string) => {
         e.preventDefault();
+        if(dragPruebaHorario && celdaOrigen)
+        {
+          if(celdaid === celdaOrigen)
+          {
+            setDragPruebaHorario(null);
+            setCeldaOrigen(null);
+            return;
+          }
+
+          setCalendario((prev) => {
+            const nuevo = { ...prev };
+            nuevo[celdaOrigen] = nuevo[celdaOrigen].filter((a)=> a.id_asignatura !== dragPruebaHorario.id_asignatura);
+            return nuevo;
+          });
+
+          setDatosform({ celdaid, asignatura: dragPruebaHorario});
+          setFormvisible(true);
+          setDragPruebaHorario(null);
+          setCeldaOrigen(null);
+          setHorario("");
+          setSalaform(null);
+          setProfesorasig(true);
+          setProfesorform(null);
+          return;
+        }
+
+
         if (dragid === null || !subjects)
         {
             return;
@@ -185,6 +220,16 @@ export const Calendar = () => {
         setCalendario((prev) => {
             const nuevo = {...prev};
             nuevo[celdaid] = nuevo[celdaid].filter((a)=> a.id_asignatura !== id_asignatura );
+
+            const pruebas: Pruebahorario[] = Object.values(nuevo).flat();
+            calcularErrores.mutate(pruebas, {
+              onSuccess: (data) => {
+                setErrores(data);
+              }
+            });
+
+            localStorage.setItem("calendario", JSON.stringify(nuevo));
+
             return nuevo;
         });
     };
@@ -204,14 +249,14 @@ export const Calendar = () => {
       })
     }
 
-    const calcular = () => {
+    /*const calcular = () => {
       const pruebas: Pruebahorario[] = Object.values(calendario).flat();
       calcularErrores.mutate(pruebas, {
         onSuccess: (data) => {
           setErrores(data);
         }
       });
-    };
+    };*/
 
     const fechasvisibles = fechas.filter((f) => {
         if(mostrarClmnaextra){
@@ -364,7 +409,6 @@ export const Calendar = () => {
 
       <div className="confirmar-section">
           <input type = "text" placeholder="Nombre del calendario" value={nombreCalendario} onChange={(e)=> setNombrecalendario(e.target.value)} />
-          <button onClick={calcular} className="confirmar-boton">Calcular errores</button>
           <button onClick={confirmar} className="confirmar-boton">Confirmar calendario</button>
       </div>
     </div>
