@@ -41,6 +41,8 @@ export const Home = () => {
         <button onClick={()=> navigate('/Asignaturas')}>Administrar Asignaturas en el sistema</button>
         <button onClick={()=> navigate('/Profesores')}>Administrar Profesores en el sistema</button>
         <button onClick={()=> navigate('/Salas')}>Administrar Salas en el sistema</button>
+        <button onClick={()=> navigate('/CalendariosDashboard')}>Administrar calendarios en el sistema</button>
+
 
         <button onClick={logout}>Cerrar la sesion</button>
     </div>

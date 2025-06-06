@@ -9,6 +9,7 @@ import { Calendar } from '../pages/Calendar';
 import { Profesores } from '../pages/Profesores';
 import { Salas } from '../pages/Salas';
 import { Asignaturas } from '../pages/Asignaturas';
+import { CalendariosDashboard } from '../pages/CalendariosDashboard';
 
 
 export const AppRoutes = () => {
@@ -19,10 +20,11 @@ export const AppRoutes = () => {
       <Route path = '/ForgotPassword' element={<ForgotPassword/>}/>
 
       <Route path='/Home'element={<PrivateRoute> <Home/> </PrivateRoute>}/>
-      <Route path='/Calendar'element={<PrivateRoute> <Calendar/> </PrivateRoute>}/>
+      <Route path='/calendar/:id'element={<PrivateRoute> <Calendar/> </PrivateRoute>}/>
       <Route path='/Profesores'element={<PrivateRoute> <Profesores/> </PrivateRoute>}/>
       <Route path='/Salas'element={<PrivateRoute> <Salas/> </PrivateRoute>}/>
       <Route path='/Asignaturas'element={<PrivateRoute> <Asignaturas/> </PrivateRoute>}/>
+      <Route path='/CalendariosDashboard'element={<PrivateRoute> <CalendariosDashboard/> </PrivateRoute>}/>
     </Routes>
   );
 };

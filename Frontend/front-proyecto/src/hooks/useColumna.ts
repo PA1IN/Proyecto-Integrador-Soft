@@ -4,9 +4,10 @@ import { AxiosError } from 'axios';
 
 interface ColumnaData
 {
+    id_columna: number;
     dia: number;
     fecha: string;
-    id_calendario: number;
+
 }
 
 interface CrearColumnaResponse
@@ -53,6 +54,9 @@ export function useCargarColumnas(id: number) {   //Carga las columnas del calen
         queryFn: async () => {
             const respuesta = await api.get('/columna',{params:{id_calendario: id}});
             return respuesta.data;
-        }
+        },
+        gcTime: 1000 * 60 * 30,
+        staleTime: 1000 * 60 * 10,
+        refetchOnWindowFocus: false,
     });
 }
