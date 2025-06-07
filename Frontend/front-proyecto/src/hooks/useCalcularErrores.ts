@@ -3,14 +3,17 @@ import api from '../api/axios';
 
 export interface Pruebahorario {
     id_asignatura: number;
-    profesor: number; //id del profe
-    sala: number; //id de la sala
+    id_profesor: number;//id del profe
+    profesor: string; 
+    id_sala: number;//id de la sala
+    sala: string; 
     horario: string;
     nivel: number;
     nombre: string;
     profesor_error:boolean;
     dia: number;
-    eliminado:boolean
+    eliminado:boolean;
+    celdaid: string;
 }
 
 export interface Resultadoerrores {
