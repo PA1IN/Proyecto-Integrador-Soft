@@ -9,6 +9,7 @@ import { PruebaDto } from '../evaluacion/dto/crear-prueba.dto';
 import { Asignatura } from '../asignatura/entities/asignatura-creada.entity';
 
 import { CheckErroresDto } from './dto/checkerrores.dto';
+import { EvaluacionService } from '../evaluacion/evaluacion.service';
 type DetalleError = {
   id_asignatura: number;
   celdaid: string;
@@ -25,6 +26,7 @@ export class CalendarioService {
     private readonly userRepository: Repository<User>, 
     @InjectRepository(Asignatura)
     private readonly asignaturaCreadaRepository: Repository<Asignatura>,
+    private readonly evaluacionService: EvaluacionService,
     
     
   ) {}
@@ -46,11 +48,14 @@ export class CalendarioService {
     }
    );
    const savedCalendario = await this.calendarioRepository.save(newCalendario);
-
-    
+   if (createCalendarioDto.pruebas?.length > 0) {
+    for (const pruebaDto of createCalendarioDto.pruebas) {
+      const prueba = await this.evaluacionService.createSinglePrueba(pruebaDto);
+      await this.evaluacionService.crearRelacionPruebaCalendario(prueba.id, savedCalendario.id);
+    }
+  }
   return savedCalendario.id;
   }
-
   private async nivel(prueba: PruebaDto): Promise<number> {
     if (prueba.id_asignatura) {
       const asignaturaCreada = await this.asignaturaCreadaRepository.findOneBy({ id: prueba.id_asignatura });

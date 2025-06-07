@@ -19,7 +19,7 @@ export class CarreraController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.carreraService.findOne(+id);
+    return this.carreraService.findOne(id);
   }
 
   @Patch(':id')
