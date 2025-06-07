@@ -30,7 +30,7 @@ export class AsignaturaService {
     async createAsignatura(createAsignaturaDto: CreateAsignaturaDto) {
         
         const asignatura = this.asignaturaCrepository.create({
-            NRC: createAsignaturaDto.NRC,
+            nrc: createAsignaturaDto.nrc,
             nivel: createAsignaturaDto.nivel,
             nombre: createAsignaturaDto.nombre,
             eliminada: false
@@ -39,7 +39,7 @@ export class AsignaturaService {
          const asignaturaguardada = await this.asignaturaCrepository.save(asignatura)
         return{
             id_asignatura: asignaturaguardada.id, 
-            NRC: asignaturaguardada.NRC,
+            nrc: asignaturaguardada.nrc,
             nivel: asignaturaguardada.nivel,
             nombre: asignaturaguardada.nombre,
             eliminada: asignaturaguardada.eliminada

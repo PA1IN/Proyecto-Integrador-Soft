@@ -9,7 +9,7 @@ export class Asignatura {
   id: number;
 
   @Column()
-  NRC: string;
+  nrc: string;
 
   @Column()
   nivel: number;

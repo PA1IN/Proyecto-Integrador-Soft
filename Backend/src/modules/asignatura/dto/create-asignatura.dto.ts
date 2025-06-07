@@ -4,7 +4,7 @@ import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-valid
 export class CreateAsignaturaDto {
     @IsString()
     @IsNotEmpty()
-    NRC: string;
+    nrc: string;
 
     @IsNotEmpty()
     @IsString()
