@@ -18,10 +18,10 @@ export class AsignaturaService {
         const asignaturas = await this.asignaturaCrepository.find(); // Fetch all asignaturas from the database
         return asignaturas.map((a) => ({
         id_asignatura: a.id,
-        NRC: a.NRC,
+        
         nivel: a.nivel,
         nombre: a.nombre,
-        eliminada: a.eliminada,
+        creada: a.eliminada,
     })); // Fetch all asignaturas from the database
     }
     

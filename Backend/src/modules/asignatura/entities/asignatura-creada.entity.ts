@@ -1,3 +1,4 @@
+
 import { CarreraAsignatura } from 'src/modules/carrera/entities/Carrera-Asignatura.entity';
 import { Prueba } from 'src/modules/evaluacion/entities/prueba.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';

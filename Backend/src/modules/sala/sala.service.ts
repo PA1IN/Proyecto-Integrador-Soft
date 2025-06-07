@@ -20,9 +20,13 @@ export class SalaService {
     }
 
 
-    async obtenerSalas(): Promise<SalaDeClases[]> {
-        return await this.salaRepository.find();
-    }
+    async obtenerSalas() {
+        const salas = await this.salaRepository.find();
+        return salas.map((s) => ({
+            id_sala: s.id,
+            nombre: s.nombre,
+    }))
+}
 
 
 }

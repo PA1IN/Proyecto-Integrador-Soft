@@ -2,21 +2,23 @@ import { IsBoolean, IsNumber, IsString } from "class-validator";
 
 export class PruebaDto{
     @IsNumber()
-    asignaturaCreadaId?: number;
+    id_asignatura: number;
     @IsNumber()
-    asignaturaFijaId?: number;
+    id_columna: number;
     @IsNumber()
-    idprofesor: number;
+    id_profesor: number;
     @IsNumber()
-    salaId: number;
+    id_sala: number;
     @IsString()
     horario: string;
     @IsNumber()
     Dia: number;
     @IsBoolean()
-    profesorError: boolean;
+    profesor_error: boolean;
     @IsBoolean()
     eliminado: boolean;
+    
+
 
 
 }

@@ -47,30 +47,28 @@ export class EvaluacionService {
     async createSinglePrueba(dto: PruebaDto) {
         const prueba = new Prueba();
 
-        if (dto.asignaturaCreadaId && dto.asignaturaFijaId) {
-    throw new Error('Solo puede asignarse una asignatura: fija o creada');
-    }
+       
 
-        if (dto.asignaturaCreadaId) {
-    const asignaturaCreada = await this.asignaturaCreadaRepository.findOneBy({ id: dto.asignaturaCreadaId });
+        if (dto.id_asignatura) {
+    const asignaturaCreada = await this.asignaturaCreadaRepository.findOneBy({ id: dto.id_asignatura });
     if (!asignaturaCreada) throw new Error('Asignatura creada no encontrada');
     prueba.asignatura = asignaturaCreada;
    
         } 
         
-        const sala = await this.salaDeClasesRepository.findOneBy({ id: dto.salaId });
+        const sala = await this.salaDeClasesRepository.findOneBy({ id: dto.id_sala });
         if (!sala) {
             throw new Error('Sala not found');
         }
         prueba.sala = sala;
-        const profesor = await this.profesorRepository.findOneBy({ id: dto.idprofesor });
+        const profesor = await this.profesorRepository.findOneBy({ id: dto.id_profesor });
         if (!profesor) {
             throw new Error('Profesor not found');
         }
         prueba.profesor = profesor;
         prueba.horario = dto.horario;
         prueba.dia = dto.Dia;
-        prueba.profesorError = dto.profesorError || false;
+        prueba.profesorError = dto.profesor_error || false;
         prueba.eliminado = dto.eliminado || false;
         
         return await this.pruebaRepository.save(prueba);
