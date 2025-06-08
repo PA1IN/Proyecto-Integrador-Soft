@@ -65,11 +65,11 @@ export function useCrearAsignatura() {
     const clienteQuery = useQueryClient();
     return useMutation({
         mutationFn: async (nuevaAsignatura:{nrc: number, nombre: string, nivel: string}) => {
-            const respuesta = await api.post('/asignaturascreadas',nuevaAsignatura);
+            const respuesta = await api.post('/asignatura',nuevaAsignatura);
             return respuesta.data;
         },
         onSuccess: () => {
-            clienteQuery.invalidateQueries({queryKey:['asignaturas']});
+            clienteQuery.invalidateQueries({queryKey:['asignatura']});
         },
     });
 }
@@ -78,10 +78,10 @@ export function useEliminarAsignatura() {
     const clienteQuery = useQueryClient();
     return useMutation({
         mutationFn: async (nivel: string) => {
-            await api.delete(`/asignaturas/${nivel}`); //sapear el endpoint del dono pa las asignaturas modificables
+            await api.delete(`/asignatura/${nivel}`); //sapear el endpoint del dono pa las asignaturas modificables
         },
         onSuccess: () => {
-            clienteQuery.invalidateQueries({queryKey:['asignaturas']});
+            clienteQuery.invalidateQueries({queryKey:['asignatura']});
         },
     });
 }
