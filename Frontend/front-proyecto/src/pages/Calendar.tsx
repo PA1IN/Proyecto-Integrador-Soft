@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { useCargarColumnas } from '../hooks/useColumna';
@@ -10,7 +10,7 @@ import { useUserProfile } from '../hooks/useUserProfile';
 import { useConfirmarCalendario } from '../hooks/useConfirmarCalendario';
 import { Pruebahorario, Resultadoerrores, useCalcularErrores } from '../hooks/useCalcularErrores';
 import { useCargarCalendario } from '../hooks/useCargarCalendario';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const bloques = ['Mañana', 'Tarde'];
 
@@ -32,11 +32,13 @@ const slotPrueba = (horario: string) => {
 
 export const Calendar = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const id_actual = id ? parseInt(id) : 0;
     const [idCalendarioLocal, setIdCalendarioLocal] = useState<number | null>(null);
+    const evitarCargabackend = id_actual === 0 && idCalendarioLocal === null;
     const {data: user } = useUserProfile(); 
-    const {data: columnas, isLoading: cargandoColumnas} = useCargarColumnas(id_actual);
-    const {data: calendarioData } = useCargarCalendario(idCalendarioLocal ?? id_actual);
+    const {data: columnas, isLoading: cargandoColumnas} = useCargarColumnas(evitarCargabackend ? undefined : (idCalendarioLocal ?? id_actual));
+    const {data: calendarioData } = useCargarCalendario(evitarCargabackend ? undefined : (idCalendarioLocal ?? id_actual));
     //const actualizarColumna = useActualizarColumna();
     const confirmarCalendario = useConfirmarCalendario();
     const calcularErrores = useCalcularErrores();
@@ -76,16 +78,15 @@ export const Calendar = () => {
     const [celdaOrigen,setCeldaOrigen] = useState<string | null>(null);
     const [rollbackPrueba, setRollBackPrueba] = useState<any | null>(null);
     const [rollbackCelda, setRollBackCelda] = useState<string | null>(null);
+    const [calendarioCargadoLocalStorage, setIdCalendarioLocalStorage] = useState(false);
     
     useEffect(() => {
       if(calendarioData && calendarioData.pruebas && calendarioData.columnas) {
         const calendarioBack : { [key: string]: Pruebahorario[]} = {};
 
-        for (const prueba of calendarioData.pruebas)
-        {
+        for (const prueba of calendarioData.pruebas) {
           const columna = calendarioData.columnas.find((col: any) => col.id_columna === prueba.id_columna);
-          if (!columna)
-          {
+          if (!columna) {
             continue;
           }
 
@@ -97,21 +98,44 @@ export const Calendar = () => {
 
           calendarioBack[celdaid].push({
             ...prueba,
-            profesor: profesores?.find((p:any) => p.id === prueba.id_profesor)?.nombre ?? '',
-            sala: salas?.find((s:any) => s.id === prueba.id_sala)?.nombre ?? '',
-            celdaid
+            id_profesor: prueba.id_profesor,
+            id_sala: prueba.id_sala,
+            celdaid,
+            horario: prueba.horario,
+            nivel: prueba.nivel,
+            nombre: prueba.nombre,
+            profesor_error: prueba.profesor_error,
+            dia: prueba.dia,
+            eliminado: prueba.eliminado
           });
         }
 
         setCalendario(calendarioBack);
 
-        const pruebas = Object.entries(calendarioBack).flatMap(([celdaid, pruebasCelda]) => 
+        localStorage.setItem("calendario", JSON.stringify(calendarioBack));
+
+        setNombrecalendario(calendarioData.nombre ?? '');
+      }
+    },[calendarioData]);
+
+    useEffect(() => {
+        if(!profesores || !salas)
+          {
+            return;
+          }
+
+        if(Object.keys(calendario).length === 0)
+          {
+            return;
+          }
+      
+        const pruebas = Object.entries(calendario).flatMap(([celdaid, pruebasCelda]) =>
           pruebasCelda.map(prueba => ({
             id_asignatura: prueba.id_asignatura,
             id_profesor: prueba.id_profesor,
-            profesor: prueba.profesor,
+            //profesor: profesores?.find((p:any) => p.id === prueba.id_profesor)?.nombre ?? '',
             id_sala: prueba.id_sala,
-            sala: prueba.sala,
+            //sala: salas?.find((s:any) => s.id === prueba.id_sala)?.nombre ?? '',
             horario: prueba.horario,
             nivel: prueba.nivel,
             nombre: prueba.nombre,
@@ -120,20 +144,22 @@ export const Calendar = () => {
             eliminado: prueba.eliminado,
             celdaid
           }))
-        
         );
 
+        
         calcularErrores.mutate(pruebas, {
           onSuccess: (data) => {
-            setErrores(data);
+            setErrores((prevError) => {
+              if(JSON.stringify(prevError) !== JSON.stringify(data)) {
+                return data;
+              }
+              return prevError;
+            });
           }
         });
 
-        localStorage.setItem("calendario", JSON.stringify(calendarioBack));
+      }, [calendario]);
 
-        setNombrecalendario(calendarioData.nombre ?? '');
-      }
-    },[calendarioData, profesores, salas, calcularErrores]);
 
     useEffect(() => {
       if(columnas) {
@@ -153,10 +179,15 @@ export const Calendar = () => {
         return;
       }
 
+      if(calendarioCargadoLocalStorage) {
+        return;
+      }
+
       const calendarioGuardado = localStorage.getItem("calendario"); // pa no perder los datos del calendario cuando se recargue la pag
       if(calendarioGuardado) {
         const calendariocargado = JSON.parse(calendarioGuardado)
-        setCalendario(JSON.parse(calendariocargado));
+        setCalendario(calendariocargado);
+        setIdCalendarioLocalStorage(true);
 
         const pruebas = Object.entries(calendariocargado).flatMap(([celdaid, pruebasCelda]) => {
           const pruebasArray = pruebasCelda as Pruebahorario[]
@@ -184,7 +215,7 @@ export const Calendar = () => {
         });
 
       }
-    },[calendarioData,calcularErrores]);
+    },[calendarioData,calcularErrores, calendarioCargadoLocalStorage]);
 
     const cambiofechas = (fecha: Date, dia:number) => {
       const fechasnuevas = fechas.map((f) => {
@@ -312,12 +343,12 @@ export const Calendar = () => {
           }
           
 
-          const pruebas: Pruebahorario[] = Object.values(nuevo).flat();
+          /*const pruebas: Pruebahorario[] = Object.values(nuevo).flat();
           calcularErrores.mutate(pruebas, {
             onSuccess: (data) => {
               setErrores(data);
             }
-          });
+          });*/
 
           //console.log(nuevo[datosForm.celdaid])
           //console.log(prueba.nrc, prueba.nombre);
@@ -365,11 +396,11 @@ export const Calendar = () => {
               }))
             );
             
-            calcularErrores.mutate(pruebas, {
+            /*calcularErrores.mutate(pruebas, {
               onSuccess: (data) => {
                 setErrores(data);
               }
-            });
+            });*/
 
             localStorage.setItem("calendario", JSON.stringify(nuevo));
 
@@ -421,7 +452,14 @@ export const Calendar = () => {
           {
             const id_calendario = data.id;
             setIdCalendarioLocal(id_calendario);
-            window.open(`/calendar/${id_calendario}`,'_blank');
+
+            setCalendario({});
+            setNombrecalendario('');
+            setFechas([...Array(7)].map((_,i)=>({dia: i + 1, fecha: null})));
+            setErrores(null);
+
+
+            navigate(`/Calendar/${id_calendario}`);
             localStorage.removeItem("calendario");
           }
         }
@@ -451,7 +489,7 @@ export const Calendar = () => {
       }
     );
 
-    if(!id_actual){
+    if(!id_actual && !calendarioCargadoLocalStorage){
       return <div>Calendario no encontrado</div>;
     }
 

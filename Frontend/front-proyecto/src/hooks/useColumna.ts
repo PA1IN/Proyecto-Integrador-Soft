@@ -48,13 +48,14 @@ export function useActualizarColumna(){   //en base al día y al id del calendar
 }
 */
 
-export function useCargarColumnas(id: number) {   //Carga las columnas del calendario (en base al id del calendario) en una lista para asignar sus datos en la matriz.
+export function useCargarColumnas(id: number | undefined) {   //Carga las columnas del calendario (en base al id del calendario) en una lista para asignar sus datos en la matriz.
     return useQuery<ColumnaData[]>({
         queryKey: ['columnas', id],
         queryFn: async () => {
             const respuesta = await api.get('/columna',{params:{id_calendario: id}});
             return respuesta.data;
         },
+        enabled: id !== undefined && id !== null,
         gcTime: 1000 * 60 * 30,
         staleTime: 1000 * 60 * 10,
         refetchOnWindowFocus: false,
