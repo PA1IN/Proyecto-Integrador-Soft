@@ -12,7 +12,7 @@ export function useSubjects() {
     return useQuery({
         queryKey: ['subjects'],
         queryFn: async () => {
-            const res = await api.get('/asignaturafijas');
+            const res = await api.get('/asignatura');
             return res.data; // tiene que venir un array de asignaturas pa q funcione
         }
     });

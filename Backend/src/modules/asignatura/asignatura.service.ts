@@ -18,10 +18,10 @@ export class AsignaturaService {
         const asignaturas = await this.asignaturaCrepository.find(); // Fetch all asignaturas from the database
         return asignaturas.map((a) => ({
         id_asignatura: a.id,
-        NRC: a.NRC,
+        
         nivel: a.nivel,
         nombre: a.nombre,
-        eliminada: a.eliminada,
+        creada: a.eliminada,
     })); // Fetch all asignaturas from the database
     }
     
@@ -30,7 +30,7 @@ export class AsignaturaService {
     async createAsignatura(createAsignaturaDto: CreateAsignaturaDto) {
         
         const asignatura = this.asignaturaCrepository.create({
-            NRC: createAsignaturaDto.NRC,
+            nrc: createAsignaturaDto.nrc,
             nivel: createAsignaturaDto.nivel,
             nombre: createAsignaturaDto.nombre,
             eliminada: false
@@ -39,7 +39,7 @@ export class AsignaturaService {
          const asignaturaguardada = await this.asignaturaCrepository.save(asignatura)
         return{
             id_asignatura: asignaturaguardada.id, 
-            NRC: asignaturaguardada.NRC,
+            nrc: asignaturaguardada.nrc,
             nivel: asignaturaguardada.nivel,
             nombre: asignaturaguardada.nombre,
             eliminada: asignaturaguardada.eliminada

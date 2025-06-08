@@ -23,7 +23,7 @@ export class CalendarioController {
 }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.calendarioService.findOne(+id);
   }
 

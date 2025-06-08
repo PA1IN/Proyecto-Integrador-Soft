@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCalendarioDto } from './dto/create-calendario.dto';
 import { UpdateCalendarioDto } from './dto/update-calendario.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,6 +9,13 @@ import { PruebaDto } from '../evaluacion/dto/crear-prueba.dto';
 import { Asignatura } from '../asignatura/entities/asignatura-creada.entity';
 
 import { CheckErroresDto } from './dto/checkerrores.dto';
+import { EvaluacionService } from '../evaluacion/evaluacion.service';
+type DetalleError = {
+  id_asignatura: number;
+  celdaid: string;
+  tipo: 'grave' | 'moderado' | 'leve';
+  mensaje: string;
+};
 
 @Injectable()
 export class CalendarioService {
@@ -19,8 +26,11 @@ export class CalendarioService {
     private readonly userRepository: Repository<User>, 
     @InjectRepository(Asignatura)
     private readonly asignaturaCreadaRepository: Repository<Asignatura>,
+    private readonly evaluacionService: EvaluacionService,
+    
     
   ) {}
+  
   async create(createCalendarioDto: CreateCalendarioDto) {
     const usuario = await this.userRepository.findOneBy({id: createCalendarioDto.user_id})
     if (!usuario) {
@@ -38,14 +48,17 @@ export class CalendarioService {
     }
    );
    const savedCalendario = await this.calendarioRepository.save(newCalendario);
-
-    
+   if (createCalendarioDto.pruebas?.length > 0) {
+    for (const pruebaDto of createCalendarioDto.pruebas) {
+      const prueba = await this.evaluacionService.createSinglePrueba(pruebaDto);
+      await this.evaluacionService.crearRelacionPruebaCalendario(prueba.id, savedCalendario.id);
+    }
+  }
   return savedCalendario.id;
   }
-
   private async nivel(prueba: PruebaDto): Promise<number> {
-    if (prueba.asignaturaCreadaId) {
-      const asignaturaCreada = await this.asignaturaCreadaRepository.findOneBy({ id: prueba.asignaturaCreadaId });
+    if (prueba.id_asignatura) {
+      const asignaturaCreada = await this.asignaturaCreadaRepository.findOneBy({ id: prueba.id_asignatura });
       if (!asignaturaCreada) {
         throw new Error('Asignatura creada no encontrada');
       }
@@ -58,6 +71,7 @@ export class CalendarioService {
 
   private async contarErroresGraves(pruebas: PruebaDto[]) {
   let errores = 0;
+  const detalles: DetalleError[] = [];
 
   for (let i = 0; i < pruebas.length; i++) {
     for (let j = i + 1; j < pruebas.length; j++) {
@@ -68,57 +82,112 @@ export class CalendarioService {
       const mismoDia = a.Dia === b.Dia;
 
       if (mismaHora && mismoDia) {
-        if (a.salaId === b.salaId) errores++;
-        if (a.idprofesor === b.idprofesor) errores++;
-        const nivelA = await this.nivel(a);
-        const nivelB = await this.nivel(b);
+        const celdaid = `${a.Dia}-${a.horario}`;
+        if (a.id_sala === b.id_sala){
+          errores++;
+          detalles.push({
+            id_asignatura: a.id_asignatura,
+            celdaid,
+            tipo: 'grave',
+            mensaje: 'Conflicto de sala entre asignaturas en el mismo horario.',
+          });
+        
+        } ;
 
-        if (nivelA === nivelB) errores++;
+
+
+
+        if (a.id_profesor === b.id_profesor) {
+          errores++;
+          detalles.push({
+            id_asignatura: a.id_asignatura,
+            celdaid,
+            tipo: 'grave',
+            mensaje: 'Conflicto de profesor entre asignaturas en el mismo horario.',
+          });
+
+
+        }
+        
+      }
+      if(mismoDia){
+        const celdaid = `${a.Dia}-${a.horario}`;
+        const nivelA = await this.nivel(a);
+      const nivelB = await this.nivel(b);
+      if (nivelA === nivelB) {errores++;
+        detalles.push({
+          id_asignatura: a.id_asignatura,
+          celdaid,
+          tipo: 'grave',
+          mensaje: 'Asignaturas del mismo nivel en el mismo dia.',
+        });
+      }
       }
     }
   }
 
-  return errores;
+  return {errores,detalles};
 }
 
 private async  contarErroresModerados(pruebas: PruebaDto[]) {
   let errores = 0;
+  const detalles: DetalleError[] = [];
 
   for (let i = 0; i < pruebas.length; i++) {
     for (let j = i + 1; j < pruebas.length; j++) {
       const a = pruebas[i];
       const b = pruebas[j];
 
-      const mismaHora = a.horario === b.horario;
+      
       const mismoDia = a.Dia === b.Dia;
 
-      if (mismaHora && mismoDia) {
+      if (mismoDia) {
         const nivelA = await this.nivel(a);
         const nivelB = await this.nivel(b);
         const distancia = Math.abs(nivelA - nivelB);
-        if (distancia === 1) errores++;
+        if (distancia === 1) {
+          detalles.push({
+            id_asignatura: a.id_asignatura,
+            celdaid: `${a.Dia}-${a.horario}`,
+            tipo: 'moderado',
+            mensaje: 'Asignaturas de niveles consecutivos en el mismo dia.',
+          });
+          
+          
+          
+          errores++;}
       }
     }
   }
 
-  return errores;
+  return {errores,detalles};
 }
 private contarErroresLeves(pruebas: PruebaDto[]) {
-  return pruebas.filter(p => p.profesorError).length;
+  const detalles = pruebas
+    .filter(p => p.profesor_error)
+    .map(p => ({
+      id_asignatura: p.id_asignatura,
+      celdaid: `${p.Dia}-${p.horario}`,
+      tipo: 'leve',
+      mensaje: 'Profesor tiene conflicto o no fue asignado correctamente.',
+    }));
+
+  return { errores: detalles.length, detalles };
 }
 
 async analizarErrores({ caledarioId, pruebas }:  CheckErroresDto) {
   const errores_graves = await this.contarErroresGraves(pruebas);
   const errores_moderados = await this.contarErroresModerados(pruebas);
   const errores_leves = this.contarErroresLeves(pruebas);
+  const detallesErrores = [errores_graves.detalles];
 
-  const calidad = Math.max(0, 100 - errores_graves * 10 - errores_moderados * 5 - errores_leves);
+  const calidad = Math.max(0, 100 - errores_graves.errores * 10 - errores_moderados.errores * 5 - errores_leves.errores);
 
   const calendario = await this.calendarioRepository.findOneBy({ id: caledarioId });
   if (calendario) {
-    calendario.errores_graves = errores_graves;
-    calendario.errores_moderados = errores_moderados;
-    calendario.errores_leves = errores_leves;
+    calendario.errores_graves = errores_graves.errores;
+    calendario.errores_moderados = errores_moderados.errores;
+    calendario.errores_leves = errores_leves.errores;
     calendario.calidad = calidad;
 
     await this.calendarioRepository.save(calendario);
@@ -129,6 +198,7 @@ async analizarErrores({ caledarioId, pruebas }:  CheckErroresDto) {
     errores_moderados,
     errores_leves,
     calidad,
+    detalles: detallesErrores,
   };
 }
 
@@ -137,12 +207,62 @@ async analizarErrores({ caledarioId, pruebas }:  CheckErroresDto) {
 
 
   async findAll() {
-    return await this.calendarioRepository.find({
+    const calendarios = await this.calendarioRepository.find({
       relations: ['usuario', 'relaciones', 'columnas'],});
+    
+   return calendarios.map((calendario) => {
+    return {
+      id: calendario.id,
+      nombre: calendario.nombre,
+      id_usuario: calendario.usuario.id,
+      fecha_creacion: calendario.fecha,
+    };
+  });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} calendario`;
+  async findOne(id: number) {
+    const calendario = await this.calendarioRepository.findOne({
+      where: { id },
+      relations: [
+      'usuario',
+      'columnas',
+      'relaciones',              // Pruebas
+      'relaciones.asignatura',
+      'relaciones.columna',
+      'relaciones.profesor',
+      'relaciones.sala',
+    ],
+    }) ;
+     if (!calendario) {
+    throw new NotFoundException('Calendario no encontrado');
+  }
+
+    return {
+    id: calendario.id,
+    nombre: calendario.nombre,
+    id_usuario: calendario.usuario.rut, // Asegúrate que 'rut' exista en tu entidad User
+    fecha_creacion: calendario.fecha,
+    columnas: calendario.columnas.map(col => ({
+      id_columna: col.id,
+      dia: col.dia,
+      fecha: col.fecha,
+    })),
+    pruebas: calendario.relaciones.map(rpc => {
+      const prueba = rpc.prueba;
+
+      return {
+        id_asignatura: prueba.asignatura?.id ?? null,
+        nombre_asignatura: prueba.asignatura?.nombre ?? null,
+        nivel: prueba.asignatura?.nivel ?? null,
+        horario: prueba.horario,
+        id_profesor: prueba.profesor?.id ?? null,
+        id_sala: prueba.sala?.id ?? null,
+        profesor_error: prueba.profesorError,
+        eliminado: prueba.eliminado,
+        dia: prueba.dia
+      };
+    }),
+  };
   }
 
   update(id: number, updateCalendarioDto: UpdateCalendarioDto) {

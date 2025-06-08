@@ -16,7 +16,12 @@ async crearProfesor(dto: ProfesorDto): Promise<Profesor> {
     return await this.profesorRepository.save(nuevoProfesor);
 }   
 
-async obtenerProfesores(): Promise<Profesor[]> {
-    return await this.profesorRepository.find();
-}
-}
+async obtenerProfesores() {
+    const profesores = await this.profesorRepository.find();
+
+
+    return profesores.map((p) => ({
+        id_profesor: p.id,
+        nombre: p.nombre,
+    }))
+}}
