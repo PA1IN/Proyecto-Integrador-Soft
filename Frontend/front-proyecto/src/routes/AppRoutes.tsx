@@ -18,7 +18,6 @@ export const AppRoutes = () => {
       <Route path = '/Login' element = {<Login/>}/>
       <Route path = '/Register' element = {<Register/>}/>
       <Route path = '/ForgotPassword' element={<ForgotPassword/>}/>
-
       <Route path='/Home'element={<PrivateRoute> <Home/> </PrivateRoute>}/>
       <Route path='/Calendar/:id'element={<PrivateRoute> <Calendar/> </PrivateRoute>}/>
       <Route path='/Calendar'element={<PrivateRoute> <Calendar/> </PrivateRoute>}/>
