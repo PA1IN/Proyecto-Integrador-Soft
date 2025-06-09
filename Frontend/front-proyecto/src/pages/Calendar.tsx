@@ -1,14 +1,14 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useEffect, useState} from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { useCargarColumnas } from '../hooks/useColumna';
-import {useAsignaturas} from '../hooks/useCalendar';
+import {useAsignaturas} from '../hooks/useAsignaturas';
 import '../styles/calendar.css';
 import { useProfesores } from '../hooks/useProfesores';
 import { useSalas } from '../hooks/useSalas';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { useConfirmarCalendario } from '../hooks/useConfirmarCalendario';
-import { Pruebahorario, Resultadoerrores, useCalcularErrores } from '../hooks/useCalcularErrores';
+import { Pruebahorario, Errores, Resultadoerrores, useCalcularErrores } from '../hooks/useCalcularErrores';
 import { useCargarCalendario } from '../hooks/useCargarCalendario';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -73,7 +73,8 @@ export const Calendar = () => {
     const [horario, setHorario] = useState("");
     const [profesorAsig,setProfesorasig] = useState(true);
     const [semestreSeleccionado, setSemestreseleccionado] = useState(0);
-    const [errores, setErrores] = useState<Resultadoerrores | null>(null);
+    const [errores, setErrores] = useState<Errores | null>(null);
+    const [detalles, setDetalles] = useState<any[]>([]);
     const [dragPruebaHorario,setDragPruebaHorario] = useState<any | null>(null);
     const [celdaOrigen,setCeldaOrigen] = useState<string | null>(null);
     const [rollbackPrueba, setRollBackPrueba] = useState<any | null>(null);
@@ -149,11 +150,18 @@ export const Calendar = () => {
         
         calcularErrores.mutate(pruebas, {
           onSuccess: (data) => {
-            setErrores((prevError) => {
-              if(JSON.stringify(prevError) !== JSON.stringify(data)) {
-                return data;
+            setErrores((prev) => {
+              if(JSON.stringify(prev) !== JSON.stringify(data.errores)) {
+                return data.errores;
               }
-              return prevError;
+              return prev;
+            });
+
+            setDetalles((prevDetalles) => {
+              if(JSON.stringify(prevDetalles) !== JSON.stringify(data.detalles)){
+                return data.detalles;
+              }
+              return prevDetalles;
             });
           }
         });
@@ -210,7 +218,10 @@ export const Calendar = () => {
 
         calcularErrores.mutate(pruebas, {
           onSuccess: (data) => {
-            setErrores(data);
+            setErrores(data.errores);
+            setDetalles(data.detalles);
+
+
           }
         });
 

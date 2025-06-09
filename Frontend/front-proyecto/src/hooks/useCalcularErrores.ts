@@ -16,12 +16,20 @@ export interface Pruebahorario {
     celdaid: string;
 }
 
-export interface Resultadoerrores {
+export interface Errores {
     errores_graves: number;
     errores_moderados: number;
     errores_leves:number;
     calidad:number;
 }
+
+export interface Resultadoerrores {
+    errores: Errores;
+    detalles: any[];
+}
+
+
+
 
 export function useCalcularErrores() {
     return useMutation<Resultadoerrores,Error,Pruebahorario[]>({

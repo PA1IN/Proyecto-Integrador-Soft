@@ -21,6 +21,7 @@ export const AppRoutes = () => {
 
       <Route path='/Home'element={<PrivateRoute> <Home/> </PrivateRoute>}/>
       <Route path='/Calendar/:id'element={<PrivateRoute> <Calendar/> </PrivateRoute>}/>
+      <Route path='/Calendar'element={<PrivateRoute> <Calendar/> </PrivateRoute>}/>
       <Route path='/Profesores'element={<PrivateRoute> <Profesores/> </PrivateRoute>}/>
       <Route path='/Salas'element={<PrivateRoute> <Salas/> </PrivateRoute>}/>
       <Route path='/Asignaturas'element={<PrivateRoute> <Asignaturas/> </PrivateRoute>}/>
