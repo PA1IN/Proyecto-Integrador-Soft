@@ -37,6 +37,10 @@ export class AsignaturaController {
     getAsignaturaByHorario(@Param('Horario') Horario: string) {
         return this.asignaturaService.getbyHorario(Horario); 
     }
+    @Patch('/eliminar/:id')
+    eliminarAsignatura(@Param('id') id: number) {
+        return this.asignaturaService.eliminarAsignatura(id); 
+    }
     
 
   

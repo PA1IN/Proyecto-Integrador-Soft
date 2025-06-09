@@ -60,8 +60,24 @@ export class AsignaturaService {
     async getbyHorario(Horario:String){
         return this.asignaturaCrepository.findOneBy({}); 
     }
-    
 
+    async eliminarAsignatura(id: number) {
+        const asignatura = await this.asignaturaCrepository.findOneBy({ id });
+        if (!asignatura) {
+            throw new NotFoundException(`Asignatura  ${id} no encontrada`);
+        }
+        asignatura.eliminada = true; // Mark the asignatura as deleted
+        await this.asignaturaCrepository.save(asignatura); // Save the updated asignatura
+        return {
+            message: `Asignatura con ${id} a sido eliminada`,
+            id_asignatura: asignatura.id,
+            nrc: asignatura.nrc,
+            nivel: asignatura.nivel,
+            nombre: asignatura.nombre,
+            eliminada: asignatura.eliminada
+        };
+    
+    }
       
 
 }
