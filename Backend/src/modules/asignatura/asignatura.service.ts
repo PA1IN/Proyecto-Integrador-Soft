@@ -21,7 +21,8 @@ export class AsignaturaService {
         
         nivel: a.nivel,
         nombre: a.nombre,
-        creada: a.eliminada,
+        creada: a.creada,
+        eliminada: a.eliminada,
     })); // Fetch all asignaturas from the database
     }
     
