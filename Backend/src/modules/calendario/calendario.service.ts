@@ -58,6 +58,7 @@ export class CalendarioService {
   }
   private async nivel(prueba: PruebaDto): Promise<number> {
     if (prueba.id_asignatura) {
+      console.log('Prueba tiene asignatura:', prueba.id_asignatura);
       const asignaturaCreada = await this.asignaturaCreadaRepository.findOneBy({ id: prueba.id_asignatura });
       if (!asignaturaCreada) {
         throw new Error('Asignatura creada no encontrada');
@@ -79,10 +80,10 @@ export class CalendarioService {
       const b = pruebas[j];
 
       const mismaHora = a.horario === b.horario;
-      const mismoDia = a.Dia === b.Dia;
+      const mismoDia = a.id_columna === b.id_columna;
 
       if (mismaHora && mismoDia) {
-        const celdaid = `${a.Dia}-${a.horario}`;
+        const celdaid = `${a.id_columna}-${a.horario}`;
         if (a.id_sala === b.id_sala){
           errores++;
           detalles.push({
@@ -111,7 +112,7 @@ export class CalendarioService {
         
       }
       if(mismoDia){
-        const celdaid = `${a.Dia}-${a.horario}`;
+        const celdaid = `${a.id_columna}-${a.horario}`;
         const nivelA = await this.nivel(a);
       const nivelB = await this.nivel(b);
       if (nivelA === nivelB) {errores++;
@@ -139,7 +140,7 @@ private async  contarErroresModerados(pruebas: PruebaDto[]) {
       const b = pruebas[j];
 
       
-      const mismoDia = a.Dia === b.Dia;
+      const mismoDia = a.id_columna === b.id_columna;
 
       if (mismoDia) {
         const nivelA = await this.nivel(a);
@@ -148,7 +149,7 @@ private async  contarErroresModerados(pruebas: PruebaDto[]) {
         if (distancia === 1) {
           detalles.push({
             id_asignatura: a.id_asignatura,
-            celdaid: `${a.Dia}-${a.horario}`,
+            celdaid: `${a.id_columna}-${a.horario}`,
             tipo: 'moderado',
             mensaje: 'Asignaturas de niveles consecutivos en el mismo dia.',
           });
@@ -167,7 +168,7 @@ private contarErroresLeves(pruebas: PruebaDto[]) {
     .filter(p => p.profesor_error)
     .map(p => ({
       id_asignatura: p.id_asignatura,
-      celdaid: `${p.Dia}-${p.horario}`,
+      celdaid: `${p.id_columna}-${p.horario}`,
       tipo: 'leve',
       mensaje: 'Profesor tiene conflicto o no fue asignado correctamente.',
     }));
@@ -226,11 +227,11 @@ async analizarErrores({ caledarioId, pruebas }:  CheckErroresDto) {
       relations: [
       'usuario',
       'columnas',
-      'relaciones',              // Pruebas
-      'relaciones.asignatura',
-      'relaciones.columna',
-      'relaciones.profesor',
-      'relaciones.sala',
+     'relaciones',
+      'relaciones.prueba',
+      'relaciones.prueba.profesor',
+      'relaciones.prueba.sala',
+      'relaciones.prueba.asignatura',
     ],
     }) ;
      if (!calendario) {

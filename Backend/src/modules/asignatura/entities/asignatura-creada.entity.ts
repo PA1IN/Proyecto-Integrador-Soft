@@ -17,7 +17,7 @@ export class Asignatura {
   @Column()
   nombre: string;
   @Column()
-  eliminado: boolean;
+  eliminada: boolean;
   @Column({ default: false })
   creada: boolean; 
   @OneToMany(() => Prueba, prueba => prueba.asignatura)
