@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { useCargarColumnas } from '../hooks/useColumna';
@@ -8,9 +8,10 @@ import { useProfesores } from '../hooks/useProfesores';
 import { useSalas } from '../hooks/useSalas';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { useConfirmarCalendario } from '../hooks/useConfirmarCalendario';
-import { Pruebahorario, Errores, Resultadoerrores, useCalcularErrores } from '../hooks/useCalcularErrores';
+import { Pruebahorario, Resultadoerrores, useCalcularErrores } from '../hooks/useCalcularErrores';
 import { useCargarCalendario } from '../hooks/useCargarCalendario';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { parse } from 'path';
 
 const bloques = ['Mañana', 'Tarde'];
 
@@ -33,12 +34,12 @@ const slotPrueba = (horario: string) => {
 export const Calendar = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const id_actual = id ? parseInt(id) : 0;
+    const id_actual = id ? parseInt(id) : 0
     const [idCalendarioLocal, setIdCalendarioLocal] = useState<number | null>(null);
     const evitarCargabackend = id_actual === 0 && idCalendarioLocal === null;
     const {data: user } = useUserProfile(); 
-    const {data: columnas, isLoading: cargandoColumnas} = useCargarColumnas(evitarCargabackend ? undefined : (idCalendarioLocal ?? id_actual));
-    const {data: calendarioData } = useCargarCalendario(evitarCargabackend ? undefined : (idCalendarioLocal ?? id_actual));
+    const {data: columnas, isLoading: cargandoColumnas} = useCargarColumnas(evitarCargabackend ? undefined : (idCalendarioLocal ?? id_actual ));
+    const {data: calendarioData } = useCargarCalendario(evitarCargabackend ? undefined : (idCalendarioLocal ?? id_actual ));
     //const actualizarColumna = useActualizarColumna();
     const confirmarCalendario = useConfirmarCalendario();
     const calcularErrores = useCalcularErrores();
@@ -47,6 +48,8 @@ export const Calendar = () => {
     const asignaturasCreadas = subjects?.filter((a:any)=> a.creada);
     const {data: profesores} = useProfesores();
     const {data: salas} = useSalas();
+    const location = useLocation();
+    const nuevoCalendario = location.state?.nuevoCalendario ?? false;
 
 
     /*const [fechas, setFechas] =useState<{dia: number; fecha: Date | null}[]>([
@@ -73,14 +76,38 @@ export const Calendar = () => {
     const [horario, setHorario] = useState("");
     const [profesorAsig,setProfesorasig] = useState(true);
     const [semestreSeleccionado, setSemestreseleccionado] = useState(0);
-    const [errores, setErrores] = useState<Errores | null>(null);
+    const [errores, setErrores] = useState<{
+      errores_graves: number;
+      errores_moderados: number;
+      errores_leves: number;
+      calidad: number;
+    }>({
+      errores_graves: 0,
+      errores_moderados: 0,
+      errores_leves: 0,
+      calidad: 0
+    });
     const [detalles, setDetalles] = useState<any[]>([]);
     const [dragPruebaHorario,setDragPruebaHorario] = useState<any | null>(null);
     const [celdaOrigen,setCeldaOrigen] = useState<string | null>(null);
     const [rollbackPrueba, setRollBackPrueba] = useState<any | null>(null);
     const [rollbackCelda, setRollBackCelda] = useState<string | null>(null);
     const [calendarioCargadoLocalStorage, setIdCalendarioLocalStorage] = useState(false);
-    
+    const columnasEnviadas = fechas.map(f => ({
+      dia: f.dia,
+      fecha: f.fecha ? f.fecha.toISOString().split('T')[0]:null
+    }));
+
+
+
+    /*useEffect(()=> {
+      if(cargaId && parseInt(cargaId) === id_actual)
+      {
+        localStorage.removeItem("carga_calendario_id");
+      }
+    }, [id_actual]);*/
+
+
     useEffect(() => {
       if(calendarioData && calendarioData.pruebas && calendarioData.columnas) {
         const calendarioBack : { [key: string]: Pruebahorario[]} = {};
@@ -101,6 +128,8 @@ export const Calendar = () => {
             ...prueba,
             id_profesor: prueba.id_profesor,
             id_sala: prueba.id_sala,
+            profesor: prueba.profesor,
+            sala: prueba.sala,
             celdaid,
             horario: prueba.horario,
             nivel: prueba.nivel,
@@ -112,8 +141,11 @@ export const Calendar = () => {
         }
 
         setCalendario(calendarioBack);
-
-        localStorage.setItem("calendario", JSON.stringify(calendarioBack));
+        if(id_actual !== 0)
+        {
+          localStorage.setItem("carga_calendario_id", id_actual.toString());
+          localStorage.setItem(`calendario_${id_actual}`, JSON.stringify(calendarioBack));
+        }
 
         setNombrecalendario(calendarioData.nombre ?? '');
       }
@@ -134,9 +166,9 @@ export const Calendar = () => {
           pruebasCelda.map(prueba => ({
             id_asignatura: prueba.id_asignatura,
             id_profesor: prueba.id_profesor,
-            //profesor: profesores?.find((p:any) => p.id === prueba.id_profesor)?.nombre ?? '',
+            profesor: profesores?.find((p:any) => p.id_profesor === prueba.id_profesor)?.nombre ?? '',
             id_sala: prueba.id_sala,
-            //sala: salas?.find((s:any) => s.id === prueba.id_sala)?.nombre ?? '',
+            sala: salas?.find((s:any) => s.id_sala === prueba.id_sala)?.nombre ?? '',
             horario: prueba.horario,
             nivel: prueba.nivel,
             nombre: prueba.nombre,
@@ -150,19 +182,18 @@ export const Calendar = () => {
         
         calcularErrores.mutate(pruebas, {
           onSuccess: (data) => {
-            setErrores((prev) => {
-              if(JSON.stringify(prev) !== JSON.stringify(data.errores)) {
-                return data.errores;
-              }
-              return prev;
+            setErrores({
+              errores_graves: data.errores_graves.errores ?? 0,
+              errores_moderados: data.errores_moderados.errores ?? 0,
+              errores_leves: data.errores_leves.errores ?? 0,
+              calidad: data.calidad ?? 0
             });
 
-            setDetalles((prevDetalles) => {
-              if(JSON.stringify(prevDetalles) !== JSON.stringify(data.detalles)){
-                return data.detalles;
-              }
-              return prevDetalles;
-            });
+            setDetalles([
+              ...(data.errores_graves.detalles ?? []),
+              ...(data.errores_moderados.detalles ?? []),
+              ...(data.errores_leves.detalles ?? [])
+            ])
           }
         });
 
@@ -182,7 +213,27 @@ export const Calendar = () => {
     }, [columnas]);
 
     useEffect(() => {
-      if(calendarioData && calendarioData.pruebas && calendarioData.columnas)
+      const cargaId = localStorage.getItem("carga_calendario_id");
+
+      if(nuevoCalendario && !calendarioCargadoLocalStorage)
+      {
+        setCalendario({});
+        setFechas([...Array(7)].map((_,i)=>({dia: i+1, fecha: null})));
+        setNombrecalendario('');
+        setErrores({
+          errores_graves: 0,
+          errores_moderados: 0,
+          errores_leves: 0,
+          calidad: 0
+        });
+        setDetalles([]);
+        localStorage.removeItem("calendario");
+        localStorage.removeItem("carga_calendario_id");
+        setIdCalendarioLocalStorage(true);
+        return;
+      }
+
+      if(id_actual && calendarioData && calendarioData.pruebas && calendarioData.columnas)
       {
         return;
       }
@@ -191,40 +242,58 @@ export const Calendar = () => {
         return;
       }
 
-      const calendarioGuardado = localStorage.getItem("calendario"); // pa no perder los datos del calendario cuando se recargue la pag
-      if(calendarioGuardado) {
-        const calendariocargado = JSON.parse(calendarioGuardado)
-        setCalendario(calendariocargado);
-        setIdCalendarioLocalStorage(true);
 
-        const pruebas = Object.entries(calendariocargado).flatMap(([celdaid, pruebasCelda]) => {
-          const pruebasArray = pruebasCelda as Pruebahorario[]
+      if(!id_actual && !cargaId)
+      {
+        return;
+      }
 
-          return pruebasArray.map((prueba) => ({
-            id_asignatura: prueba.id_asignatura,
-            id_profesor: prueba.id_profesor,
-            id_sala: prueba.id_sala,
-            profesor: prueba.profesor,
-            sala: prueba.sala,
-            horario: prueba.horario,
-            nivel: prueba.nivel,
-            nombre: prueba.nombre,
-            profesor_error: prueba.profesor_error,
-            dia: prueba.dia,
-            eliminado: prueba.eliminado,
-            celdaid
-          }));
+      if(!id_actual && !nuevoCalendario && !calendarioCargadoLocalStorage )
+      {
+        const calendarioGuardado = localStorage.getItem("calendario"); // pa no perder los datos del calendario cuando se recargue la pag
+        if(calendarioGuardado) {
+          const calendariocargado = JSON.parse(calendarioGuardado)
+          setCalendario(calendariocargado);
+          setIdCalendarioLocalStorage(true);
+
+          const pruebas = Object.entries(calendariocargado).flatMap(([celdaid, pruebasCelda]) => {
+            const pruebasArray = pruebasCelda as Pruebahorario[]
+
+            return pruebasArray.map((prueba) => ({
+              id_asignatura: prueba.id_asignatura,
+              id_profesor: prueba.id_profesor,
+              id_sala: prueba.id_sala,
+              profesor: prueba.profesor,
+              sala: prueba.sala,
+              horario: prueba.horario,
+              nivel: prueba.nivel,
+              nombre: prueba.nombre,
+              profesor_error: prueba.profesor_error,
+              dia: prueba.dia,
+              eliminado: prueba.eliminado,
+              celdaid
+            }));
+          });
+
+          calcularErrores.mutate(pruebas, {
+            onSuccess: (data) => {
+              setErrores({
+                errores_graves: data.errores_graves.errores ?? 0,
+                errores_moderados: data.errores_moderados.errores ?? 0,
+                errores_leves: data.errores_leves.errores ?? 0,
+                calidad: data.calidad ?? 0
+              });
+              setDetalles([
+                ...data.errores_graves.detalles ?? [],
+                ...data.errores_moderados.detalles ?? [],
+                ...data.errores_leves.detalles ?? []
+              ]);
+
+
+            }
         });
 
-        calcularErrores.mutate(pruebas, {
-          onSuccess: (data) => {
-            setErrores(data.errores);
-            setDetalles(data.detalles);
-
-
-          }
-        });
-
+        }
       }
     },[calendarioData,calcularErrores, calendarioCargadoLocalStorage]);
 
@@ -273,13 +342,13 @@ export const Calendar = () => {
           });
 
           setDatosform({ celdaid, asignatura: dragPruebaHorario});
+          setProfesorform(dragPruebaHorario.id_profesor ?? null);
           setFormvisible(true);
           setDragPruebaHorario(null);
           setCeldaOrigen(null);
-          setHorario("");
-          setSalaform(null);
-          setProfesorasig(true);
-          setProfesorform(null);
+          setHorario(dragPruebaHorario.horario ?? "");
+          setSalaform(dragPruebaHorario.id_sala ?? null);
+          setProfesorasig(!dragPruebaHorario.profesor_error);
           return;
         }
 
@@ -320,12 +389,13 @@ export const Calendar = () => {
       }
 
       const prueba = {
-        ...datosForm.asignatura,
-        id_asignatura: datosForm.asignatura.id_asignatura,
-        id_profesor:profesorForm,
-        profesor: profesores?.find((p:any) => p.id === profesorForm)?.nombre ?? '',
-        id_sala: salaForm,
-        sala: salas?.find((s:any) => s.id === salaForm)?.nombre ?? '',
+        id_asignatura: Number(datosForm.asignatura.id_asignatura),
+        id_profesor: Number(profesorForm),
+        nombre: String(datosForm.asignatura.nombre),
+        nivel: Number(datosForm.asignatura.nivel),
+        profesor: profesores?.find((p:any) => p.id_profesor === profesorForm)?.nombre ?? '',
+        id_sala: Number(salaForm),
+        sala: salas?.find((s:any) => s.id_sala === salaForm)?.nombre ?? '',
         horario,
         profesor_error: !profesorAsig,
         dia: diaColumn(datosForm.celdaid),
@@ -367,8 +437,10 @@ export const Calendar = () => {
             
             console.log(prueba); 
           }*/
-
-          localStorage.setItem("calendario", JSON.stringify(nuevo));
+          if(!id_actual)
+          {
+            localStorage.setItem("calendario", JSON.stringify(nuevo));
+          }
           return nuevo;
       });
 
@@ -390,7 +462,7 @@ export const Calendar = () => {
             const nuevo = {...prev};
             nuevo[celdaid] = nuevo[celdaid].filter((a)=> a.id_asignatura !== id_asignatura );
 
-            const pruebas = Object.entries(nuevo).flatMap(([celdaid, pruebasCelda]) => 
+           /* const pruebas = Object.entries(nuevo).flatMap(([celdaid, pruebasCelda]) => 
               pruebasCelda.map(prueba => ({
                 id_asignatura: prueba.id_asignatura,
                 id_profesor: prueba.id_profesor,
@@ -405,7 +477,7 @@ export const Calendar = () => {
                 eliminado: prueba.eliminado,
                 celdaid
               }))
-            );
+            );*/
             
             /*calcularErrores.mutate(pruebas, {
               onSuccess: (data) => {
@@ -456,22 +528,37 @@ export const Calendar = () => {
         nombre: nombreCalendario,
         id_usuario: user.rut,
         fecha_creacion,
-        pruebas
+        pruebas,
+        columnas: columnasEnviadas
       }, {
         onSuccess:(data)=> {
           if(data?.id)
           {
-            const id_calendario = data.id;
-            setIdCalendarioLocal(id_calendario);
+            
 
             setCalendario({});
             setNombrecalendario('');
             setFechas([...Array(7)].map((_,i)=>({dia: i + 1, fecha: null})));
-            setErrores(null);
+            setErrores({
+              errores_graves: 0,
+              errores_moderados: 0,
+              errores_leves: 0,
+              calidad: 0,
+            });
+            setDetalles([]);
 
-
-            navigate(`/Calendar/${id_calendario}`);
             localStorage.removeItem("calendario");
+            localStorage.removeItem("carga_calendario_id");
+            setIdCalendarioLocalStorage(false);
+            setIdCalendarioLocal(null);
+            setCalendario({});
+
+            setTimeout(()=>{
+              navigate('/Calendar', {state:{ nuevoCalendario: true}});
+            }, 100);
+
+            
+            
           }
         }
       });
@@ -500,11 +587,11 @@ export const Calendar = () => {
       }
     );
 
-    if(!id_actual && !calendarioCargadoLocalStorage){
+    /*if(!id_actual && !calendarioCargadoLocalStorage){
       return <div>Calendario no encontrado</div>;
-    }
+    }*/
 
-    if (cargandoColumnas) {
+    if (cargandoColumnas && (columnas??[]).length === 0) {
       return <div> Cargando fechas... </div>
     }
 
@@ -535,21 +622,21 @@ export const Calendar = () => {
         <div className="modal-overlay">
           <div className="modal">
             <h3>Datos de la prueba</h3>
-            <select onChange={(e) => setProfesorform(Number(e.target.value))}>
-              <option>Seleccione un docente para la evaluacion</option>
+            <select value={profesorForm !== null ? profesorForm: ''} onChange={(e) => setProfesorform(Number(e.target.value))}>
+              <option key="default" value="">Seleccione un docente para la evaluacion</option>
               {profesores?.map((p:any) => (
-                <option key={p.id} value={p.id}>{p.nombre}</option>
+                <option key={p.id_profesor} value={p.id_profesor}>{p.nombre}</option>
               ))}
             </select>
 
-            <select onChange={(e)=> setSalaform(Number(e.target.value))}>
-              <option>Seleccione una sala para la evaluacion</option>
-              {salas?.map((s:any) => (
-                <option key={s.id} value={s.id}>{s.nombre}</option>
+            <select value={salaForm !== null ? salaForm: ''} onChange={(e)=> setSalaform(Number(e.target.value))}>
+              <option key="default" value="">Seleccione una sala para la evaluacion</option>
+              {salas?.filter((s:any) => s.id_sala !== undefined).map((s:any) => (
+                <option key={s.id_sala} value={s.id_sala}>{s.nombre}</option>
               ))}
             </select>
 
-            <input type="text" placeholder="horario (09:00 - 10:30)" onChange={(e)=>setHorario(e.target.value)}/>
+            <input type="text" placeholder="horario (09:00 - 10:30)" value={horario} onChange={(e)=>setHorario(e.target.value)}/>
             <label>
               <input type="checkbox" checked={profesorAsig} onChange={()=>setProfesorasig(!profesorAsig)}/>
               ¿El docente es el mismo de la asignatura? 

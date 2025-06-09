@@ -39,7 +39,7 @@ export const CalendariosDashboard = () => {
                                 <li key={cal.id}>
                                     <strong>{cal.nombre}</strong> - Creado el: {cal.fecha_creacion}
                                     <br />
-                                    <button onClick={() => window.open(`/calendar/${cal.id_calendario}`,'_blank')}> Ver Calendario </button>
+                                    <button onClick={() =>{ localStorage.setItem("carga_calendario_id", cal.id); window.open(`/Calendar/${cal.id}`,'_blank')} }> Ver Calendario </button>
                                     <p>---------</p>
                                 </li>
                             ))}

@@ -16,16 +16,24 @@ export interface Pruebahorario {
     celdaid: string;
 }
 
-export interface Errores {
-    errores_graves: number;
-    errores_moderados: number;
-    errores_leves:number;
-    calidad:number;
+export interface errorDetalle {
+    id_asignatura: number;
+    celdaid: string;
+    tipo: string;
+    mensaje: string;
+}
+
+export interface CategoriaError {
+    errores: number;
+    detalles: errorDetalle[];
 }
 
 export interface Resultadoerrores {
-    errores: Errores;
-    detalles: any[];
+    errores_graves: CategoriaError;
+    errores_moderados: CategoriaError;
+    errores_leves: CategoriaError;
+    calidad: number;
+    detalles: errorDetalle[];
 }
 
 
