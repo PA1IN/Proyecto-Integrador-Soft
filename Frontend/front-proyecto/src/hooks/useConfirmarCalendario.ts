@@ -12,6 +12,8 @@ interface Confirmarcalendario {
     fecha_creacion: string;
     pruebas: {id_asignatura: number; id_columna: number; horario: string; id_profesor: number; id_sala: number; profesor_error: boolean; eliminado: boolean}[];
     columnas: {dia: number; fecha: string | null}[];
+   //columnas: [dia: number, fecha: string | ''][];
+
 }
 
 export function useConfirmarCalendario() {
@@ -25,18 +27,26 @@ export function useConfirmarCalendario() {
                 fecha_creacion,
             });
             
-            const id_calendario = respuesta.data.id;
+            const id_calendario = respuesta.data;
+            console.log(id_calendario);
 
-            for(const columna of columnas){
+            /*for(const columna of columnas){
                 await api.post('/columnas', {
                     id_calendario,
                     dia: columna.dia,
                     fecha: columna.fecha
                 });
-            }
+            }*/
 
             
-            for (const prueba of pruebas) {
+            await api.post('/columnas', {
+                calendarioId: id_calendario,
+                columnas
+            });
+            
+            console.log(pruebas);
+            
+            /*for (const prueba of pruebas) {
                 await api.post('/evaluacion', {
                     id_asignatura: prueba.id_asignatura,
                     id_columna: prueba.id_columna,
@@ -47,7 +57,14 @@ export function useConfirmarCalendario() {
                     eliminado: prueba.eliminado ?? false,
                     id_calendario
                 });
-            }
+            }*/
+          
+            await api.post('/evaluacion', {
+                calendarioId: id_calendario,
+                pruebas
+            });
+            
+            console.log(respuesta.data)
             return {id: id_calendario};
             
         },
