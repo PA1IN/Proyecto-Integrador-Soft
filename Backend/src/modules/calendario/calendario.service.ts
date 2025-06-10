@@ -265,7 +265,7 @@ async analizarErrores({ caledarioId, pruebas }:  CheckErroresDto) {
 
       return {
         id_asignatura: prueba.asignatura?.id ?? null,
-        nombre_asignatura: prueba.asignatura?.nombre ?? null,
+        asignatura: prueba.asignatura?.nombre ?? null,
         nivel: prueba.asignatura?.nivel ?? null,
         horario: prueba.horario,
         id_profesor: prueba.profesor?.id ?? null,

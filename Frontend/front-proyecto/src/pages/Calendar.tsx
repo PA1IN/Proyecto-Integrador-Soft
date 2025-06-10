@@ -204,7 +204,7 @@ export const Calendar = () => {
           celdaid,
           horario: prueba.horario,
           nivel: prueba.nivel,
-          nombre: prueba.nombre,
+          nombre: prueba.asignatura,
           profesor_error: prueba.profesor_error,
           dia: prueba.dia,
           eliminado: prueba.eliminado
@@ -237,6 +237,7 @@ export const Calendar = () => {
         const pruebas = Object.entries(calendario).flatMap(([celdaid, pruebasCelda]) =>
           pruebasCelda.map(prueba => ({
             id_asignatura: prueba.id_asignatura,
+            asignatura: prueba.nombre,
             id_profesor: prueba.id_profesor,
             profesor: profesores?.find((p:any) => p.id_profesor === prueba.id_profesor)?.nombre ?? '',
             id_sala: prueba.id_sala,
