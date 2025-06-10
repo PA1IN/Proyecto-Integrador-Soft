@@ -12,11 +12,14 @@ export class PruebaDto{
     @IsString()
     horario: string;
     @IsNumber()
-    Dia: number;
+    dia: number;
     @IsBoolean()
     profesor_error: boolean;
     @IsBoolean()
     eliminado: boolean;
+    @IsString()
+    celdaid: string;
+    
     
 
 

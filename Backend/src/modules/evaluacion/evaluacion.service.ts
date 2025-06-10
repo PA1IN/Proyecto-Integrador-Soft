@@ -67,7 +67,7 @@ export class EvaluacionService {
         }
         prueba.profesor = profesor;
         prueba.horario = dto.horario;
-        prueba.dia = dto.Dia;
+        prueba.dia = dto.dia;
         prueba.profesorError = dto.profesor_error || false;
         prueba.eliminado = dto.eliminado || false;
         

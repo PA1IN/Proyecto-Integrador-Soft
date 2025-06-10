@@ -78,12 +78,13 @@ export class CalendarioService {
     for (let j = i + 1; j < pruebas.length; j++) {
       const a = pruebas[i];
       const b = pruebas[j];
+      
 
       const mismaHora = a.horario === b.horario;
-      const mismoDia = a.id_columna === b.id_columna;
+      const mismoDia = a.dia === b.dia;
 
       if (mismaHora && mismoDia) {
-        const celdaid = `${a.id_columna}-${a.horario}`;
+        const celdaid = `${a.celdaid}`;
         if (a.id_sala === b.id_sala){
           errores++;
           detalles.push({
@@ -112,7 +113,7 @@ export class CalendarioService {
         
       }
       if(mismoDia){
-        const celdaid = `${a.id_columna}-${a.horario}`;
+        const celdaid = `${a.celdaid}`;
         const nivelA = await this.nivel(a);
       const nivelB = await this.nivel(b);
       if (nivelA === nivelB) {errores++;
@@ -140,7 +141,7 @@ private async  contarErroresModerados(pruebas: PruebaDto[]) {
       const b = pruebas[j];
 
       
-      const mismoDia = a.id_columna === b.id_columna;
+      const mismoDia = a.dia === b.dia;
 
       if (mismoDia) {
         const nivelA = await this.nivel(a);
@@ -149,7 +150,7 @@ private async  contarErroresModerados(pruebas: PruebaDto[]) {
         if (distancia === 1) {
           detalles.push({
             id_asignatura: a.id_asignatura,
-            celdaid: `${a.id_columna}-${a.horario}`,
+            celdaid: `${a.dia}`,
             tipo: 'moderado',
             mensaje: 'Asignaturas de niveles consecutivos en el mismo dia.',
           });
@@ -168,7 +169,7 @@ private contarErroresLeves(pruebas: PruebaDto[]) {
     .filter(p => p.profesor_error)
     .map(p => ({
       id_asignatura: p.id_asignatura,
-      celdaid: `${p.id_columna}-${p.horario}`,
+      celdaid: `${p.celdaid}`,
       tipo: 'leve',
       mensaje: 'Profesor tiene conflicto o no fue asignado correctamente.',
     }));
