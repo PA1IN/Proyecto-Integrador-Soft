@@ -13,6 +13,8 @@ export class CreateAsignaturaDto {
     @IsNumber()
     nivel: number;
 
+    @IsOptional()
+    creada: boolean;
    
 
 }

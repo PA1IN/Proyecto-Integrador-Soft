@@ -15,7 +15,7 @@ export class AsignaturaService {
     ) {}
 
     async getAsignaturasc(){
-        const asignaturas = await this.asignaturaCrepository.find(); // Fetch all asignaturas from the database
+        const asignaturas = await this.asignaturaCrepository.find({where : {creada: true  }}); // Fetch all asignaturas from the database
         return asignaturas.map((a) => ({
         id_asignatura: a.id,
         
@@ -45,6 +45,36 @@ export class AsignaturaService {
             nombre: asignaturaguardada.nombre,
             eliminada: asignaturaguardada.eliminada
         } ; // Save the new asignatura to the database
+    }
+
+    async crearasignaturaprod(dto: CreateAsignaturaDto){
+        const asignatura = this.asignaturaCrepository.create({
+            nrc: dto.nrc,
+            nivel: dto.nivel,
+            nombre: dto.nombre,
+            creada: true,
+            eliminada: false
+
+        });
+        const asignaturaguardada = await this.asignaturaCrepository.save(asignatura)
+        return{
+            id_asignatura: asignaturaguardada.id, 
+            nrc: asignaturaguardada.nrc,
+            nivel: asignaturaguardada.nivel,
+            nombre: asignaturaguardada.nombre,
+            eliminada: asignaturaguardada.eliminada
+        } ;
+
+    }
+    async getcreadasnt(){
+        const asignaturas = await this.asignaturaCrepository.find({where : {creada: false  }}); // Fetch all asignaturas from the database
+        return asignaturas.map((a) => ({
+        id_asignatura: a.id,
+        
+        nivel: a.nivel,
+        nombre: a.nombre,
+        creada: a.creada,
+        eliminado: a.eliminada,})); // Fetch all asignaturas from the database
     }
  
     
