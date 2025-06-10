@@ -16,12 +16,32 @@ async crearProfesor(dto: ProfesorDto): Promise<Profesor> {
     return await this.profesorRepository.save(nuevoProfesor);
 }   
 
+async crearProfesorProd(dto: ProfesorDto) {
+    const eliminado = false; // Default value for eliminada
+    const nuevoProfesor = this.profesorRepository.create({
+        nombre: dto.nombre, Eliminado: eliminado, creado: true,
+    });
+    return await this.profesorRepository.save(nuevoProfesor);
+}
+
+
 async obtenerProfesores() {
-    const profesores = await this.profesorRepository.find();
+    const profesores = await this.profesorRepository.find({where: { Eliminado: false, creado: false }});
 
 
     return profesores.map((p) => ({
         id_profesor: p.id,
         nombre: p.nombre,
     }))
-}}
+}
+async obtenerProfesoresCreado() {
+    const profesores = await this.profesorRepository.find({ where: { Eliminado: false, creado: true } });
+    return profesores.map((p) => ({
+        id_profesor: p.id,
+        nombre: p.nombre,
+        creado: p.creado,
+    }));
+}
+
+}
+

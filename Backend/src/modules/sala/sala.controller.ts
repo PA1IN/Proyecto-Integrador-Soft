@@ -14,10 +14,18 @@ export class SalaController {
     crearSala(@Body() dto: crearSalaDto) { // Replace 'any' with the actual DTO type
         return this.salaService.crearSala(dto); // Call the service method to create a room
     }
+    @Post('prod')
+    crearSalaprod(@Body() dto: crearSalaDto) { // Replace 'any' with the actual DTO type
+        return this.salaService.crearSalaprod(dto); // Call the service method to create a room
+    }
 
     @Get()
     obtenerSalas() {
         return this.salaService.obtenerSalas(); // Call the service method to get all rooms
+    }
+    @Get('creadas')
+    salascreadas() {
+        return this.salaService.salascreadas(); // Call the service method to get all created rooms
     }
 
 
