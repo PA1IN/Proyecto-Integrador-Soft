@@ -262,6 +262,7 @@ async analizarErrores({ caledarioId, pruebas }:  CheckErroresDto) {
     pruebas: calendario.relaciones.map(rpc => {
       const prueba = rpc.prueba;
 
+
       return {
         id_asignatura: prueba.asignatura?.id ?? null,
         nombre_asignatura: prueba.asignatura?.nombre ?? null,
@@ -271,7 +272,8 @@ async analizarErrores({ caledarioId, pruebas }:  CheckErroresDto) {
         id_sala: prueba.sala?.id ?? null,
         profesor_error: prueba.profesorError,
         eliminado: prueba.eliminado,
-        dia: prueba.dia
+        dia: prueba.dia,
+        celdaid: prueba.celdaid,
       };
     }),
   };
