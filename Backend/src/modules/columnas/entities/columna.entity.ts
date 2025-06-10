@@ -7,7 +7,7 @@ export class Columna {
 id: number;
 @Column()
 dia:number;
-@Column()
+@Column({nullable: true})
 fecha: string;
 @ManyToOne(() => Calendario, calendario => calendario.columnas, { onDelete: 'CASCADE' })
 calendario: Calendario;
