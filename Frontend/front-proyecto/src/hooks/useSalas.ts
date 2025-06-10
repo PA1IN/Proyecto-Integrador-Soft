@@ -18,6 +18,16 @@ export function useSalas() {    //pa listar las salas.
     });
 }
 
+export function useSalasCreadas() {    //pa listar las salas creadas.
+    return useQuery({
+        queryKey: ['salasCreadas'],
+        queryFn: async () => {
+            const respuesta = await api.get('/sala/creada');
+            return respuesta.data;
+        }
+    });
+}
+
 export function useCrearSala(){ 
     const clienteQuery = useQueryClient();
     return useMutation({
@@ -26,7 +36,7 @@ export function useCrearSala(){
             return respuesta.data
         },
         onSuccess: () => {
-            clienteQuery.invalidateQueries({queryKey:['sala']});
+            clienteQuery.invalidateQueries({queryKey:['salasCreadas']});
         }                          
     });
 }
@@ -38,7 +48,7 @@ export function useEliminarSala(){   //pa "eliminar" una sala
             await api.patch(`/sala/${id}`)
         },
         onSuccess: () => {
-            clienteQuery.invalidateQueries({queryKey:['sala']});
+            clienteQuery.invalidateQueries({queryKey:['salasCreadas']});
         }                        
     });
 
