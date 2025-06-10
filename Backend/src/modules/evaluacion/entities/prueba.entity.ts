@@ -35,5 +35,6 @@ export class Prueba {
   
   @ManyToOne(() => Asignatura, { nullable: true })
   asignatura: Asignatura;
-
+  @Column({ default: 'prodiccion ignorar esta prueba' })
+  celdaid: string;
 }
