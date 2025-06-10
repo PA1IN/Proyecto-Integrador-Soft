@@ -64,7 +64,7 @@ export const Calendar = () => {
 
     const [fechas, setFechas] = useState<{dia:number,fecha:Date| null}[]>(
       [...Array(7)].map((_,i)=>({dia: i + 1, fecha: null }))); 
-    const [esperarCarga,setEsperarCarga] = useState(false);
+    
     const [mostrarClmnaextra,setMostrarClmnextra ] = useState(false);
     const [calendario, setCalendario] = useState<{[key:string]:Pruebahorario[]}>({});
     const [dragid, setDragid] = useState<number | null>(null);
@@ -149,7 +149,7 @@ export const Calendar = () => {
 
         setNombrecalendario(calendarioData.nombre ?? '');
       }
-    },[calendarioData, id_actual]);
+    },[calendarioData]);
 
     useEffect(() => {
         if(!profesores || !salas)
@@ -197,10 +197,10 @@ export const Calendar = () => {
           }
         });
 
-      }, [calendario, calcularErrores, profesores, salas]);
+      }, [calendario]);
 
 
-    /*useEffect(() => {
+    useEffect(() => {
       console.log('columnas del backend', columnas);
 
       if(columnas) {
@@ -212,31 +212,9 @@ export const Calendar = () => {
           prev.map((fechaActual) => columnasCargadas.find((c) => c.dia === fechaActual.dia)|| fechaActual)
         );
       }
-    }, [columnas]);*/
-
-    useEffect(() => {
-      console.log('columnas del backend', columnas);
-      if (columnas) {
-        const columnasCargadas = columnas?.columnas.map((col) => ({
-          dia: col.dia,
-          fecha: col.fecha ? new Date(col.fecha) : null,
-        }));
-
-        setFechas((prevFechas) => {
-          const nuevasFechas = prevFechas.map((fechaActual) =>
-            columnasCargadas.find((c) => c.dia === fechaActual.dia) || fechaActual
-          );
-
-          const sonIguales = prevFechas.every((f, idx) =>
-            f.fecha?.toISOString() === nuevasFechas[idx].fecha?.toISOString()
-          );
-
-          return sonIguales ? prevFechas : nuevasFechas;
-        });
-      }
     }, [columnas]);
 
-    /*useEffect(() => {
+    useEffect(() => {
       const cargaId = localStorage.getItem("carga_calendario_id");
 
       if(nuevoCalendario && !calendarioCargadoLocalStorage)
@@ -272,7 +250,7 @@ export const Calendar = () => {
         return;
       }
 
-      if(!id_actual && !nuevoCalendario)
+      if(!id_actual && !nuevoCalendario && !calendarioCargadoLocalStorage )
       {
         const calendarioGuardado = localStorage.getItem("calendario"); // pa no perder los datos del calendario cuando se recargue la pag
         if(calendarioGuardado) {
@@ -319,7 +297,7 @@ export const Calendar = () => {
 
         }
       }
-    },[calendarioData,calcularErrores, calendarioCargadoLocalStorage, nuevoCalendario, id_actual, calendario]);*/
+    },[calendarioData,calcularErrores, calendarioCargadoLocalStorage]);
 
     const cambiofechas = (fecha: Date, dia:number) => {
       const fechasnuevas = fechas.map((f) => {
@@ -427,6 +405,8 @@ export const Calendar = () => {
         celdaid: datosForm.celdaid
       };
 
+      //console.log(prueba);
+
       setCalendario((prev) => {
           const nuevo = { ...prev};
           if (!nuevo[datosForm.celdaid])
@@ -461,18 +441,35 @@ export const Calendar = () => {
             
             console.log(prueba); 
           }*/
+
+          console.log(" estado actual del calendario");
+          Object.entries(nuevo).forEach(([celdaid, pruebasCelda]) => {
+              console.log(`Celda: ${celdaid}`);
+              pruebasCelda.forEach((prueba, idx) => {
+                  console.log(`  Prueba #${idx + 1}:`, {
+                      id_asignatura: prueba.id_asignatura,
+                      id_profesor: prueba.id_profesor,
+                      nombre: prueba.nombre,
+                      nivel: prueba.nivel,
+                      profesor: prueba.profesor,
+                      id_sala: prueba.id_sala,
+                      sala: prueba.sala,
+                      horario: prueba.horario,
+                      profesor_error: prueba.profesor_error,
+                      dia: prueba.dia,
+                      eliminado: prueba.eliminado
+                  });
+              });
+          });
+          console.log("...");
+
           if(!id_actual)
           {
             localStorage.setItem("calendario", JSON.stringify(nuevo));
-            setIdCalendarioLocalStorage(false);
           }
 
-          setEsperarCarga(true);
-          setTimeout(()=> setEsperarCarga(false),200);
           return nuevo;
       });
-      console.log("pruebas cargadas: ",prueba)
-
       
       //setDragnrc(null);
 
@@ -481,8 +478,6 @@ export const Calendar = () => {
       setRollBackCelda(celdaOrigen);
       setFormvisible(false);
       setDatosform(null);
-      setEsperarCarga(true);
-      setTimeout(()=> setEsperarCarga(false),200);
 
     };
 
@@ -520,29 +515,37 @@ export const Calendar = () => {
 
             return nuevo;
         });
-
     };
 
     const confirmar = () => {
       if(!user || !nombreCalendario.trim()) {
         return;
       }
+      console.log("columnas actuales:", columnas);
 
       const idColumn = (celdaid: string) => {
         const diaCelda = parseInt(celdaid.split("-")[0]);
-        const columnaError = columnas?.columnas ?? [];
-        const columna = columnaError.find(col => col.dia === diaCelda);
-        return columna ? columna.id_columna : null;
+        if(columnas?.columnas)
+        {
+          const columnaError = columnas?.columnas ?? [];
+          const columna = columnaError.find(col => col.dia === diaCelda);
+          return columna ? columna.id_columna : null;
+        } else {
+          const columnalocal = columnasEnviadas.find(c => c.dia === diaCelda);
+          if(columnalocal)
+          {
+            return diaCelda;
+          }
+          return null;
+        }
+        
       }
 
       const fecha_creacion = new Date().toISOString().split('T')[0];
-
-      //const calendarioGuardado = localStorage.getItem("calendario");
-      //const calendarioFinal = calendarioGuardado ? (JSON.parse(calendarioGuardado) as {[key:string]: Pruebahorario[]}) : calendario;
-      const calendarioFinal = calendario
-
-      const pruebas = Object.entries(calendarioFinal).flatMap(([celdaid, pruebasCelda]) => 
+      console.log(calendario);
+      const pruebas = Object.entries(calendario).flatMap(([celdaid, pruebasCelda]) => 
         pruebasCelda.map(prueba => {
+          console.log(prueba.nombre);
           const idColumna = idColumn(celdaid);
           if(idColumna === null)
           {
@@ -557,7 +560,8 @@ export const Calendar = () => {
             id_sala: prueba.id_sala,
             dia: prueba.dia,
             profesor_error: prueba.profesor_error,
-            eliminado: prueba.eliminado ?? false
+            eliminado: prueba.eliminado ?? false,
+            celdaid
           };
         })).filter((p): p is NonNullable<typeof p> => p !== null); //vola negra pa que ts no lo tome nulo y de error al compilar
       
@@ -791,7 +795,7 @@ export const Calendar = () => {
 
       <div className="confirmar-section">
           <input type = "text" placeholder="Nombre del calendario" value={nombreCalendario} onChange={(e)=> setNombrecalendario(e.target.value)} />
-          <button onClick={confirmar} className="confirmar-boton" disabled={esperarCarga}>Confirmar calendario</button>
+          <button onClick={confirmar} className="confirmar-boton">Confirmar calendario</button>
       </div>
     </div>
    )

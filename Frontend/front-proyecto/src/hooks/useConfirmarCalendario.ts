@@ -10,10 +10,8 @@ interface Confirmarcalendario {
     nombre: string;
     id_usuario: number;
     fecha_creacion: string;
-    pruebas: {id_asignatura: number; id_columna: number; horario: string; id_profesor: number; id_sala: number; profesor_error: boolean; eliminado: boolean}[];
+    pruebas: {id_asignatura: number; id_columna: number; horario: string; id_profesor: number; id_sala: number; profesor_error: boolean; eliminado: boolean; celdaid: string}[];
     columnas: {dia: number; fecha: string | null}[];
-   //columnas: [dia: number, fecha: string | ''][];
-
 }
 
 export function useConfirmarCalendario() {
@@ -27,8 +25,8 @@ export function useConfirmarCalendario() {
                 fecha_creacion,
             });
             
+            //const id_calendario = respuesta.data.id;
             const id_calendario = respuesta.data;
-            console.log(id_calendario);
 
             /*for(const columna of columnas){
                 await api.post('/columnas', {
@@ -38,13 +36,13 @@ export function useConfirmarCalendario() {
                 });
             }*/
 
-            
             await api.post('/columnas', {
-                calendarioId: id_calendario,
-                columnas
+                    calendarioId: id_calendario,
+                    columnas
             });
-            
-            console.log(pruebas);
+
+
+
             
             /*for (const prueba of pruebas) {
                 await api.post('/evaluacion', {
@@ -55,16 +53,17 @@ export function useConfirmarCalendario() {
                     id_sala: prueba.id_sala,
                     profesor_error: prueba.profesor_error,
                     eliminado: prueba.eliminado ?? false,
-                    id_calendario
+                    calendarioId: id_calendario
                 });
             }*/
-          
+
+
             await api.post('/evaluacion', {
-                calendarioId: id_calendario,
-                pruebas
-            });
-            
-            console.log(respuesta.data)
+                    pruebas,
+                    calendarioId: id_calendario
+                });
+
+
             return {id: id_calendario};
             
         },
