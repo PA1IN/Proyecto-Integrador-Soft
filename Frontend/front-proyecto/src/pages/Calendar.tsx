@@ -64,7 +64,7 @@ export const Calendar = () => {
 
     const [fechas, setFechas] = useState<{dia:number,fecha:Date| null}[]>(
       [...Array(7)].map((_,i)=>({dia: i + 1, fecha: null }))); 
-    
+    const [esperarCarga,setEsperarCarga] = useState(false);
     const [mostrarClmnaextra,setMostrarClmnextra ] = useState(false);
     const [calendario, setCalendario] = useState<{[key:string]:Pruebahorario[]}>({});
     const [dragid, setDragid] = useState<number | null>(null);
@@ -95,7 +95,7 @@ export const Calendar = () => {
     const [calendarioCargadoLocalStorage, setIdCalendarioLocalStorage] = useState(false);
     const columnasEnviadas = fechas.map(f => ({
       dia: f.dia,
-      fecha: f.fecha ? f.fecha.toISOString().split('T')[0]:null
+      fecha: f.fecha ? f.fecha.toISOString() : null
     }));
 
 
@@ -149,7 +149,7 @@ export const Calendar = () => {
 
         setNombrecalendario(calendarioData.nombre ?? '');
       }
-    },[calendarioData]);
+    },[calendarioData, id_actual]);
 
     useEffect(() => {
         if(!profesores || !salas)
@@ -197,22 +197,46 @@ export const Calendar = () => {
           }
         });
 
-      }, [calendario]);
+      }, [calendario, calcularErrores, profesores, salas]);
 
 
-    useEffect(() => {
+    /*useEffect(() => {
+      console.log('columnas del backend', columnas);
+
       if(columnas) {
-        const columnasCargadas = columnas.map((col) => ({   // pa cargar el "dia"(id de la columna) cuando cambian las columnas
+        const columnasCargadas = columnas?.columnas.map((col) => ({   // pa cargar el "dia"(id de la columna) cuando cambian las columnas
           dia: col.dia,
-          fecha: new Date(col.fecha),
+          fecha: col.fecha? new Date(col.fecha) : null,
         }));
         setFechas((prev) => 
           prev.map((fechaActual) => columnasCargadas.find((c) => c.dia === fechaActual.dia)|| fechaActual)
         );
       }
-    }, [columnas]);
+    }, [columnas]);*/
 
     useEffect(() => {
+      console.log('columnas del backend', columnas);
+      if (columnas) {
+        const columnasCargadas = columnas?.columnas.map((col) => ({
+          dia: col.dia,
+          fecha: col.fecha ? new Date(col.fecha) : null,
+        }));
+
+        setFechas((prevFechas) => {
+          const nuevasFechas = prevFechas.map((fechaActual) =>
+            columnasCargadas.find((c) => c.dia === fechaActual.dia) || fechaActual
+          );
+
+          const sonIguales = prevFechas.every((f, idx) =>
+            f.fecha?.toISOString() === nuevasFechas[idx].fecha?.toISOString()
+          );
+
+          return sonIguales ? prevFechas : nuevasFechas;
+        });
+      }
+    }, [columnas]);
+
+    /*useEffect(() => {
       const cargaId = localStorage.getItem("carga_calendario_id");
 
       if(nuevoCalendario && !calendarioCargadoLocalStorage)
@@ -248,7 +272,7 @@ export const Calendar = () => {
         return;
       }
 
-      if(!id_actual && !nuevoCalendario && !calendarioCargadoLocalStorage )
+      if(!id_actual && !nuevoCalendario)
       {
         const calendarioGuardado = localStorage.getItem("calendario"); // pa no perder los datos del calendario cuando se recargue la pag
         if(calendarioGuardado) {
@@ -295,7 +319,7 @@ export const Calendar = () => {
 
         }
       }
-    },[calendarioData,calcularErrores, calendarioCargadoLocalStorage]);
+    },[calendarioData,calcularErrores, calendarioCargadoLocalStorage, nuevoCalendario, id_actual, calendario]);*/
 
     const cambiofechas = (fecha: Date, dia:number) => {
       const fechasnuevas = fechas.map((f) => {
@@ -359,7 +383,7 @@ export const Calendar = () => {
         }
 
         const asignatura = subjects.find((subject:any) => subject.id_asignatura === dragid);
-        console.log(subjects);
+        //console.log(subjects);
         if (!asignatura)
         {
             return;
@@ -440,9 +464,14 @@ export const Calendar = () => {
           if(!id_actual)
           {
             localStorage.setItem("calendario", JSON.stringify(nuevo));
+            setIdCalendarioLocalStorage(false);
           }
+
+          setEsperarCarga(true);
+          setTimeout(()=> setEsperarCarga(false),200);
           return nuevo;
       });
+      console.log("pruebas cargadas: ",prueba)
 
       
       //setDragnrc(null);
@@ -452,6 +481,8 @@ export const Calendar = () => {
       setRollBackCelda(celdaOrigen);
       setFormvisible(false);
       setDatosform(null);
+      setEsperarCarga(true);
+      setTimeout(()=> setEsperarCarga(false),200);
 
     };
 
@@ -489,6 +520,7 @@ export const Calendar = () => {
 
             return nuevo;
         });
+
     };
 
     const confirmar = () => {
@@ -498,13 +530,18 @@ export const Calendar = () => {
 
       const idColumn = (celdaid: string) => {
         const diaCelda = parseInt(celdaid.split("-")[0]);
-        const columna = columnas?.find(col => col.dia === diaCelda);
+        const columnaError = columnas?.columnas ?? [];
+        const columna = columnaError.find(col => col.dia === diaCelda);
         return columna ? columna.id_columna : null;
       }
 
       const fecha_creacion = new Date().toISOString().split('T')[0];
 
-      const pruebas = Object.entries(calendario).flatMap(([celdaid, pruebasCelda]) => 
+      //const calendarioGuardado = localStorage.getItem("calendario");
+      //const calendarioFinal = calendarioGuardado ? (JSON.parse(calendarioGuardado) as {[key:string]: Pruebahorario[]}) : calendario;
+      const calendarioFinal = calendario
+
+      const pruebas = Object.entries(calendarioFinal).flatMap(([celdaid, pruebasCelda]) => 
         pruebasCelda.map(prueba => {
           const idColumna = idColumn(celdaid);
           if(idColumna === null)
@@ -523,7 +560,8 @@ export const Calendar = () => {
             eliminado: prueba.eliminado ?? false
           };
         })).filter((p): p is NonNullable<typeof p> => p !== null); //vola negra pa que ts no lo tome nulo y de error al compilar
-
+      
+      console.log("Pruebas a enviar:", pruebas);
       confirmarCalendario.mutate({
         nombre: nombreCalendario,
         id_usuario: user.rut,
@@ -532,10 +570,12 @@ export const Calendar = () => {
         columnas: columnasEnviadas
       }, {
         onSuccess:(data)=> {
+          window.open(`/Calendar/${data.id}`,'_blank');
+
           if(data?.id)
           {
             
-
+            
             setCalendario({});
             setNombrecalendario('');
             setFechas([...Array(7)].map((_,i)=>({dia: i + 1, fecha: null})));
@@ -552,9 +592,10 @@ export const Calendar = () => {
             setIdCalendarioLocalStorage(false);
             setIdCalendarioLocal(null);
             setCalendario({});
-
+            
             setTimeout(()=>{
               navigate('/Calendar', {state:{ nuevoCalendario: true}});
+              
             }, 100);
 
             
@@ -595,7 +636,7 @@ export const Calendar = () => {
       return <div> Cargando fechas... </div>
     }
 
-    console.log(JSON.stringify(calendario,null,1));
+    //console.log(JSON.stringify(calendario,null,1));
 
 
     
@@ -750,7 +791,7 @@ export const Calendar = () => {
 
       <div className="confirmar-section">
           <input type = "text" placeholder="Nombre del calendario" value={nombreCalendario} onChange={(e)=> setNombrecalendario(e.target.value)} />
-          <button onClick={confirmar} className="confirmar-boton">Confirmar calendario</button>
+          <button onClick={confirmar} className="confirmar-boton" disabled={esperarCarga}>Confirmar calendario</button>
       </div>
     </div>
    )
