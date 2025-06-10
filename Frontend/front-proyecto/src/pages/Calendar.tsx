@@ -108,7 +108,7 @@ export const Calendar = () => {
     }, [id_actual]);*/
 
 
-    useEffect(() => {
+    /*useEffect(() => {
       if(calendarioData && calendarioData.pruebas && calendarioData.columnas) {
         const calendarioBack : { [key: string]: Pruebahorario[]} = {};
 
@@ -118,7 +118,13 @@ export const Calendar = () => {
             continue;
           }
 
-          const celdaid = `${columna.dia}-${bloquePrueba(prueba.horario)}-slot${slotPrueba(prueba.horario)}`;
+          const celdaid = prueba.celdaid;
+
+          if(!celdaid)
+          {
+            console.warn("prueba sin celdaid: ", prueba)
+            continue;
+          }
 
           if(!calendarioBack[celdaid]){
             calendarioBack[celdaid] = [];
@@ -138,7 +144,16 @@ export const Calendar = () => {
             dia: prueba.dia,
             eliminado: prueba.eliminado
           });
+
+          console.log("Insertando prueba en celda:", celdaid, {
+          ...prueba,
+          profesor: profesores?.find((p:any) => p.id_profesor === prueba.id_profesor)?.nombre ?? '',
+          sala: salas?.find((s:any) => s.id_sala === prueba.id_sala)?.nombre ?? '',
+        });
         }
+
+        
+
 
         setCalendario(calendarioBack);
         if(id_actual !== 0)
@@ -149,7 +164,64 @@ export const Calendar = () => {
 
         setNombrecalendario(calendarioData.nombre ?? '');
       }
-    },[calendarioData]);
+    },[calendarioData]);*/
+
+    useEffect(() => {
+      if (!calendarioData || !calendarioData.pruebas || !calendarioData.columnas) {
+        return;
+      }
+
+      if (!profesores || !salas) {
+        return;
+      }
+
+      const calendarioBack : { [key: string]: Pruebahorario[]} = {};
+
+      for (const prueba of calendarioData.pruebas) {
+        const celdaid = prueba.celdaid;
+
+        if (!celdaid) {
+          console.warn("prueba sin celdaid: ", prueba);
+          continue;
+        }
+
+        if (!calendarioBack[celdaid]) {
+          calendarioBack[celdaid] = [];
+        }
+
+        console.log("insertando prueba en celda:", celdaid, {
+          ...prueba,
+          profesor: profesores?.find((p:any) => p.id_profesor === prueba.id_profesor)?.nombre ?? '',
+          sala: salas?.find((s:any) => s.id_sala === prueba.id_sala)?.nombre ?? '',
+        });
+
+        calendarioBack[celdaid].push({
+          ...prueba,
+          id_profesor: prueba.id_profesor,
+          id_sala: prueba.id_sala,
+          profesor: profesores?.find((p:any) => p.id_profesor === prueba.id_profesor)?.nombre ?? '',
+          sala: salas?.find((s:any) => s.id_sala === prueba.id_sala)?.nombre ?? '',
+          celdaid,
+          horario: prueba.horario,
+          nivel: prueba.nivel,
+          nombre: prueba.nombre,
+          profesor_error: prueba.profesor_error,
+          dia: prueba.dia,
+          eliminado: prueba.eliminado
+        });
+      }
+
+      setCalendario(calendarioBack);
+
+      if(id_actual !== 0) {
+        localStorage.setItem("carga_calendario_id", id_actual.toString());
+        localStorage.setItem(`calendario_${id_actual}`, JSON.stringify(calendarioBack));
+      }
+
+      setNombrecalendario(calendarioData.nombre ?? '');
+
+    }, [calendarioData, profesores, salas, id_actual]);
+
 
     useEffect(() => {
         if(!profesores || !salas)
@@ -555,6 +627,8 @@ export const Calendar = () => {
           return {
             id_asignatura: prueba.id_asignatura,
             id_columna: idColumna,
+            profesor: prueba.profesor,
+            sala: prueba.sala,
             horario: prueba.horario,
             id_profesor: prueba.id_profesor,
             id_sala: prueba.id_sala,

@@ -10,7 +10,7 @@ interface Confirmarcalendario {
     nombre: string;
     id_usuario: number;
     fecha_creacion: string;
-    pruebas: {id_asignatura: number; id_columna: number; horario: string; id_profesor: number; id_sala: number; profesor_error: boolean; eliminado: boolean; celdaid: string}[];
+    pruebas: {id_asignatura: number; id_columna: number; horario: string; id_profesor: number; profesor: string | undefined; sala: string | undefined; id_sala: number; profesor_error: boolean; eliminado: boolean; celdaid: string}[];
     columnas: {dia: number; fecha: string | null}[];
 }
 
