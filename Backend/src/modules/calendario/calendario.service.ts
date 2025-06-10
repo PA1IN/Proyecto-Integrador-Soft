@@ -78,10 +78,15 @@ export class CalendarioService {
     for (let j = i + 1; j < pruebas.length; j++) {
       const a = pruebas[i];
       const b = pruebas[j];
+      console.log('Comparando pruebas:', a.celdaid, b.celdaid);
+      const idcela = a.celdaid.split('-')[0];
+      const idcelb = b.celdaid.split('-')[0];
+      const idcel2 = a.celdaid.split('-')[1];
+      const idcelb2 = b.celdaid.split('-')[1];
       
 
       const mismaHora = a.horario === b.horario;
-      const mismoDia = a.celdaid === b.celdaid;
+      const mismoDia = idcela === idcelb
 
       if (mismaHora && mismoDia) {
         const celdaid = `${a.celdaid}-${a.horario}`;
@@ -139,6 +144,7 @@ private async  contarErroresModerados(pruebas: PruebaDto[]) {
     for (let j = i + 1; j < pruebas.length; j++) {
       const a = pruebas[i];
       const b = pruebas[j];
+      
 
       
       const mismoDia = a.id_columna === b.id_columna;

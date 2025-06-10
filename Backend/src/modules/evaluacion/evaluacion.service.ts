@@ -70,6 +70,7 @@ export class EvaluacionService {
         prueba.dia = dto.dia;
         prueba.profesorError = dto.profesor_error || false;
         prueba.eliminado = dto.eliminado || false;
+        prueba.celdaid = dto.celdaid || 'prodiccion ignorar esta prueba'; // Default value if not provided
         
         return await this.pruebaRepository.save(prueba);
     }
