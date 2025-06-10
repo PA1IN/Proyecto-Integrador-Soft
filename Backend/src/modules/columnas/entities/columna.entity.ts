@@ -8,7 +8,7 @@ id: number;
 @Column()
 dia:number;
 @Column()
-fecha: Date;
+fecha: string;
 @ManyToOne(() => Calendario, calendario => calendario.columnas, { onDelete: 'CASCADE' })
 calendario: Calendario;
 
