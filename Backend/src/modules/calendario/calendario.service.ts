@@ -89,7 +89,7 @@ export class CalendarioService {
       const mismoDia = idcela === idcelb
 
       if (mismaHora && mismoDia) {
-        const celdaid = `${a.celdaid}-${a.horario}`;
+        const celdaid = `${idcela}-${idcel2}-${a.horario}`;
         if (a.id_sala === b.id_sala){
           errores++;
           detalles.push({
@@ -118,7 +118,7 @@ export class CalendarioService {
         
       }
       if(mismoDia){
-        const celdaid = `${a.celdaid}-${a.horario}`;
+        const celdaid = `${idcela}-${idcel2}-${a.horario}`;
         const nivelA = await this.nivel(a);
       const nivelB = await this.nivel(b);
       if (nivelA === nivelB) {errores++;
@@ -144,10 +144,14 @@ private async  contarErroresModerados(pruebas: PruebaDto[]) {
     for (let j = i + 1; j < pruebas.length; j++) {
       const a = pruebas[i];
       const b = pruebas[j];
-      
+      const idcela = a.celdaid.split('-')[0];
+      const idcelb = b.celdaid.split('-')[0];
+      const idcel2 = a.celdaid.split('-')[1];
+      const idcelb2 = b.celdaid.split('-')[1];
+      const celdaid = `${idcela}-${idcel2}-${a.horario}`;
 
       
-      const mismoDia = a.id_columna === b.id_columna;
+      const mismoDia = idcela === idcelb
 
       if (mismoDia) {
         const nivelA = await this.nivel(a);
@@ -156,7 +160,7 @@ private async  contarErroresModerados(pruebas: PruebaDto[]) {
         if (distancia === 1) {
           detalles.push({
             id_asignatura: a.id_asignatura,
-            celdaid:`${a.celdaid}-${a.horario}`,
+            celdaid:`${idcela}-${idcel2}-${a.horario}`,
             tipo: 'moderado',
             mensaje: 'Asignaturas de niveles consecutivos en el mismo dia.',
           });
