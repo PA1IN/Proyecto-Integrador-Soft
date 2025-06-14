@@ -71,8 +71,8 @@ export const Calendar = () => {
     const [formVisible, setFormvisible] = useState(false);
     const [datosForm,setDatosform] = useState<{celdaid:string, asignatura: any} | null>(null);
     const [nombreCalendario, setNombrecalendario] = useState("");
-    const [profesorForm, setProfesorform] = useState<number | null>(null);
-    const [salaForm, setSalaform] = useState<number | null>(null);
+    const [profesorForm, setProfesorform] = useState<number[]>([]);
+    const [salaForm, setSalaform] = useState<number[]>([]);
     const [horario, setHorario] = useState("");
     const [profesorAsig,setProfesorasig] = useState(true);
     const [semestreSeleccionado, setSemestreseleccionado] = useState(0);
@@ -197,10 +197,10 @@ export const Calendar = () => {
 
         calendarioBack[celdaid].push({
           ...prueba,
-          id_profesor: prueba.id_profesor,
-          id_sala: prueba.id_sala,
-          profesor: profesores?.find((p:any) => p.id_profesor === prueba.id_profesor)?.nombre ?? '',
-          sala: salas?.find((s:any) => s.id_sala === prueba.id_sala)?.nombre ?? '',
+          id_profesores: Array.isArray(prueba.id_profesores) ? prueba.id_profesores : [],
+          id_salas: Array.isArray(prueba.id_salas) ? prueba.id_salas : [],
+          profesores: Array.isArray(prueba.profesores) ? prueba.profesores: [],
+          salas: Array.isArray(prueba.salas) ? prueba.salas : [],
           celdaid,
           horario: prueba.horario,
           nivel: prueba.nivel,
@@ -238,10 +238,10 @@ export const Calendar = () => {
           pruebasCelda.map(prueba => ({
             id_asignatura: prueba.id_asignatura,
             asignatura: prueba.nombre,
-            id_profesor: prueba.id_profesor,
-            profesor: profesores?.find((p:any) => p.id_profesor === prueba.id_profesor)?.nombre ?? '',
-            id_sala: prueba.id_sala,
-            sala: salas?.find((s:any) => s.id_sala === prueba.id_sala)?.nombre ?? '',
+            id_profesores: prueba.id_profesores,
+            profesores: prueba.profesores,
+            id_salas: prueba.id_salas,
+            salas: prueba.salas,
             horario: prueba.horario,
             nivel: prueba.nivel,
             nombre: prueba.nombre,
@@ -336,10 +336,10 @@ export const Calendar = () => {
 
             return pruebasArray.map((prueba) => ({
               id_asignatura: prueba.id_asignatura,
-              id_profesor: prueba.id_profesor,
-              id_sala: prueba.id_sala,
-              profesor: prueba.profesor,
-              sala: prueba.sala,
+              id_profesores: prueba.id_profesores,
+              id_salas: prueba.id_salas,
+              profesores: prueba.profesores,
+              salas: prueba.salas,
               horario: prueba.horario,
               nivel: prueba.nivel,
               nombre: prueba.nombre,
@@ -417,12 +417,12 @@ export const Calendar = () => {
           });
 
           setDatosform({ celdaid, asignatura: dragPruebaHorario});
-          setProfesorform(dragPruebaHorario.id_profesor ?? null);
+          setProfesorform(dragPruebaHorario.id_profesores ?? []);
           setFormvisible(true);
           setDragPruebaHorario(null);
           setCeldaOrigen(null);
           setHorario(dragPruebaHorario.horario ?? "");
-          setSalaform(dragPruebaHorario.id_sala ?? null);
+          setSalaform(dragPruebaHorario.id_salas ?? []);
           setProfesorasig(!dragPruebaHorario.profesor_error);
           return;
         }
@@ -444,9 +444,9 @@ export const Calendar = () => {
         setFormvisible(true);
         setDragid(null);
         setHorario("");
-        setSalaform(null);
+        setSalaform([]);
         setProfesorasig(true);
-        setProfesorform(null);
+        setProfesorform([]);
 
     };
     
@@ -465,12 +465,12 @@ export const Calendar = () => {
 
       const prueba = {
         id_asignatura: Number(datosForm.asignatura.id_asignatura),
-        id_profesor: Number(profesorForm),
+        id_profesores: profesorForm,
         nombre: String(datosForm.asignatura.nombre),
         nivel: Number(datosForm.asignatura.nivel),
-        profesor: profesores?.find((p:any) => p.id_profesor === profesorForm)?.nombre ?? '',
-        id_sala: Number(salaForm),
-        sala: salas?.find((s:any) => s.id_sala === salaForm)?.nombre ?? '',
+        profesores: Array.from(new Set(profesorForm.map(id => profesores?.find((p:any) => p.id_profesor === id)?.nombre ?? ''))),
+        id_salas: salaForm,
+        salas: Array.from(new Set(salaForm.map(id => salas?.find((s:any) => s.id_sala === id)?.nombre ?? ''))),
         horario,
         profesor_error: !profesorAsig,
         dia: diaColumn(datosForm.celdaid),
@@ -521,12 +521,12 @@ export const Calendar = () => {
               pruebasCelda.forEach((prueba, idx) => {
                   console.log(`  Prueba #${idx + 1}:`, {
                       id_asignatura: prueba.id_asignatura,
-                      id_profesor: prueba.id_profesor,
+                      id_profesor: prueba.id_profesores,
                       nombre: prueba.nombre,
                       nivel: prueba.nivel,
-                      profesor: prueba.profesor,
-                      id_sala: prueba.id_sala,
-                      sala: prueba.sala,
+                      profesor: prueba.profesores,
+                      id_sala: prueba.id_salas,
+                      sala: prueba.salas,
                       horario: prueba.horario,
                       profesor_error: prueba.profesor_error,
                       dia: prueba.dia,
@@ -628,11 +628,11 @@ export const Calendar = () => {
           return {
             id_asignatura: prueba.id_asignatura,
             id_columna: idColumna,
-            profesor: prueba.profesor,
-            sala: prueba.sala,
+            profesores: prueba.profesores,
+            salas: prueba.salas,
             horario: prueba.horario,
-            id_profesor: prueba.id_profesor,
-            id_sala: prueba.id_sala,
+            id_profesores: prueba.id_profesores,
+            id_salas: prueba.id_salas,
             dia: prueba.dia,
             profesor_error: prueba.profesor_error,
             eliminado: prueba.eliminado ?? false,
@@ -742,15 +742,21 @@ export const Calendar = () => {
         <div className="modal-overlay">
           <div className="modal">
             <h3>Datos de la prueba</h3>
-            <select value={profesorForm !== null ? profesorForm: ''} onChange={(e) => setProfesorform(Number(e.target.value))}>
-              <option key="default" value="">Seleccione un docente para la evaluacion</option>
+            <select multiple value={profesorForm.map(String)} onChange={(e) =>{
+              const opcionesProfesor = Array.from(e.target.options).filter(opcion => opcion.selected).map(opcion => Number(opcion.value));
+              setProfesorform(opcionesProfesor);
+            }}>
+              <option key="default" value="">Seleccione uno o mas docentes para la evaluacion</option>
               {profesores?.map((p:any) => (
                 <option key={p.id_profesor} value={p.id_profesor}>{p.nombre}</option>
               ))}
             </select>
 
-            <select value={salaForm !== null ? salaForm: ''} onChange={(e)=> setSalaform(Number(e.target.value))}>
-              <option key="default" value="">Seleccione una sala para la evaluacion</option>
+            <select multiple value={salaForm.map(String)} onChange={(e)=> {
+              const opcionesSala = Array.from(e.target.options).filter(opcion => opcion.selected).map(opcion => Number(opcion.value));
+              setSalaform(opcionesSala);
+            }}>
+              <option disabled value="">Seleccione una o mas salas para la evaluacion</option>
               {salas?.filter((s:any) => s.id_sala !== undefined).map((s:any) => (
                 <option key={s.id_sala} value={s.id_sala}>{s.nombre}</option>
               ))}
@@ -787,8 +793,8 @@ export const Calendar = () => {
               }
               setFormvisible(false);
               setDatosform(null);
-              setProfesorform(null);
-              setSalaform(null);
+              setProfesorform([]);
+              setSalaform([]);
               setHorario("");
               setProfesorasig(true);
               setRollBackPrueba(null);
@@ -843,10 +849,10 @@ export const Calendar = () => {
                         {calendario[celdaid]?.map((asig, idx) => (
                           <div key={idx} className="bloque-asignatura asignatura-agendada" draggable onDragStart={() => dragAsignaturaAgendada(asig,celdaid)}>
                             <div><strong>Sem.:</strong> {asig.nivel}</div>
-                            <div><strong>Prof:</strong> {asig.profesor}</div>
+                            <div><strong>Prof:</strong> {Array.isArray(asig.profesores) ? asig.profesores.join(", "): asig.profesores}</div>
                             <div><strong>Asig:</strong> {asig.nombre}</div>
                             <div><strong>Horario:</strong> {asig.horario}</div>
-                            <div><strong>Sala:</strong> {asig.sala}</div>
+                            <div><strong>Sala:</strong> {Array.isArray(asig.salas) ? asig.salas.join(", "): asig.salas}</div>
                             <button
                               className="eliminar-boton"
                               onClick={() => eliminar(celdaid, asig.id_asignatura)}
