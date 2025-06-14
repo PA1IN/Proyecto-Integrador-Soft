@@ -69,6 +69,9 @@ export class CalendarioService {
       throw new Error('Prueba debe tener asignatura');
     
   }
+  private arraysIntersect(a: number[], b: number[]): boolean {
+    return a.some(val => b.includes(val));
+  }
 
   private async contarErroresGraves(pruebas: PruebaDto[]) {
   let errores = 0;
@@ -90,7 +93,8 @@ export class CalendarioService {
 
       if (mismaHora && mismoDia) {
         const celdaid = `${idcela}-${idcel2}-${a.horario}`;
-        if (a.id_sala === b.id_sala){
+
+        if (this.arraysIntersect(a.id_salas, b.id_salas)) {
           errores++;
           detalles.push({
             id_asignatura: a.id_asignatura,
@@ -98,13 +102,13 @@ export class CalendarioService {
             tipo: 'grave',
             mensaje: 'Conflicto de sala entre asignaturas en el mismo horario.',
           });
-        
-        } ;
+        }
 
 
 
 
-        if (a.id_profesor === b.id_profesor) {
+
+        if (this.arraysIntersect(a.id_profesores, b.id_profesores)) {
           errores++;
           detalles.push({
             id_asignatura: a.id_asignatura,
@@ -112,8 +116,6 @@ export class CalendarioService {
             tipo: 'grave',
             mensaje: 'Conflicto de profesor entre asignaturas en el mismo horario.',
           });
-
-
         }
         
       }
@@ -268,10 +270,11 @@ async analizarErrores({ caledarioId, pruebas }:  CheckErroresDto) {
         asignatura: prueba.asignatura?.nombre ?? null,
         nivel: prueba.asignatura?.nivel ?? null,
         horario: prueba.horario,
-        id_profesor: prueba.profesor?.id ?? null,
-        profesor: prueba.profesor?.nombre ?? null,
-        id_sala: prueba.sala?.id ?? null,
-        sala: prueba.sala?.nombre ?? null,
+
+        id_profesores: prueba.profesores?.map(p => p.id) ?? [],
+        profesores: prueba.profesores?.map(p => p.nombre) ?? [],
+        id_salas: prueba.salas?.map(s => s.id) ?? [],
+        salas: prueba.salas?.map(s => s.nombre) ?? [],
         profesor_error: prueba.profesorError,
         eliminado: prueba.eliminado,
         dia: prueba.dia,
