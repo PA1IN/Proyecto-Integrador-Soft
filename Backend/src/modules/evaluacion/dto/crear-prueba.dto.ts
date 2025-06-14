@@ -1,14 +1,22 @@
-import { IsBoolean, IsNumber, IsString } from "class-validator";
+import { ArrayNotEmpty, ArrayUnique, IsArray, IsBoolean, IsNumber, IsString } from "class-validator";
 
 export class PruebaDto{
     @IsNumber()
     id_asignatura: number;
     @IsNumber()
     id_columna: number;
-    @IsNumber()
-    id_profesor: number;
-    @IsNumber()
-    id_sala: number;
+    @IsArray()
+    @ArrayNotEmpty()
+    @ArrayUnique()
+    @IsNumber({}, { each: true }) // Valida que cada elemento sea un número
+    id_profesores: number[];
+
+    @IsArray()
+    @ArrayNotEmpty()
+    @ArrayUnique()
+    @IsNumber({}, { each: true })
+    id_salas: number[];
+    
     @IsString()
     horario: string;
     @IsNumber()

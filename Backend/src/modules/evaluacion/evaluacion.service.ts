@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Prueba } from './entities/prueba.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { RelacionPruebaCalendario } from './entities/relacion-prueba-calendario.entity';
 import { SalaDeClases } from '../sala/entities/sala.entity';
 import { Asignatura } from '../asignatura/entities/asignatura-creada.entity';
@@ -46,9 +46,6 @@ export class EvaluacionService {
     
     async createSinglePrueba(dto: PruebaDto) {
         const prueba = new Prueba();
-
-       
-
         if (dto.id_asignatura) {
     const asignaturaCreada = await this.asignaturaCreadaRepository.findOneBy({ id: dto.id_asignatura });
     if (!asignaturaCreada) throw new Error('Asignatura creada no encontrada');
@@ -56,16 +53,21 @@ export class EvaluacionService {
    
         } 
         
-        const sala = await this.salaDeClasesRepository.findOneBy({ id: dto.id_sala });
-        if (!sala) {
-            throw new Error('Sala not found');
+        const salas = await this.salaDeClasesRepository.find({
+        where: { id: In(dto.id_salas) }
+        });
+        if (salas.length !== dto.id_salas.length) {
+        throw new Error('Algunas salas no fueron encontradas');
         }
-        prueba.sala = sala;
-        const profesor = await this.profesorRepository.findOneBy({ id: dto.id_profesor });
-        if (!profesor) {
-            throw new Error('Profesor not found');
+        prueba.salas = salas;
+        const profesores = await this.profesorRepository.find({
+        where: { id: In(dto.id_profesores) }
+        });
+        if (profesores.length !== dto.id_profesores.length) {
+        throw new Error('Algunos profesores no fueron encontrados');
         }
-        prueba.profesor = profesor;
+         prueba.profesores = profesores;
+
         prueba.horario = dto.horario;
         prueba.dia = dto.dia;
         prueba.profesorError = dto.profesor_error || false;
