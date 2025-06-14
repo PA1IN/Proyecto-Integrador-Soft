@@ -5,13 +5,18 @@ import { Repository} from 'typeorm';
 import { CreateAsignaturaDto } from './dto/create-asignatura.dto';
 import { HorarioAsignaturaDto } from './dto/horario-asignatura.dto';
 import { Asignatura } from './entities/asignatura-creada.entity';
+import { Carrera } from '../carrera/entities/carrera.entity';
+import { CarreraAsignatura } from '../carrera/entities/Carrera-Asignatura.entity';
 
 @Injectable()
 export class AsignaturaService {
     constructor(
         @InjectRepository(Asignatura)
         private readonly asignaturaCrepository: Repository<Asignatura>, // Inject your repository here
-        
+        @InjectRepository(Carrera)
+        private readonly carreraRepository: Repository<Carrera>, // Inject Carrera repository if needed
+        @InjectRepository(CarreraAsignatura)
+        private readonly carreraAsignaturaRepository: Repository<CarreraAsignatura>, // Inject Carrera-Asignatura repository if needed
     ) {}
 
     async getAsignaturasc(){
@@ -38,6 +43,23 @@ export class AsignaturaService {
 
         });
          const asignaturaguardada = await this.asignaturaCrepository.save(asignatura)
+        
+         const carrera = await this.carreraRepository.findOne({
+        where: { id: createAsignaturaDto.id_carrera },
+        });
+        if (!carrera) {
+        throw new Error('Carrera no encontrada');
+             }
+        
+        const carreraAsignatura = this.carreraAsignaturaRepository.create({
+            carrera,
+            asignatura: asignaturaguardada,
+            });
+
+        await this.carreraAsignaturaRepository.save(carreraAsignatura);
+
+
+
         return{
             id_asignatura: asignaturaguardada.id, 
             nrc: asignaturaguardada.nrc,
@@ -57,6 +79,22 @@ export class AsignaturaService {
 
         });
         const asignaturaguardada = await this.asignaturaCrepository.save(asignatura)
+
+
+        const carrera = await this.carreraRepository.findOne({
+        where: { id: dto.id_carrera },
+        });
+        if (!carrera) {
+        throw new Error('Carrera no encontrada');
+             }
+        
+        const carreraAsignatura = this.carreraAsignaturaRepository.create({
+            carrera,
+            asignatura: asignaturaguardada,
+            });
+
+        await this.carreraAsignaturaRepository.save(carreraAsignatura);
+
         return{
             id_asignatura: asignaturaguardada.id, 
             nrc: asignaturaguardada.nrc,
