@@ -12,7 +12,7 @@ export function useSalas() {    //pa listar las salas.
     return useQuery({
         queryKey: ['salas'],
         queryFn: async () => {
-            const respuesta = await api.get('/sala');
+            const respuesta = await api.get('/sala/creadas');
             return respuesta.data;
         }
     });

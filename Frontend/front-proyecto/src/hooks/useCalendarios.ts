@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import api from '../api/axios';
-import { StringLiteral } from 'typescript';
 
 export interface Calendario {
     id_calendario: number;

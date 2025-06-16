@@ -3,10 +3,10 @@ import api from '../api/axios';
 
 export interface Pruebahorario {
     id_asignatura: number;
-    id_profesor: number;//id del profe
-    profesor?: string; 
-    id_sala: number;//id de la sala
-    sala?: string; 
+    id_profesores: number[];//id del profe
+    profesores?: string[]; 
+    id_salas: number[];//id de la sala
+    salas?: string[]; 
     horario: string;
     nivel: number;
     nombre: string;

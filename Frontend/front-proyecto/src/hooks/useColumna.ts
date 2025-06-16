@@ -1,18 +1,15 @@
 import {useQuery,useMutation,useQueryClient} from '@tanstack/react-query';
 import api from '../api/axios';
 
-interface ColumnaData
+
+
+export interface ColumnaResponse
 {
-    id_columna: number;
-    dia: number;
-    fecha: string;
+    columnas: {id_columna: number; dia: number; fecha: string | null}[];
 
 }
 
-interface CrearColumnaResponse
-{
-    message : string;
-}
+
 
 /*export function useCrearcolumna(onSuccess: () => void, onFail:(error:string)=>void){ 
     const clienteQuery = useQueryClient();
@@ -48,11 +45,12 @@ export function useActualizarColumna(){   //en base al día y al id del calendar
 */
 
 export function useCargarColumnas(id: number | undefined) {   //Carga las columnas del calendario (en base al id del calendario) en una lista para asignar sus datos en la matriz.
-    return useQuery<ColumnaData[]>({
+    return useQuery<ColumnaResponse>({
         queryKey: ['columnas', id],
         queryFn: async () => {
-            const respuesta = await api.get(`/columna/${id}`);
-            return respuesta.data;
+            const respuesta = await api.get(`/columnas/calendario/${id}`);
+            console.log(respuesta.data.columnas);
+            return respuesta.data[0];
         },
         enabled: id !== undefined && id !== null,
         gcTime: 1000 * 60 * 30,

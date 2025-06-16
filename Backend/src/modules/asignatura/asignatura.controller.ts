@@ -13,6 +13,10 @@ export class AsignaturaController {
     
     @Get()
     getAsignaturasc() {
+        return this.asignaturaService.getcreadasnt(); 
+    }
+    @Get('creadas')
+    getAsignaturasCreada() {
         return this.asignaturaService.getAsignaturasc(); 
     }
    

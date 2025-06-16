@@ -18,8 +18,8 @@ export class ColumnasController {
     return this.columnasService.findAll();
   }
 
-  @Get(':calendarioid')
-  findByCalendario(@Param('calendarioid') calendarioId: string) {
+  @Get('calendario/:calendarioid')
+  findByCalendario(@Param('calendarioid') calendarioId: number) {
     return this.columnasService.findByCalendario(+calendarioId);
   }
   @Get(':id')

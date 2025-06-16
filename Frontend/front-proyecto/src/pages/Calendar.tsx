@@ -71,8 +71,8 @@ export const Calendar = () => {
     const [formVisible, setFormvisible] = useState(false);
     const [datosForm,setDatosform] = useState<{celdaid:string, asignatura: any} | null>(null);
     const [nombreCalendario, setNombrecalendario] = useState("");
-    const [profesorForm, setProfesorform] = useState<number | null>(null);
-    const [salaForm, setSalaform] = useState<number | null>(null);
+    const [profesorForm, setProfesorform] = useState<number[]>([]);
+    const [salaForm, setSalaform] = useState<number[]>([]);
     const [horario, setHorario] = useState("");
     const [profesorAsig,setProfesorasig] = useState(true);
     const [semestreSeleccionado, setSemestreseleccionado] = useState(0);
@@ -95,7 +95,7 @@ export const Calendar = () => {
     const [calendarioCargadoLocalStorage, setIdCalendarioLocalStorage] = useState(false);
     const columnasEnviadas = fechas.map(f => ({
       dia: f.dia,
-      fecha: f.fecha ? f.fecha.toISOString().split('T')[0]:null
+      fecha: f.fecha ? f.fecha.toISOString() : null
     }));
 
 
@@ -108,7 +108,7 @@ export const Calendar = () => {
     }, [id_actual]);*/
 
 
-    useEffect(() => {
+    /*useEffect(() => {
       if(calendarioData && calendarioData.pruebas && calendarioData.columnas) {
         const calendarioBack : { [key: string]: Pruebahorario[]} = {};
 
@@ -118,7 +118,13 @@ export const Calendar = () => {
             continue;
           }
 
-          const celdaid = `${columna.dia}-${bloquePrueba(prueba.horario)}-slot${slotPrueba(prueba.horario)}`;
+          const celdaid = prueba.celdaid;
+
+          if(!celdaid)
+          {
+            console.warn("prueba sin celdaid: ", prueba)
+            continue;
+          }
 
           if(!calendarioBack[celdaid]){
             calendarioBack[celdaid] = [];
@@ -138,7 +144,16 @@ export const Calendar = () => {
             dia: prueba.dia,
             eliminado: prueba.eliminado
           });
+
+          console.log("Insertando prueba en celda:", celdaid, {
+          ...prueba,
+          profesor: profesores?.find((p:any) => p.id_profesor === prueba.id_profesor)?.nombre ?? '',
+          sala: salas?.find((s:any) => s.id_sala === prueba.id_sala)?.nombre ?? '',
+        });
         }
+
+        
+
 
         setCalendario(calendarioBack);
         if(id_actual !== 0)
@@ -149,7 +164,64 @@ export const Calendar = () => {
 
         setNombrecalendario(calendarioData.nombre ?? '');
       }
-    },[calendarioData]);
+    },[calendarioData]);*/
+
+    useEffect(() => {
+      if (!calendarioData || !calendarioData.pruebas || !calendarioData.columnas) {
+        return;
+      }
+
+      if (!profesores || !salas) {
+        return;
+      }
+
+      const calendarioBack : { [key: string]: Pruebahorario[]} = {};
+
+      for (const prueba of calendarioData.pruebas) {
+        const celdaid = prueba.celdaid;
+
+        if (!celdaid) {
+          console.warn("prueba sin celdaid: ", prueba);
+          continue;
+        }
+
+        if (!calendarioBack[celdaid]) {
+          calendarioBack[celdaid] = [];
+        }
+
+        console.log("insertando prueba en celda:", celdaid, {
+          ...prueba,
+          profesor: profesores?.find((p:any) => p.id_profesor === prueba.id_profesor)?.nombre ?? '',
+          sala: salas?.find((s:any) => s.id_sala === prueba.id_sala)?.nombre ?? '',
+        });
+
+        calendarioBack[celdaid].push({
+          ...prueba,
+          id_profesores: Array.isArray(prueba.id_profesores) ? prueba.id_profesores : [],
+          id_salas: Array.isArray(prueba.id_salas) ? prueba.id_salas : [],
+          profesores: Array.isArray(prueba.profesores) ? prueba.profesores: [],
+          salas: Array.isArray(prueba.salas) ? prueba.salas : [],
+          celdaid,
+          horario: prueba.horario,
+          nivel: prueba.nivel,
+          nombre: prueba.asignatura,
+          profesor_error: prueba.profesor_error,
+          dia: prueba.dia,
+          eliminado: prueba.eliminado
+        });
+      }
+
+      setCalendario(calendarioBack);
+
+      if(id_actual !== 0) {
+        localStorage.setItem("carga_calendario_id", id_actual.toString());
+        localStorage.setItem(`calendario_${id_actual}`, JSON.stringify(calendarioBack));
+      }
+
+      setNombrecalendario(calendarioData.nombre ?? '');
+
+    }, [calendarioData, profesores, salas, id_actual]);
+
 
     useEffect(() => {
         if(!profesores || !salas)
@@ -165,10 +237,11 @@ export const Calendar = () => {
         const pruebas = Object.entries(calendario).flatMap(([celdaid, pruebasCelda]) =>
           pruebasCelda.map(prueba => ({
             id_asignatura: prueba.id_asignatura,
-            id_profesor: prueba.id_profesor,
-            profesor: profesores?.find((p:any) => p.id_profesor === prueba.id_profesor)?.nombre ?? '',
-            id_sala: prueba.id_sala,
-            sala: salas?.find((s:any) => s.id_sala === prueba.id_sala)?.nombre ?? '',
+            asignatura: prueba.nombre,
+            id_profesores: prueba.id_profesores,
+            profesores: prueba.profesores,
+            id_salas: prueba.id_salas,
+            salas: prueba.salas,
             horario: prueba.horario,
             nivel: prueba.nivel,
             nombre: prueba.nombre,
@@ -201,10 +274,12 @@ export const Calendar = () => {
 
 
     useEffect(() => {
+      console.log('columnas del backend', columnas);
+
       if(columnas) {
-        const columnasCargadas = columnas.map((col) => ({   // pa cargar el "dia"(id de la columna) cuando cambian las columnas
+        const columnasCargadas = columnas?.columnas.map((col) => ({   // pa cargar el "dia"(id de la columna) cuando cambian las columnas
           dia: col.dia,
-          fecha: new Date(col.fecha),
+          fecha: col.fecha? new Date(col.fecha) : null,
         }));
         setFechas((prev) => 
           prev.map((fechaActual) => columnasCargadas.find((c) => c.dia === fechaActual.dia)|| fechaActual)
@@ -261,10 +336,10 @@ export const Calendar = () => {
 
             return pruebasArray.map((prueba) => ({
               id_asignatura: prueba.id_asignatura,
-              id_profesor: prueba.id_profesor,
-              id_sala: prueba.id_sala,
-              profesor: prueba.profesor,
-              sala: prueba.sala,
+              id_profesores: prueba.id_profesores,
+              id_salas: prueba.id_salas,
+              profesores: prueba.profesores,
+              salas: prueba.salas,
               horario: prueba.horario,
               nivel: prueba.nivel,
               nombre: prueba.nombre,
@@ -342,12 +417,12 @@ export const Calendar = () => {
           });
 
           setDatosform({ celdaid, asignatura: dragPruebaHorario});
-          setProfesorform(dragPruebaHorario.id_profesor ?? null);
+          setProfesorform(dragPruebaHorario.id_profesores ?? []);
           setFormvisible(true);
           setDragPruebaHorario(null);
           setCeldaOrigen(null);
           setHorario(dragPruebaHorario.horario ?? "");
-          setSalaform(dragPruebaHorario.id_sala ?? null);
+          setSalaform(dragPruebaHorario.id_salas ?? []);
           setProfesorasig(!dragPruebaHorario.profesor_error);
           return;
         }
@@ -359,7 +434,7 @@ export const Calendar = () => {
         }
 
         const asignatura = subjects.find((subject:any) => subject.id_asignatura === dragid);
-        console.log(subjects);
+        //console.log(subjects);
         if (!asignatura)
         {
             return;
@@ -369,9 +444,9 @@ export const Calendar = () => {
         setFormvisible(true);
         setDragid(null);
         setHorario("");
-        setSalaform(null);
+        setSalaform([]);
         setProfesorasig(true);
-        setProfesorform(null);
+        setProfesorform([]);
 
     };
     
@@ -390,18 +465,20 @@ export const Calendar = () => {
 
       const prueba = {
         id_asignatura: Number(datosForm.asignatura.id_asignatura),
-        id_profesor: Number(profesorForm),
+        id_profesores: profesorForm,
         nombre: String(datosForm.asignatura.nombre),
         nivel: Number(datosForm.asignatura.nivel),
-        profesor: profesores?.find((p:any) => p.id_profesor === profesorForm)?.nombre ?? '',
-        id_sala: Number(salaForm),
-        sala: salas?.find((s:any) => s.id_sala === salaForm)?.nombre ?? '',
+        profesores: Array.from(new Set(profesorForm.map(id => profesores?.find((p:any) => p.id_profesor === id)?.nombre ?? ''))),
+        id_salas: salaForm,
+        salas: Array.from(new Set(salaForm.map(id => salas?.find((s:any) => s.id_sala === id)?.nombre ?? ''))),
         horario,
         profesor_error: !profesorAsig,
         dia: diaColumn(datosForm.celdaid),
         eliminado: false,
         celdaid: datosForm.celdaid
       };
+
+      //console.log(prueba);
 
       setCalendario((prev) => {
           const nuevo = { ...prev};
@@ -437,13 +514,35 @@ export const Calendar = () => {
             
             console.log(prueba); 
           }*/
+
+          console.log(" estado actual del calendario");
+          Object.entries(nuevo).forEach(([celdaid, pruebasCelda]) => {
+              console.log(`Celda: ${celdaid}`);
+              pruebasCelda.forEach((prueba, idx) => {
+                  console.log(`  Prueba #${idx + 1}:`, {
+                      id_asignatura: prueba.id_asignatura,
+                      id_profesor: prueba.id_profesores,
+                      nombre: prueba.nombre,
+                      nivel: prueba.nivel,
+                      profesor: prueba.profesores,
+                      id_sala: prueba.id_salas,
+                      sala: prueba.salas,
+                      horario: prueba.horario,
+                      profesor_error: prueba.profesor_error,
+                      dia: prueba.dia,
+                      eliminado: prueba.eliminado
+                  });
+              });
+          });
+          console.log("...");
+
           if(!id_actual)
           {
             localStorage.setItem("calendario", JSON.stringify(nuevo));
           }
+
           return nuevo;
       });
-
       
       //setDragnrc(null);
 
@@ -495,17 +594,31 @@ export const Calendar = () => {
       if(!user || !nombreCalendario.trim()) {
         return;
       }
+      console.log("columnas actuales:", columnas);
 
       const idColumn = (celdaid: string) => {
         const diaCelda = parseInt(celdaid.split("-")[0]);
-        const columna = columnas?.find(col => col.dia === diaCelda);
-        return columna ? columna.id_columna : null;
+        if(columnas?.columnas)
+        {
+          const columnaError = columnas?.columnas ?? [];
+          const columna = columnaError.find(col => col.dia === diaCelda);
+          return columna ? columna.id_columna : null;
+        } else {
+          const columnalocal = columnasEnviadas.find(c => c.dia === diaCelda);
+          if(columnalocal)
+          {
+            return diaCelda;
+          }
+          return null;
+        }
+        
       }
 
       const fecha_creacion = new Date().toISOString().split('T')[0];
-
+      console.log(calendario);
       const pruebas = Object.entries(calendario).flatMap(([celdaid, pruebasCelda]) => 
         pruebasCelda.map(prueba => {
+          console.log(prueba.nombre);
           const idColumna = idColumn(celdaid);
           if(idColumna === null)
           {
@@ -515,15 +628,19 @@ export const Calendar = () => {
           return {
             id_asignatura: prueba.id_asignatura,
             id_columna: idColumna,
+            profesores: prueba.profesores,
+            salas: prueba.salas,
             horario: prueba.horario,
-            id_profesor: prueba.id_profesor,
-            id_sala: prueba.id_sala,
+            id_profesores: prueba.id_profesores,
+            id_salas: prueba.id_salas,
             dia: prueba.dia,
             profesor_error: prueba.profesor_error,
-            eliminado: prueba.eliminado ?? false
+            eliminado: prueba.eliminado ?? false,
+            celdaid
           };
         })).filter((p): p is NonNullable<typeof p> => p !== null); //vola negra pa que ts no lo tome nulo y de error al compilar
-
+      
+      console.log("Pruebas a enviar:", pruebas);
       confirmarCalendario.mutate({
         nombre: nombreCalendario,
         id_usuario: user.rut,
@@ -532,10 +649,12 @@ export const Calendar = () => {
         columnas: columnasEnviadas
       }, {
         onSuccess:(data)=> {
+          window.open(`/Calendar/${data.id}`,'_blank');
+
           if(data?.id)
           {
             
-
+            
             setCalendario({});
             setNombrecalendario('');
             setFechas([...Array(7)].map((_,i)=>({dia: i + 1, fecha: null})));
@@ -552,9 +671,10 @@ export const Calendar = () => {
             setIdCalendarioLocalStorage(false);
             setIdCalendarioLocal(null);
             setCalendario({});
-
+            
             setTimeout(()=>{
               navigate('/Calendar', {state:{ nuevoCalendario: true}});
+              
             }, 100);
 
             
@@ -595,7 +715,7 @@ export const Calendar = () => {
       return <div> Cargando fechas... </div>
     }
 
-    console.log(JSON.stringify(calendario,null,1));
+    //console.log(JSON.stringify(calendario,null,1));
 
 
     
@@ -622,15 +742,21 @@ export const Calendar = () => {
         <div className="modal-overlay">
           <div className="modal">
             <h3>Datos de la prueba</h3>
-            <select value={profesorForm !== null ? profesorForm: ''} onChange={(e) => setProfesorform(Number(e.target.value))}>
-              <option key="default" value="">Seleccione un docente para la evaluacion</option>
+            <select multiple value={profesorForm.map(String)} onChange={(e) =>{
+              const opcionesProfesor = Array.from(e.target.options).filter(opcion => opcion.selected).map(opcion => Number(opcion.value));
+              setProfesorform(opcionesProfesor);
+            }}>
+              <option key="default" value="">Seleccione uno o mas docentes para la evaluacion</option>
               {profesores?.map((p:any) => (
                 <option key={p.id_profesor} value={p.id_profesor}>{p.nombre}</option>
               ))}
             </select>
 
-            <select value={salaForm !== null ? salaForm: ''} onChange={(e)=> setSalaform(Number(e.target.value))}>
-              <option key="default" value="">Seleccione una sala para la evaluacion</option>
+            <select multiple value={salaForm.map(String)} onChange={(e)=> {
+              const opcionesSala = Array.from(e.target.options).filter(opcion => opcion.selected).map(opcion => Number(opcion.value));
+              setSalaform(opcionesSala);
+            }}>
+              <option disabled value="">Seleccione una o mas salas para la evaluacion</option>
               {salas?.filter((s:any) => s.id_sala !== undefined).map((s:any) => (
                 <option key={s.id_sala} value={s.id_sala}>{s.nombre}</option>
               ))}
@@ -667,8 +793,8 @@ export const Calendar = () => {
               }
               setFormvisible(false);
               setDatosform(null);
-              setProfesorform(null);
-              setSalaform(null);
+              setProfesorform([]);
+              setSalaform([]);
               setHorario("");
               setProfesorasig(true);
               setRollBackPrueba(null);
@@ -723,10 +849,10 @@ export const Calendar = () => {
                         {calendario[celdaid]?.map((asig, idx) => (
                           <div key={idx} className="bloque-asignatura asignatura-agendada" draggable onDragStart={() => dragAsignaturaAgendada(asig,celdaid)}>
                             <div><strong>Sem.:</strong> {asig.nivel}</div>
-                            <div><strong>Prof:</strong> {asig.profesor}</div>
+                            <div><strong>Prof:</strong> {Array.isArray(asig.profesores) ? asig.profesores.join(", "): asig.profesores}</div>
                             <div><strong>Asig:</strong> {asig.nombre}</div>
                             <div><strong>Horario:</strong> {asig.horario}</div>
-                            <div><strong>Sala:</strong> {asig.sala}</div>
+                            <div><strong>Sala:</strong> {Array.isArray(asig.salas) ? asig.salas.join(", "): asig.salas}</div>
                             <button
                               className="eliminar-boton"
                               onClick={() => eliminar(celdaid, asig.id_asignatura)}

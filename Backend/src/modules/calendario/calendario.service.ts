@@ -69,6 +69,9 @@ export class CalendarioService {
       throw new Error('Prueba debe tener asignatura');
     
   }
+  private arraysIntersect(a: number[], b: number[]): boolean {
+    return a.some(val => b.includes(val));
+  }
 
   private async contarErroresGraves(pruebas: PruebaDto[]) {
   let errores = 0;
@@ -78,13 +81,20 @@ export class CalendarioService {
     for (let j = i + 1; j < pruebas.length; j++) {
       const a = pruebas[i];
       const b = pruebas[j];
+      console.log('Comparando pruebas:', a.celdaid, b.celdaid);
+      const idcela = a.celdaid.split('-')[0];
+      const idcelb = b.celdaid.split('-')[0];
+      const idcel2 = a.celdaid.split('-')[1];
+      const idcelb2 = b.celdaid.split('-')[1];
+      
 
       const mismaHora = a.horario === b.horario;
-      const mismoDia = a.id_columna === b.id_columna;
+      const mismoDia = idcela === idcelb
 
       if (mismaHora && mismoDia) {
-        const celdaid = `${a.id_columna}-${a.horario}`;
-        if (a.id_sala === b.id_sala){
+        const celdaid = `${idcela}-${idcel2}-${a.horario}`;
+
+        if (this.arraysIntersect(a.id_salas, b.id_salas)) {
           errores++;
           detalles.push({
             id_asignatura: a.id_asignatura,
@@ -92,13 +102,13 @@ export class CalendarioService {
             tipo: 'grave',
             mensaje: 'Conflicto de sala entre asignaturas en el mismo horario.',
           });
-        
-        } ;
+        }
 
 
 
 
-        if (a.id_profesor === b.id_profesor) {
+
+        if (this.arraysIntersect(a.id_profesores, b.id_profesores)) {
           errores++;
           detalles.push({
             id_asignatura: a.id_asignatura,
@@ -106,13 +116,11 @@ export class CalendarioService {
             tipo: 'grave',
             mensaje: 'Conflicto de profesor entre asignaturas en el mismo horario.',
           });
-
-
         }
         
       }
       if(mismoDia){
-        const celdaid = `${a.id_columna}-${a.horario}`;
+        const celdaid = `${idcela}-${idcel2}-${a.horario}`;
         const nivelA = await this.nivel(a);
       const nivelB = await this.nivel(b);
       if (nivelA === nivelB) {errores++;
@@ -138,9 +146,14 @@ private async  contarErroresModerados(pruebas: PruebaDto[]) {
     for (let j = i + 1; j < pruebas.length; j++) {
       const a = pruebas[i];
       const b = pruebas[j];
+      const idcela = a.celdaid.split('-')[0];
+      const idcelb = b.celdaid.split('-')[0];
+      const idcel2 = a.celdaid.split('-')[1];
+      const idcelb2 = b.celdaid.split('-')[1];
+      const celdaid = `${idcela}-${idcel2}-${a.horario}`;
 
       
-      const mismoDia = a.id_columna === b.id_columna;
+      const mismoDia = idcela === idcelb
 
       if (mismoDia) {
         const nivelA = await this.nivel(a);
@@ -149,7 +162,7 @@ private async  contarErroresModerados(pruebas: PruebaDto[]) {
         if (distancia === 1) {
           detalles.push({
             id_asignatura: a.id_asignatura,
-            celdaid: `${a.id_columna}-${a.horario}`,
+            celdaid:`${idcela}-${idcel2}-${a.horario}`,
             tipo: 'moderado',
             mensaje: 'Asignaturas de niveles consecutivos en el mismo dia.',
           });
@@ -168,7 +181,7 @@ private contarErroresLeves(pruebas: PruebaDto[]) {
     .filter(p => p.profesor_error)
     .map(p => ({
       id_asignatura: p.id_asignatura,
-      celdaid: `${p.id_columna}-${p.horario}`,
+      celdaid: `${p.celdaid}`,
       tipo: 'leve',
       mensaje: 'Profesor tiene conflicto o no fue asignado correctamente.',
     }));
@@ -251,16 +264,21 @@ async analizarErrores({ caledarioId, pruebas }:  CheckErroresDto) {
     pruebas: calendario.relaciones.map(rpc => {
       const prueba = rpc.prueba;
 
+
       return {
         id_asignatura: prueba.asignatura?.id ?? null,
-        nombre_asignatura: prueba.asignatura?.nombre ?? null,
+        asignatura: prueba.asignatura?.nombre ?? null,
         nivel: prueba.asignatura?.nivel ?? null,
         horario: prueba.horario,
-        id_profesor: prueba.profesor?.id ?? null,
-        id_sala: prueba.sala?.id ?? null,
+
+        id_profesores: prueba.profesores?.map(p => p.id) ?? [],
+        profesores: prueba.profesores?.map(p => p.nombre) ?? [],
+        id_salas: prueba.salas?.map(s => s.id) ?? [],
+        salas: prueba.salas?.map(s => s.nombre) ?? [],
         profesor_error: prueba.profesorError,
         eliminado: prueba.eliminado,
-        dia: prueba.dia
+        dia: prueba.dia,
+        celdaid: prueba.celdaid,
       };
     }),
   };

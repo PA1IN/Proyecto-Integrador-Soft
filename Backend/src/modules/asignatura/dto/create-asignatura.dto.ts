@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateAsignaturaDto {
     @IsString()
@@ -13,6 +13,11 @@ export class CreateAsignaturaDto {
     @IsNumber()
     nivel: number;
 
+    @IsOptional()
+    @IsBoolean()
+    creada: boolean;
+    @IsNumber()
+    id_carrera: number;
    
 
 }

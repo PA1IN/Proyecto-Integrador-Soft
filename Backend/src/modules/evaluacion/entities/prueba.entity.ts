@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, JoinColumn, JoinTable, ManyToMany } from 'typeorm';
 import { RelacionPruebaCalendario } from './relacion-prueba-calendario.entity';
 import { Asignatura } from 'src/modules/asignatura/entities/asignatura-creada.entity';
 
@@ -12,16 +12,25 @@ export class Prueba {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Profesor)
-  @JoinColumn({ name: 'id_profesor' })
-  profesor: Profesor;
+ @ManyToMany(() => Profesor)
+  @JoinTable({
+    name: 'prueba_profesores', // nombre de la tabla intermedia
+    joinColumn: { name: 'prueba_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'profesor_id', referencedColumnName: 'id' },
+  })
+  profesores: Profesor[];
 
   @Column()
   horario: string;
 
-  @ManyToOne(() => SalaDeClases)
-  @JoinColumn({ name: 'id_sala' })
-  sala: SalaDeClases;
+ @ManyToMany(() => SalaDeClases)
+  @JoinTable({
+    name: 'prueba_salas', // nombre de la tabla intermedia
+    joinColumn: { name: 'prueba_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'sala_id', referencedColumnName: 'id' },
+  })
+  salas: SalaDeClases[];
+
 
   @Column()
   dia: number;
@@ -35,5 +44,6 @@ export class Prueba {
   
   @ManyToOne(() => Asignatura, { nullable: true })
   asignatura: Asignatura;
-
+  @Column({ default: 'prodiccion ignorar esta prueba' })
+  celdaid: string;
 }

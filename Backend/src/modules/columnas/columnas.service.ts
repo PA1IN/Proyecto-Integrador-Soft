@@ -36,10 +36,17 @@ export class ColumnasService {
     return await this.columnaRepository.find();
   }
   async findByCalendario(calendarioId: number) {
-    const calendario = await this.calendarioRepository.findOne({
+    const calendario = await this.calendarioRepository.find({
       where: { id: calendarioId },
       relations: ['columnas'],
     });
+    return calendario.map(cal => ({
+      columnas: cal.columnas.map(col => ({
+      id_columna: col.id,
+      dia: col.dia,
+      fecha_inicio: col.fecha
+      })),
+    }));  
   }
   async findOne(id: number) {
     const columna = await this.columnaRepository.findOne({

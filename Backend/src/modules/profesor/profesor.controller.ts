@@ -14,9 +14,17 @@ export class ProfesorController {
     crearProfesor(@Body() dto: ProfesorDto) { // Replace 'any' with the actual DTO type
         return this.profesorService.crearProfesor(dto); // Call the service method to create a professor
     }
+    @Post('prod')
+    crearProfesorProd(@Body() dto: ProfesorDto) { // Replace 'any' with the actual DTO type
+        return this.profesorService.crearProfesorProd(dto); // Call the service method to create a professor in production
+    }
 
     @Get()
     obtenerProfesores() {
         return this.profesorService.obtenerProfesores(); // Call the service method to get all professors
+    }
+    @Get('creado')
+    obtenerProfesoresCreado() {
+        return this.profesorService.obtenerProfesoresCreado(); // Call the service method to get all created professors
     }
 }

@@ -1,9 +1,9 @@
-import { IsDate, IsNumber } from "class-validator";
+import { IsDate, IsNumber, IsString } from "class-validator";
 
 export class columnaDto {
   @IsNumber()
   dia: number;
-  @IsDate()
-  fecha: Date;
+  @IsString()
+  fecha: string;
   
   }

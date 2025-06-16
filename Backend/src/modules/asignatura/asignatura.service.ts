@@ -5,17 +5,22 @@ import { Repository} from 'typeorm';
 import { CreateAsignaturaDto } from './dto/create-asignatura.dto';
 import { HorarioAsignaturaDto } from './dto/horario-asignatura.dto';
 import { Asignatura } from './entities/asignatura-creada.entity';
+import { Carrera } from '../carrera/entities/carrera.entity';
+import { CarreraAsignatura } from '../carrera/entities/Carrera-Asignatura.entity';
 
 @Injectable()
 export class AsignaturaService {
     constructor(
         @InjectRepository(Asignatura)
         private readonly asignaturaCrepository: Repository<Asignatura>, // Inject your repository here
-        
+        @InjectRepository(Carrera)
+        private readonly carreraRepository: Repository<Carrera>, // Inject Carrera repository if needed
+        @InjectRepository(CarreraAsignatura)
+        private readonly carreraAsignaturaRepository: Repository<CarreraAsignatura>, // Inject Carrera-Asignatura repository if needed
     ) {}
 
     async getAsignaturasc(){
-        const asignaturas = await this.asignaturaCrepository.find(); // Fetch all asignaturas from the database
+        const asignaturas = await this.asignaturaCrepository.find({where : {creada: true  }}); // Fetch all asignaturas from the database
         return asignaturas.map((a) => ({
         id_asignatura: a.id,
         
@@ -38,6 +43,23 @@ export class AsignaturaService {
 
         });
          const asignaturaguardada = await this.asignaturaCrepository.save(asignatura)
+        
+         const carrera = await this.carreraRepository.findOne({
+        where: { id: createAsignaturaDto.id_carrera },
+        });
+        if (!carrera) {
+        throw new Error('Carrera no encontrada');
+             }
+        
+        const carreraAsignatura = this.carreraAsignaturaRepository.create({
+            carrera,
+            asignatura: asignaturaguardada,
+            });
+
+        await this.carreraAsignaturaRepository.save(carreraAsignatura);
+
+
+
         return{
             id_asignatura: asignaturaguardada.id, 
             nrc: asignaturaguardada.nrc,
@@ -45,6 +67,52 @@ export class AsignaturaService {
             nombre: asignaturaguardada.nombre,
             eliminada: asignaturaguardada.eliminada
         } ; // Save the new asignatura to the database
+    }
+
+    async crearasignaturaprod(dto: CreateAsignaturaDto){
+        const asignatura = this.asignaturaCrepository.create({
+            nrc: dto.nrc,
+            nivel: dto.nivel,
+            nombre: dto.nombre,
+            creada: true,
+            eliminada: false
+
+        });
+        const asignaturaguardada = await this.asignaturaCrepository.save(asignatura)
+
+
+        const carrera = await this.carreraRepository.findOne({
+        where: { id: dto.id_carrera },
+        });
+        if (!carrera) {
+        throw new Error('Carrera no encontrada');
+             }
+        
+        const carreraAsignatura = this.carreraAsignaturaRepository.create({
+            carrera,
+            asignatura: asignaturaguardada,
+            });
+
+        await this.carreraAsignaturaRepository.save(carreraAsignatura);
+
+        return{
+            id_asignatura: asignaturaguardada.id, 
+            nrc: asignaturaguardada.nrc,
+            nivel: asignaturaguardada.nivel,
+            nombre: asignaturaguardada.nombre,
+            eliminada: asignaturaguardada.eliminada
+        } ;
+
+    }
+    async getcreadasnt(){
+        const asignaturas = await this.asignaturaCrepository.find({where : {creada: false  }}); // Fetch all asignaturas from the database
+        return asignaturas.map((a) => ({
+        id_asignatura: a.id,
+        
+        nivel: a.nivel,
+        nombre: a.nombre,
+        creada: a.creada,
+        eliminado: a.eliminada,})); // Fetch all asignaturas from the database
     }
  
     
