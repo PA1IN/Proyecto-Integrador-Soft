@@ -1,6 +1,6 @@
 import React, { SyntheticEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { useForgotPassword } from '../hooks/useForgotPassword';
+import { useForgotPassword} from '../hooks/useForgotPassword';
 
 export const ForgotPassword = () => {
   const [correo, setCorreo] = useState('');
@@ -24,6 +24,7 @@ export const ForgotPassword = () => {
     setErrorMsg('');
     setExitoMsg('');
     recuperarPassword.mutate({correo});
+    navigate('/CambiarPassword')
       
   };
 

@@ -1,4 +1,4 @@
-import {useMutation} from '@tanstack/react-query';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import api from '../api/axios';
 import { AxiosError } from 'axios';
 
@@ -7,7 +7,16 @@ interface Forgotdata {
     correo: string;
 }
 
+interface Reemplazo {
+    correo: string;
+    password: string;
+}
+
 interface Forgotresponse{
+    message: string                     //revisar back para modificar esta interfaz
+}
+
+interface respuestaCambiarPassword{
     message: string                     //revisar back para modificar esta interfaz
 }
 
@@ -25,4 +34,26 @@ export function useForgotPassword(onSuccess: () => void,onFail: (error: string) 
             onFail(mensaje);
         }
     })
+}
+
+export function useRecibirVerificacion() {    
+    return useQuery({
+        queryKey: ['verificacion'],
+        queryFn: async () => {
+            const respuesta = await api.get('/api/v1/auth/forgotpassword');
+            return respuesta.data;
+        }
+    });
+}
+
+export function useCambiarPassword() {
+    const clienteQuery = useQueryClient();
+    return useMutation({
+        mutationFn: async ({correo, password}:Reemplazo) => {
+            await api.patch(`/api/v1/auth/forgotpassword`, {correo,password})
+        },
+        onSuccess: () => {
+            clienteQuery.invalidateQueries({queryKey:['verificacion']});
+        }                        
+    });
 }
