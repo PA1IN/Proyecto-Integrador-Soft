@@ -27,7 +27,7 @@ export const CambiarPassword = () => {
         
         verifyToken(token, {
             onSuccess: (data) => {
-                setEmail(data.email);
+                setEmail(data.correo);
                 setSuccessMsg('Código verificado correctamente');
             },
             onError: (error: any) => {
@@ -57,7 +57,7 @@ export const CambiarPassword = () => {
         
         setErrorMsg('');
         
-        cambiarContra({ email, newPassword: password }, {
+        cambiarContra({ email: email, newPassword: password }, {
             onSuccess: () => {
                 setSuccessMsg('Contraseña cambiada exitosamente!. Cierra esta pestaña');
             },

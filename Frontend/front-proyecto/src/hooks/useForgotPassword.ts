@@ -4,7 +4,7 @@ import { AxiosError } from 'axios';
 
 
 interface Forgotdata {
-    email: string;
+    correo: string;
 }
 
 interface Reemplazo {
@@ -21,14 +21,14 @@ interface respuestaCambiarPassword {
 }
 
 interface VerificacionResponse {
-    email: string;
+    correo: string;
 }
 
 export function useForgotPassword(onSuccess: () => void,onFail: (error: string) => void) {
     const clienteQuery = useQueryClient();
     return useMutation<Forgotresponse,AxiosError,Forgotdata>({
-        mutationFn: async ({email}:Forgotdata): Promise<Forgotresponse> => {
-            const respuesta = await api.patch('/auth/enviarCorreo',{email});
+        mutationFn: async ({correo}:Forgotdata): Promise<Forgotresponse> => {
+            const respuesta = await api.patch('/auth/enviarCorreo',{correo});
             return respuesta.data;
         },
         onSuccess: () => {
