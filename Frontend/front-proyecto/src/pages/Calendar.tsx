@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { useCargarColumnas } from '../hooks/useColumna';
@@ -11,25 +11,14 @@ import { useConfirmarCalendario } from '../hooks/useConfirmarCalendario';
 import { Pruebahorario, Resultadoerrores, useCalcularErrores } from '../hooks/useCalcularErrores';
 import { useCargarCalendario } from '../hooks/useCargarCalendario';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { parse } from 'path';
+import VistaPDF from '../components/VistaPdf';
+import SelectorHorario from '../components/SelectorHorario';
+import dayjs, { Dayjs } from 'dayjs'; 
+import { registerLocale } from 'react-datepicker';
+import {es} from "date-fns/locale/es";
+registerLocale("es",es);
 
 const bloques = ['Mañana', 'Tarde'];
-
-const bloquePrueba = (horario: string) => {
-  const hora = parseInt(horario.split(":")[0]);
-  return hora < 13 ? "Mañana" : "Tarde";
-};
-
-const slotPrueba = (horario: string) => {
-  const hora = parseInt(horario.split(":")[0]);
-  if(hora < 9) return 1;
-  if(hora < 11) return 2;
-  if(hora < 13) return 3;
-  if(hora < 15) return 4;
-  if(hora < 17) return 5;
-  return 6;
-}
-
 
 export const Calendar = () => {
     const { id } = useParams();
@@ -61,20 +50,26 @@ export const Calendar = () => {
       {dia: 6, fecha: null},
       {dia: 7, fecha: null} //pal dia que quieran hacer las semanas de prueba con 7 dias
     ]);*/
-
+    type profesorSeleccionado = {id:number; esCatedra: boolean};
+    const [busquedaProfesor, setBusquedaProfesor] = useState("");
+    const [busquedaSala, setBusquedaSala] = useState("");
     const [fechas, setFechas] = useState<{dia:number,fecha:Date| null}[]>(
-      [...Array(7)].map((_,i)=>({dia: i + 1, fecha: null }))); 
-    
+      [...Array(7)].map((_,i)=>({dia: i + 1, fecha: null })));
+    const [mostrarVistapdf, setMostrarVistapdf] = useState(false);
     const [mostrarClmnaextra,setMostrarClmnextra ] = useState(false);
     const [calendario, setCalendario] = useState<{[key:string]:Pruebahorario[]}>({});
     const [dragid, setDragid] = useState<number | null>(null);
     const [formVisible, setFormvisible] = useState(false);
     const [datosForm,setDatosform] = useState<{celdaid:string, asignatura: any} | null>(null);
     const [nombreCalendario, setNombrecalendario] = useState("");
-    const [profesorForm, setProfesorform] = useState<number[]>([]);
+    const [profesorForm, setProfesorform] = useState<profesorSeleccionado[]>([]);
     const [salaForm, setSalaform] = useState<number[]>([]);
-    const [horario, setHorario] = useState("");
-    const [profesorAsig,setProfesorasig] = useState(true);
+
+    //const [horario, setHorario] = useState("");
+    const [horaInicio, setHoraInicio] = useState<Dayjs | null>(null);
+    const [horaFin, setHoraFin] = useState<Dayjs | null>(null);
+
+    const [mostrarErrores,setMostrarErrores] = useState(false);
     const [semestreSeleccionado, setSemestreseleccionado] = useState(0);
     const [errores, setErrores] = useState<{
       errores_graves: number;
@@ -98,6 +93,13 @@ export const Calendar = () => {
       fecha: f.fecha ? f.fecha.toISOString() : null
     }));
 
+    const Errores: { [key: string]: string} = {};
+    detalles.forEach((d)=>{
+      if(!Errores[d.celdaid])
+        {
+          Errores[d.celdaid] = d.tipo;
+        }
+    });
 
 
     /*useEffect(()=> {
@@ -279,7 +281,7 @@ export const Calendar = () => {
       if(columnas) {
         const columnasCargadas = columnas?.columnas.map((col) => ({   // pa cargar el "dia"(id de la columna) cuando cambian las columnas
           dia: col.dia,
-          fecha: col.fecha? new Date(col.fecha) : null,
+          fecha: col.fecha_inicio? new Date(col.fecha_inicio) : null,
         }));
         setFechas((prev) => 
           prev.map((fechaActual) => columnasCargadas.find((c) => c.dia === fechaActual.dia)|| fechaActual)
@@ -417,13 +419,27 @@ export const Calendar = () => {
           });
 
           setDatosform({ celdaid, asignatura: dragPruebaHorario});
-          setProfesorform(dragPruebaHorario.id_profesores ?? []);
+          setProfesorform(
+            (dragPruebaHorario.id_profesores ?? []).filter((id: number | null): id is number => id != null).map((id: number) => ({id, esCatedra: true}))
+          
+          );
+
+
+          if(dragPruebaHorario?.horario)
+          {
+            const partes = dragPruebaHorario.horario.split('-');
+            if(partes.length === 2)
+            {
+              setHoraInicio(dayjs(partes[0], 'HH:mm'));
+              setHoraFin(dayjs(partes[1], 'HH:mm'));
+            }
+          }
           setFormvisible(true);
           setDragPruebaHorario(null);
           setCeldaOrigen(null);
-          setHorario(dragPruebaHorario.horario ?? "");
+          //setHorario(dragPruebaHorario.horario ?? "");
           setSalaform(dragPruebaHorario.id_salas ?? []);
-          setProfesorasig(!dragPruebaHorario.profesor_error);
+          //setProfesorasig(!dragPruebaHorario.profesor_error);
           return;
         }
 
@@ -440,13 +456,26 @@ export const Calendar = () => {
             return;
         }
 
+        
+
         setDatosform({celdaid, asignatura});
+        if(dragPruebaHorario?.horario)
+          {
+            const partes = dragPruebaHorario.horario.split('-');
+            if(partes.length === 2)
+            {
+              setHoraInicio(dayjs(partes[0], 'HH:mm'));
+              setHoraFin(dayjs(partes[1], 'HH:mm'));
+            }
+          }
         setFormvisible(true);
         setDragid(null);
-        setHorario("");
+        //setHorario("");
         setSalaform([]);
-        setProfesorasig(true);
+        //setProfesorasig(true);
         setProfesorform([]);
+        setHoraInicio(null);
+        setHoraFin(null);
 
     };
     
@@ -463,16 +492,27 @@ export const Calendar = () => {
         return;
       }
 
+      if(!horaInicio || !horaFin)
+      {
+        alert("seleccione una hora para inicio y termino");
+        return;
+      }
+
       const prueba = {
         id_asignatura: Number(datosForm.asignatura.id_asignatura),
-        id_profesores: profesorForm,
+        id_profesores: profesorForm.filter(p => p != null).map(p => p.id),
         nombre: String(datosForm.asignatura.nombre),
         nivel: Number(datosForm.asignatura.nivel),
-        profesores: Array.from(new Set(profesorForm.map(id => profesores?.find((p:any) => p.id_profesor === id)?.nombre ?? ''))),
+        profesores: Array.from(new Set(
+          profesores ? profesorForm.filter((p): p is { id: number; esCatedra: boolean} => p && typeof p.id === 'number').map(p => {
+            const encontrado = profesores.find((prof: any) => prof.id_profesor === p.id);
+            return encontrado ? encontrado.nombre : '';
+          }) : []
+        )),
         id_salas: salaForm,
         salas: Array.from(new Set(salaForm.map(id => salas?.find((s:any) => s.id_sala === id)?.nombre ?? ''))),
-        horario,
-        profesor_error: !profesorAsig,
+        horario: horaInicio && horaFin ? `${horaInicio.format('HH:mm')}-${horaFin.format('HH:mm')}` : '',
+        profesor_error: profesorForm.filter(p => p != null).map(p => !p.esCatedra),
         dia: diaColumn(datosForm.celdaid),
         eliminado: false,
         celdaid: datosForm.celdaid
@@ -500,21 +540,6 @@ export const Calendar = () => {
             nuevo[datosForm.celdaid].push(prueba);
           }
           
-
-          /*const pruebas: Pruebahorario[] = Object.values(nuevo).flat();
-          calcularErrores.mutate(pruebas, {
-            onSuccess: (data) => {
-              setErrores(data);
-            }
-          });*/
-
-          //console.log(nuevo[datosForm.celdaid])
-          //console.log(prueba.nrc, prueba.nombre);
-          /*for(nuevo[datosForm.celdaid] of Object.values(calendario)) {
-            
-            console.log(prueba); 
-          }*/
-
           console.log(" estado actual del calendario");
           Object.entries(nuevo).forEach(([celdaid, pruebasCelda]) => {
               console.log(`Celda: ${celdaid}`);
@@ -550,6 +575,8 @@ export const Calendar = () => {
       setRollBackPrueba(dragPruebaHorario);
       setRollBackCelda(celdaOrigen);
       setFormvisible(false);
+      setHoraInicio(null);
+      setHoraFin(null);
       setDatosform(null);
 
     };
@@ -707,6 +734,32 @@ export const Calendar = () => {
       }
     );
 
+    const vistalimpiapdf = (cal: Record<string, Pruebahorario[]>) => {
+      const nuevo: Record<string,{
+        id_asignatura: number;
+        asignatura: string;
+        nivel: number;
+        horario: string;
+        profesores: string[];
+        salas: string[];
+        celdaid: string;
+      }[]> = {};
+
+      for(const [celdaid, pruebas] of Object.entries(cal)) {
+        nuevo[celdaid] = pruebas.map(prueba => ({
+          id_asignatura: prueba.id_asignatura,
+          asignatura: prueba.nombre,
+          nivel: prueba.nivel,
+          horario: prueba.horario,
+          profesores: prueba.profesores || [],
+          salas: prueba.salas || [],
+          celdaid: prueba.celdaid
+        }));
+      }
+
+      return nuevo;
+    };
+
     /*if(!id_actual && !calendarioCargadoLocalStorage){
       return <div>Calendario no encontrado</div>;
     }*/
@@ -718,9 +771,23 @@ export const Calendar = () => {
     //console.log(JSON.stringify(calendario,null,1));
 
 
-    
-
    return (
+     <div className="page-wrapper">
+        <aside className="panel-asignaturas-flotante">
+          <div className="categorias">
+            <h3>Asignaturas</h3>
+            <label>Filtrar por semestre: </label>
+            <select onChange={(e) => setSemestreseleccionado(Number(e.target.value))}>
+              {[1,2,3,4,5,6,7,8].map((sem) => (
+                <option key={sem} value={sem}>Semestre {sem}</option>
+              ))}
+            </select>
+            {(asignaturasFijas || []).concat(asignaturasCreadas || []).filter((s:any) => semestreSeleccionado === 0 || s.nivel === semestreSeleccionado).map((s:any) => (
+              <div key={s.id_asignatura} draggable className="bloque-asignatura" onDragStart={() => drag(s.id_asignatura)}>{s.nombre}</div>
+            ))}
+          </div>
+        </aside>
+
     <div className="calendar-container">
       <h2 className="calendar-titulo">Calendario de pruebas</h2>
       
@@ -742,33 +809,106 @@ export const Calendar = () => {
         <div className="modal-overlay">
           <div className="modal">
             <h3>Datos de la prueba</h3>
-            <select multiple value={profesorForm.map(String)} onChange={(e) =>{
-              const opcionesProfesor = Array.from(e.target.options).filter(opcion => opcion.selected).map(opcion => Number(opcion.value));
-              setProfesorform(opcionesProfesor);
-            }}>
-              <option key="default" value="">Seleccione uno o mas docentes para la evaluacion</option>
-              {profesores?.map((p:any) => (
-                <option key={p.id_profesor} value={p.id_profesor}>{p.nombre}</option>
-              ))}
-            </select>
+            <input
+              type="text"
+              placeholder="Buscar profesor por nombre"
+              value={busquedaProfesor}
+              onChange={(e) => setBusquedaProfesor(e.target.value)}
+              className="input-busqueda"
+            />
 
-            <select multiple value={salaForm.map(String)} onChange={(e)=> {
-              const opcionesSala = Array.from(e.target.options).filter(opcion => opcion.selected).map(opcion => Number(opcion.value));
-              setSalaform(opcionesSala);
-            }}>
-              <option disabled value="">Seleccione una o mas salas para la evaluacion</option>
-              {salas?.filter((s:any) => s.id_sala !== undefined).map((s:any) => (
-                <option key={s.id_sala} value={s.id_sala}>{s.nombre}</option>
-              ))}
-            </select>
+           <div className="lista-profesores-scroll">
+              {profesores
+                ?.filter((p: any) =>
+                  p.nombre.toLowerCase().includes(busquedaProfesor.toLowerCase())
+                )
+                .map((prof: any) => {
+                  const profesor = profesorForm.find((p) => p?.id === prof.id_profesor);
+                  return (
+                    <div key={prof.id_profesor} className="item-profesor">
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={!!profesor}
+                          onChange={() => {
+                            if (profesor) {
+                              setProfesorform((prev) => prev.filter((p) => p?.id !== prof.id_profesor));
+                            } else {
+                              setProfesorform((prev) => [
+                                ...prev,
+                                { id: prof.id_profesor, esCatedra: true },
+                              ]);
+                            }
+                          }}
+                        />
+                        {prof.nombre}
+                      </label>
 
-            <input type="text" placeholder="horario (09:00 - 10:30)" value={horario} onChange={(e)=>setHorario(e.target.value)}/>
-            <label>
-              <input type="checkbox" checked={profesorAsig} onChange={()=>setProfesorasig(!profesorAsig)}/>
-              ¿El docente es el mismo de la asignatura? 
-            </label>
+                      {profesor && (
+                        <label className="checkbox-catedra">
+                          <input
+                            type="checkbox"
+                            checked={profesor.esCatedra}
+                            onChange={(e) => {
+                              setProfesorform((prev) =>
+                                prev.map((p) =>
+                                  p?.id === prof.id_profesor
+                                    ? { ...p, esCatedra: e.target.checked }
+                                    : p
+                                )
+                              );
+                            }}
+                          />
+                          Es docente de la cátedra
+                        </label>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
 
+
+
+            <input
+              type="text"
+              placeholder="Buscar sala por nombre"
+              value={busquedaSala}
+              onChange={(e) => setBusquedaSala(e.target.value)}
+              className="input-busqueda"
+            />
+
+            <div className="lista-profesores-scroll">
+              {salas
+                ?.filter((s: any) =>
+                  s.nombre.toLowerCase().includes(busquedaSala.toLowerCase())
+                )
+                .map((s: any) => {
+                  const seleccionada = salaForm.includes(s.id_sala);
+                  return (
+                    <div key={s.id_sala} className="item-profesor">
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={seleccionada}
+                          onChange={() => {
+                            if (seleccionada) {
+                              setSalaform((prev) => prev.filter((id) => id !== s.id_sala));
+                            } else {
+                              setSalaform((prev) => [...prev, s.id_sala]);
+                            }
+                          }}
+                        />
+                        {s.nombre}
+                      </label>
+                    </div>
+                  );
+                })}
+            </div>
+
+
+            <SelectorHorario horaInicio={horaInicio} setHoraInicio={setHoraInicio} horaFin={horaFin} setHoraFin={setHoraFin}/>
             
+
             <button onClick={guardarPrueba}>Guardar</button>
             <button onClick={()=> {
 
@@ -795,8 +935,9 @@ export const Calendar = () => {
               setDatosform(null);
               setProfesorform([]);
               setSalaform([]);
-              setHorario("");
-              setProfesorasig(true);
+              setHoraInicio(null);
+              setHoraFin(null);
+              //setProfesorasig(true);
               setRollBackPrueba(null);
               setRollBackCelda(null);
             }}>Cancelar</button>
@@ -805,28 +946,12 @@ export const Calendar = () => {
       )}
 
       
-      <div className="calendar-layour">
-          <div className="categorias">
-          <h3>Asignaturas</h3>
-          <label>Filtrar por semestre: </label>
-          <select onChange={(e) => setSemestreseleccionado(Number(e.target.value))}>
-          {[1,2,3,4,5,6,7,8].map((sem) => (
-            <option key={sem} value={sem}>Semestre {sem}</option>
-          ))}
-          </select>
-          {(asignaturasFijas || []).concat(asignaturasCreadas || []).filter((s:any) => semestreSeleccionado === 0 || s.nivel === semestreSeleccionado).map((s:any) => (
-            <div key={s.id_asignatura} draggable className="bloque-asignatura" onDragStart={() => drag(s.id_asignatura)}>{s.nombre}</div>
-          ))
-          }
-          </div>
-        
-      
         <div className="calendar-grilla">
           <div className="fila fila-header">
             <div className="celda-hora"></div>
             {fechasvisibles.map((f)=> (
               <div key = {f.dia} className="celda-dia">
-                <DatePicker selected={f.fecha} onChange={(fechanueva) => cambiofechas(fechanueva as Date,f.dia)} dateFormat="EEEE dd/MM" placeholderText="seleccionar fecha"/>
+                <DatePicker selected={f.fecha} onChange={(fechanueva) => cambiofechas(fechanueva as Date,f.dia)} dateFormat="EEEE dd/MM" placeholderText="seleccionar fecha" locale="es"/>
               </div>
             ))}
           </div>
@@ -846,13 +971,16 @@ export const Calendar = () => {
                         onDrop={(e) => drop(e, celdaid)}
                         onDragOver={dragTermino}
                       >
-                        {calendario[celdaid]?.map((asig, idx) => (
-                          <div key={idx} className="bloque-asignatura asignatura-agendada" draggable onDragStart={() => dragAsignaturaAgendada(asig,celdaid)}>
+                        {calendario[celdaid]?.map((asig, idx) => {
+                          const claseError = Errores[celdaid] === 'grave' ? 'error-grave' : Errores[celdaid] === 'moderado' ? 'error-moderado' : Errores[celdaid] === 'leve' ? 'error-leve' : 'sin-error';
+
+                          return(
+                          <div key={idx} className={`bloque-asignatura asignatura-agendada ${claseError}`} draggable onDragStart={() => dragAsignaturaAgendada(asig,celdaid)}>
                             <div><strong>Sem.:</strong> {asig.nivel}</div>
-                            <div><strong>Prof:</strong> {Array.isArray(asig.profesores) ? asig.profesores.join(", "): asig.profesores}</div>
+                            <div><strong>Prof:</strong> {Array.isArray(asig.profesores) ? asig.profesores.join(", "): String(asig.profesores)}</div>
                             <div><strong>Asig:</strong> {asig.nombre}</div>
                             <div><strong>Horario:</strong> {asig.horario}</div>
-                            <div><strong>Sala:</strong> {Array.isArray(asig.salas) ? asig.salas.join(", "): asig.salas}</div>
+                            <div><strong>Sala:</strong> {Array.isArray(asig.salas) ? asig.salas.join(", "): String(asig.salas)}</div>
                             <button
                               className="eliminar-boton"
                               onClick={() => eliminar(celdaid, asig.id_asignatura)}
@@ -860,7 +988,8 @@ export const Calendar = () => {
                               ×
                             </button>
                           </div>
-                        ))}
+                        );
+                      })}
                       </div>
                     );
                   })}
@@ -870,7 +999,7 @@ export const Calendar = () => {
           ))}
 
         </div>
-      </div>
+      
 
       
 
@@ -878,6 +1007,45 @@ export const Calendar = () => {
           <input type = "text" placeholder="Nombre del calendario" value={nombreCalendario} onChange={(e)=> setNombrecalendario(e.target.value)} />
           <button onClick={confirmar} className="confirmar-boton">Confirmar calendario</button>
       </div>
+
+      <button onClick={() => setMostrarVistapdf(true)} className="boton-descarga-pdf">Exportar calendario</button>
+      {mostrarVistapdf && (
+        <VistaPDF calendario={vistalimpiapdf(calendario)} fechas={fechas} nombreCalendario={nombreCalendario} onClose={() => setMostrarVistapdf(false)} mostrardiaextra={mostrarClmnaextra}/>
+      )}
+
+      {mostrarErrores && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>Detalles de errores</h3>
+            {detalles.length === 0 ? (
+              <p>No hay errores registrados</p>
+            ) : (
+              <div className="lista-errores">
+                {['grave', 'moderado', 'leve'].map((tipo) => {
+                  const titulo = tipo === 'grave' ? 'Errores Graves' : tipo === 'moderado' ? 'Errores Moderados' :'Errores Leves';
+                  const erroresTipo = detalles.filter(d => d.tipo === tipo);
+                  return erroresTipo.length > 0 ? (
+                    <div key={tipo}>
+                      <h4>{titulo}</h4>
+                      <ul>
+                        {erroresTipo.map((detalle, idx) => (
+                          <li key={idx}>
+                            {detalle.mensaje} (Asignatura #{detalle.id_asignatura}, Celda: {detalle.celdaid})
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null;
+                })}
+              </div>
+            )}
+            <button onClick={() => setMostrarErrores(false)}>Cerrar</button>
+          </div>
+        </div>
+      )}
+      <button onClick={() => setMostrarErrores(true)} className="boton-errores"> Detalles de errores</button>
+
     </div>
+  </div>
    )
 };

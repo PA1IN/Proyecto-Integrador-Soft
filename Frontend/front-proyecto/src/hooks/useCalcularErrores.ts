@@ -10,7 +10,7 @@ export interface Pruebahorario {
     horario: string;
     nivel: number;
     nombre: string;
-    profesor_error:boolean;
+    profesor_error:boolean[];
     dia: number;
     eliminado:boolean;
     celdaid: string;
