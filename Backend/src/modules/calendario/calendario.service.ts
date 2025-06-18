@@ -92,7 +92,7 @@ export class CalendarioService {
       const mismoDia = idcela === idcelb
 
       if (mismaHora && mismoDia) {
-        const celdaid = `${idcela}-${idcel2}-${a.horario}`;
+        const celdaid = a.celdaid;
 
         if (this.arraysIntersect(a.id_salas, b.id_salas)) {
           errores++;
@@ -120,7 +120,7 @@ export class CalendarioService {
         
       }
       if(mismoDia){
-        const celdaid = `${idcela}-${idcel2}-${a.horario}`;
+        const celdaid = a.celdaid;
         const nivelA = await this.nivel(a);
       const nivelB = await this.nivel(b);
       if (nivelA === nivelB) {errores++;
@@ -150,7 +150,7 @@ private async  contarErroresModerados(pruebas: PruebaDto[]) {
       const idcelb = b.celdaid.split('-')[0];
       const idcel2 = a.celdaid.split('-')[1];
       const idcelb2 = b.celdaid.split('-')[1];
-      const celdaid = `${idcela}-${idcel2}-${a.horario}`;
+      const celdaid = a.celdaid;
 
       
       const mismoDia = idcela === idcelb
@@ -162,7 +162,7 @@ private async  contarErroresModerados(pruebas: PruebaDto[]) {
         if (distancia === 1) {
           detalles.push({
             id_asignatura: a.id_asignatura,
-            celdaid:`${idcela}-${idcel2}-${a.horario}`,
+            celdaid: a.celdaid,
             tipo: 'moderado',
             mensaje: 'Asignaturas de niveles consecutivos en el mismo dia.',
           });
