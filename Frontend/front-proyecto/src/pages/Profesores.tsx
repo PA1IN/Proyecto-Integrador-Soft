@@ -37,7 +37,7 @@ export const Profesores = () =>
       
     const crear = (e:SyntheticEvent) => {
         e.preventDefault();
-        crearProfesor.mutate({nombre: name});
+        crearProfesor.mutate({nombre: name,  creado: true});
         setNombre('');
     };
     

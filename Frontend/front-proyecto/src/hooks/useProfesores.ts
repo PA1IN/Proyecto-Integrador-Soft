@@ -1,10 +1,10 @@
 import {useQuery,useMutation,useQueryClient} from '@tanstack/react-query';
 import api from '../api/axios';
-import { AxiosError } from 'axios';
 
 interface ProfesorData
 {
     nombre: string;
+    creado: boolean;
 }
 
 

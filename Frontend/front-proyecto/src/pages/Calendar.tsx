@@ -14,6 +14,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import VistaPDF from '../components/VistaPdf';
 import SelectorHorario from '../components/SelectorHorario';
 import dayjs, { Dayjs } from 'dayjs'; 
+import { ToastContainer, toast } from 'react-toastify';
 import { registerLocale } from 'react-datepicker';
 import {es} from "date-fns/locale/es";
 registerLocale("es",es);
@@ -264,12 +265,21 @@ export const Calendar = () => {
               calidad: data.calidad ?? 0
             });
 
-            setDetalles([
+            const detalles = [
               ...(data.errores_graves.detalles ?? []),
               ...(data.errores_moderados.detalles ?? []),
               ...(data.errores_leves.detalles ?? [])
-            ])
+            ];
+            setDetalles(detalles);
+
+            detalles.forEach((detalle) => {
+              toast.error(`Error ${detalle.tipo}: ${detalle.mensaje}`, { toastId: `${detalle.tipo}-${detalle.id_asignatura}-${detalle.celdaid}`});
+            });
+          },
+          onError: () => {
+            toast.error(" error al calcular los errores del calendario");
           }
+
         });
 
       }, [calendario]);
@@ -788,6 +798,16 @@ export const Calendar = () => {
           </div>
         </aside>
 
+      {true && (
+      <div className="errores-box">
+        <p><strong>Errores graves: </strong>{errores?.errores_graves}</p>
+        <p><strong>Errores moderados: </strong>{errores?.errores_moderados}</p>
+        <p><strong>Errores leves: </strong>{errores?.errores_leves}</p>
+        <p><strong>Calidad: </strong>{errores?.calidad}</p>
+      </div>
+    )}
+      
+
     <div className="calendar-container">
       <h2 className="calendar-titulo">Calendario de pruebas</h2>
       
@@ -795,14 +815,6 @@ export const Calendar = () => {
         <input type="checkbox" checked={mostrarClmnaextra} onChange={()=> setMostrarClmnextra((prev)=> !prev)}/>
         Columna adicional (dia 7)
       </label>
-      {true && (
-        <div className="errores-box">
-          <p><strong>Errores graves: </strong>{errores?.errores_graves}</p>
-          <p><strong>Errores moderados: </strong>{errores?.errores_moderados}</p>
-          <p><strong>Errores leves: </strong>{errores?.errores_leves}</p>
-          <p><strong>Calidad: </strong>{errores?.calidad}</p>
-        </div>
-      )}
       
 
       {formVisible && datosForm && (
@@ -1045,6 +1057,7 @@ export const Calendar = () => {
       )}
       <button onClick={() => setMostrarErrores(true)} className="boton-errores"> Detalles de errores</button>
 
+    <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={true} closeOnClick pauseOnFocusLoss draggable pauseOnHover />
     </div>
   </div>
    )
