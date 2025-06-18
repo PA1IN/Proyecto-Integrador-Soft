@@ -19,6 +19,16 @@ export function useProfesores() {    //pa listar los profesores que no estén el
     });
 }
 
+export function useProfesoresCreados() {    //pa listar los profesores que no estén eliminados.
+    return useQuery({
+        queryKey: ['profesoresCreados'],
+        queryFn: async () => {
+            const respuesta = await api.get('/profesor/creado');
+            return respuesta.data;
+        }
+    });
+}
+
 export function useCrearProfesor(){ 
     const clienteQuery = useQueryClient();
     return useMutation({
@@ -27,7 +37,7 @@ export function useCrearProfesor(){
             return respuesta.data
         },
         onSuccess: () => {
-            clienteQuery.invalidateQueries({queryKey:['profesor']});
+            clienteQuery.invalidateQueries({queryKey:['profesoresCreados']});
         }                          
     });
 }
@@ -39,7 +49,7 @@ export function useEliminarProfe(){   //pa "eliminar" un profesor
             await api.patch(`/profesor/${id}`)
         },
         onSuccess: () => {
-            clienteQuery.invalidateQueries({queryKey:['profesor']});
+            clienteQuery.invalidateQueries({queryKey:['profesoresCreados']});
         }                        
     });
 

@@ -2,7 +2,7 @@ import React, {SyntheticEvent,useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useUserProfile } from '../hooks/useUserProfile';
-import { useAsignaturas, useAsignaturasCreadas, useCrearAsignatura, useEliminarAsignatura } from '../hooks/useAsignaturas';
+import { useAsignaturas, useAsignaturasCreadas, useCrearAsignatura, useEliminarAsignatura, useCarreras} from '../hooks/useAsignaturas';
 
 
 export const Asignaturas = () => 
@@ -13,12 +13,14 @@ export const Asignaturas = () =>
     const navigate = useNavigate();
     const {data: asignaturas,isLoading: cargaAsignaturas} = useAsignaturas();
     const {data: asignaturasCreadas,isLoading: cargaAsignaturasCreadas} = useAsignaturasCreadas();
+    const {data: carreras,isLoading: cargaCarreras} = useCarreras();
     const eliminarAsignatura = useEliminarAsignatura();
     const crearAsignatura = useCrearAsignatura();
 
     const [codigoNrc, setNrc] = useState('');
     const [niv, setNivel] = useState('');
     const [name, setNombre] = useState('');
+    const [carrera, setCarrera] = useState('');
 
     if(!token)
     {
@@ -40,8 +42,11 @@ export const Asignaturas = () =>
       
     const crear = (e:SyntheticEvent) => {
         e.preventDefault();
-        crearAsignatura.mutate({nrc: codigoNrc, nivel: Number(niv) ,nombre: name});
+        crearAsignatura.mutate({nrc: codigoNrc, nivel: Number(niv) ,nombre: name, creado: true, id_carrera: Number(carrera)});
         setNombre('');
+        setNivel('');
+        setNrc('');
+        setCarrera('');
     };
     
     return (
@@ -53,13 +58,25 @@ export const Asignaturas = () =>
                 <input type = "text" placeholder="Ingrese el nombre de la asignatura." value={name} onChange={(e)=> setNombre(e.target.value)} required />
                 <input type = "number" placeholder="Ingrese el número del semestre (o nivel) al que pertenece la asignatura (ej: 4)." value={niv} onChange={(e)=> setNivel(e.target.value)} required />
                 <input type = "text" placeholder="Ingrese el NRC de la asignatura." value={codigoNrc} onChange={(e)=> setNrc(e.target.value)} required />
+                <select 
+                    value={carrera} 
+                    onChange={(e) => setCarrera(e.target.value)}
+                    required
+                >
+                    <option value="">Seleccione una carrera</option>
+                    {carreras?.map((carreraItem: any) => (
+                        <option key={carreraItem.id} value={carreraItem.id}>
+                            {carreraItem.nombre}
+                        </option>
+                    ))}
+                </select>
                 <button type="submit">Agregar</button>
             </form>
 
             {cargaAsignaturasCreadas ? (<p>Cargando tus asignaturas...</p>)
             : (
             <>
-                <h2>Tus asignaturas creadas: </h2>
+                <h2>Tus asignaturas agregadas: </h2>
                 {asignaturasCreadas?.length > 0 ? (
                     <ul>
                         {asignaturasCreadas.map((ac: any) => (

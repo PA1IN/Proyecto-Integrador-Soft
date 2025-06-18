@@ -1,9 +1,9 @@
 import React, { SyntheticEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { useForgotPassword } from '../hooks/useForgotPassword';
+import { useForgotPassword} from '../hooks/useForgotPassword';
 
 export const ForgotPassword = () => {
-  const [correo, setCorreo] = useState('');
+  const [email, setCorreo] = useState('');
   const [error, setErrorMsg] = useState('');
   const navigate = useNavigate();
   const [exito,setExitoMsg] = useState('');
@@ -23,7 +23,8 @@ export const ForgotPassword = () => {
     e.preventDefault();
     setErrorMsg('');
     setExitoMsg('');
-    recuperarPassword.mutate({correo});
+    recuperarPassword.mutate({correo: email});
+    navigate('/recuperar-contraseña')
       
   };
 
@@ -38,7 +39,7 @@ export const ForgotPassword = () => {
       <form onSubmit={enviar}>
           <div className = "form-group">
               <label htmlFor = "email">Correo: </label>
-              <input type = "email" id = "email" placeholder = 'Ingrese su Correo registrado...' required value={correo} onChange={e => setCorreo(e.target.value)}/>
+              <input type = "email" id = "email" placeholder = 'Ingrese su Correo registrado...' required value={email} onChange={e => setCorreo(e.target.value)}/>
           </div>
           
           <button type = "submit" className = "login-button" value="Submit" disabled={recuperarPassword.isPending}>
