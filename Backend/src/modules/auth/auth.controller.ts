@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Req, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegistroDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -36,7 +36,7 @@ export class AuthController {
     async enviarCorreo(@Body() dto: EnviarCorreoDto) {
         return this.authService.enviarCorreoRecuperacion(dto);
     }
-    @Post('recuperarContrasena')
+    @Patch('recuperarContrasena')
     async recuperarContrasena(@Body() dto: RecuperarContrasenaDto) {
         return this.authService.recoverPassword(dto);
     }
