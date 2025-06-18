@@ -1,0 +1,102 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-grande {
+  background: white;
+  padding: 20px;
+  max-height: 90vh;
+  overflow-y: auto;
+  width: 90%;
+  border-radius: 8px;
+}
+
+/*.pdf-preview-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.pdf-preview-content th,
+.pdf-preview-content td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+}*/
+
+.acciones-modal {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.boton-descarga-pdf {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+.boton-descarga-pdf:hover {
+  background-color: #388e3c;
+}
+
+.pdf-grid {
+  display: flex;
+  flex-direction: column;
+  font-size: 11px;
+  width: 100%;
+  border: 1px solid #ccc;
+}
+
+.pdf-row {
+  display: flex;
+}
+
+.pdf-cell {
+  flex: 1;
+  border: 1px solid #ccc;
+  padding: 6px;
+  min-height: 60px;
+  word-wrap: break-word;
+}
+
+.pdf-header {
+  background-color: #003366;
+  color: white;
+  font-weight: bold;
+}
+
+.pdf-time-slot {
+  color: black;
+  width: 100px;
+  background-color: #f0f0f0;
+  font-weight: bold;
+  text-align: center;
+}
+
+.pdf-slot {
+  background-color: #fff;
+}
+
+.pdf-day-header {
+  text-align: center;
+}
+
+.pdf-prueba-box {
+  background-color: #e6f4ea;
+  border: 1px solid #9acd32;
+  padding: 4px;
+  margin-bottom: 4px;
+  border-radius: 4px;
+}
