@@ -7,6 +7,7 @@ import { HorarioAsignaturaDto } from './dto/horario-asignatura.dto';
 import { Asignatura } from './entities/asignatura-creada.entity';
 import { Carrera } from '../carrera/entities/carrera.entity';
 import { CarreraAsignatura } from '../carrera/entities/Carrera-Asignatura.entity';
+import { create } from 'domain';
 
 @Injectable()
 export class AsignaturaService {
@@ -42,6 +43,9 @@ export class AsignaturaService {
             eliminada: false
 
         });
+        if(createAsignaturaDto.creada){
+            asignatura.creada = createAsignaturaDto.creada; 
+        }
          const asignaturaguardada = await this.asignaturaCrepository.save(asignatura)
         
          const carrera = await this.carreraRepository.findOne({
