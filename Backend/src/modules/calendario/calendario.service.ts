@@ -275,7 +275,7 @@ async analizarErrores({ caledarioId, pruebas }:  CheckErroresDto) {
         profesores: prueba.profesores?.map(p => p.nombre) ?? [],
         id_salas: prueba.salas?.map(s => s.id) ?? [],
         salas: prueba.salas?.map(s => s.nombre) ?? [],
-        profesor_error: prueba.profesorError,
+        profesor_error: prueba.profesorError?.map(e => e) ?? [],
         eliminado: prueba.eliminado,
         dia: prueba.dia,
         celdaid: prueba.celdaid,
