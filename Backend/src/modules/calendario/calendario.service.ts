@@ -242,7 +242,7 @@ async analizarErrores({ caledarioId, pruebas }:  CheckErroresDto) {
       'columnas',
      'relaciones',
       'relaciones.prueba',
-      'relaciones.prueba.profesor',
+      'relaciones.prueba.profesores',
       'relaciones.prueba.sala',
       'relaciones.prueba.asignatura',
     ],
