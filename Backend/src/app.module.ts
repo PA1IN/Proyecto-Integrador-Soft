@@ -24,6 +24,7 @@ import { ProfesorModule } from './modules/profesor/profesor.module';
 import { CarreraModule } from './modules/carrera/carrera.module';
 import { Carrera } from './modules/carrera/entities/carrera.entity';
 import { CarreraAsignatura } from './modules/carrera/entities/Carrera-Asignatura.entity';
+import { MailModule } from './modules/mail/mail.module';
 
 
 @Module({
@@ -48,6 +49,7 @@ import { CarreraAsignatura } from './modules/carrera/entities/Carrera-Asignatura
     EvaluacionModule,
     ProfesorModule,
     CarreraModule,
+    MailModule,
     
     
   ],

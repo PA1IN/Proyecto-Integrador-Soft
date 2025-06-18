@@ -64,5 +64,38 @@ export class UserService {
 
     return user;
   }
+  async getUserByEmail(email: string): Promise<User | null> {
+    const user = await this.userRepository.findOne({ where: { correo: email } });
+
+    if (!user) {
+      throw new HttpException(
+        CreateResponse('No hay usuario registrado con ese correo', null, 'NOT_FOUND'),
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return user;
+  }
+  async añadirTokenRecuperacion(user: User, token: string): Promise<User> {
+    user.recoverToken = token; // Assuming you have a recoverToken field in your User entity
+    return await this.userRepository.save(user);
+  }
+
+
+  async getUserByToken(token: string) {
+    const user = await this.userRepository.findOne({ where: { recoverToken: token } });
+
+    if (!user) {
+      throw new HttpException(
+        CreateResponse('No hay usuario registrado con ese token', null, 'NOT_FOUND'),
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return user.correo;
+  }
+  async updateUser(user: User): Promise<User> {
+    return await this.userRepository.save(user);
+  }
 }
 

@@ -17,6 +17,10 @@ export class UserController {
     return this.userService.dataUserByRut(rut);
 }
 
+ @Get("user/:token") 
+    getuserbytoken(@Param("token") token: string):Promise<ApiResponse<any>> {
+    return this.userService.dataUserByRut(token);
+}
 
 
 

@@ -17,4 +17,7 @@ export class User {
     @OneToMany(() => Calendario, calendario => calendario.usuario)
     calendarios: Calendario[];
 
+    @Column({type: "uuid", nullable: true})
+    recoverToken: string | null; // Token for password recovery, can be null if not set
+
 }
