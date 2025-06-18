@@ -32,7 +32,7 @@ export class AuthController {
     ) {
      return req.user; 
     }
-    @Post('enviarCorreo')
+    @Patch('enviarCorreo')
     async enviarCorreo(@Body() dto: EnviarCorreoDto) {
         return this.authService.enviarCorreoRecuperacion(dto);
     }
