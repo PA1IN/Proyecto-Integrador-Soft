@@ -5,7 +5,7 @@ import api from '../api/axios';
 
 export interface ColumnaResponse
 {
-    columnas: {id_columna: number; dia: number; fecha: string | null}[];
+    columnas: {id_columna: number; dia: number; fecha_inicio: string | null}[];
 
 }
 

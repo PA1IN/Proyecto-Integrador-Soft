@@ -1,4 +1,4 @@
-.calendar-container {
+/*.calendar-container {
   max-width: 1200px;
   margin: 2rem auto;
   padding: 2rem;
@@ -253,6 +253,85 @@
   z-index: 9999;
 }
 
+.lista-profesores-scroll {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.boton-errores {
+  margin-top: 10px;
+  margin-left: 10px;
+  background-color: #ff4d4f;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.lista-errores {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+}
+
+.lista-errores h4 {
+  margin-top: 16px;
+  color: #333;
+}
+
+.lista-errores li {
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.bloque-asignatura.asignatura-agendada {
+  background-color: #c0e8c0; 
+  transition: background-color 0.3s ease;
+}
+
+.bloque-asignatura.asignatura-agendada.error-grave {
+  background-color: #f44336; 
+  color: white;
+}
+
+.bloque-asignatura.asignatura-agendada.error-moderado {
+  background-color: #ffeb3b; 
+  color: black;
+}
+
+.bloque-asignatura.asignatura-agendada.error-leve {
+  background-color: #ff9800; 
+  color: white;
+}
+
+.calendar-page-layout {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0 2rem;
+  box-sizing: border-box;
+}
+
+.panel-asignaturas-flotante {
+  width: 250px;
+  background-color: #f5f5f5;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+  min-height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+  z-index: 10;
+}/*
 
 
 /*
@@ -273,3 +352,359 @@
   white-space: normal;
 }
 */
+
+
+.page-wrapper {
+  background-color: #3f6fd8;
+  min-height: 100vh;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
+  box-sizing: border-box;
+  overflow-x: auto;
+  min-width: fit-content;
+  
+}
+
+/*.calendar-container {
+  flex: 1;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #e8f0fe;
+  border-radius: 12px;
+  font-family: sans-serif;
+  position: relative;
+  overflow-x: auto;
+
+}*/
+
+.calendar-container {
+  display: inline-block;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #e8f0fe;
+  border-radius: 12px;
+  font-family: sans-serif;
+  position: relative;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+
+.calendar-titulo {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+
+.calendar-layout {
+  display: flex;
+  gap: 1rem;
+}
+
+.panel-asignaturas-flotante {
+  width: 260px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.1);
+  padding: 1rem;
+  height: fit-content;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: sticky;
+  top: 2rem;
+}
+
+.categorias {
+  padding: 1rem;
+}
+
+.categorias h3 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.categorias h4 {
+  margin: 1rem 0 0.5rem 0;
+}
+
+.bloque-asignatura {
+  background-color: #e0e0e0;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  text-align: center;
+  cursor: grab;
+  border: 1px solid #bbb;
+  max-width: 100%;
+  height: auto;
+  display: inline-block;
+  line-height: 1.2;
+  font-size: 0.9rem;
+  position: relative;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.asignatura-agendada {
+  background-color: #c8e6c9;
+  border: 1px solid #66bb6a;
+  color: #2e7d32;
+  padding: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  font-size: 0.8rem;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.calendar-grilla {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: max-content;
+}
+
+.fila {
+  display: flex;
+  width: 100%;
+}
+
+.fila-header {
+  font-weight: bold;
+}
+
+.celda-hora {
+  width: 120px;
+  min-width: 120px;
+  max-width: 120px;
+  font-weight: bold;
+  vertical-align: top;
+  background-color: #f0f0f0;
+  text-align: center;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.celda-dia {
+  width: 200px;
+  min-width: 200px;
+  text-align: center;
+  background-color: #1976d2;
+  color: white;
+  padding: 0.5rem;
+  border: 1px solid #fff;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.celda-multiple {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 200px;
+  min-width: 200px;
+  border: 1px solid #ccc;
+  background-color: white;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.celda-droppable {
+  width: 200px;
+  min-width: 200px;
+  background-color: #fff;
+  min-height: 80px;
+  border: 1px solid #ccc;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.horario-slot {
+  font-size: 0.7rem;
+  color: #888;
+  position: absolute;
+  top: 2px;
+  left: 4px;
+}
+
+.eliminar-boton {
+  background: transparent;
+  border: none;
+  color: #b71c1c;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 350px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.modal select,
+.modal input[type='text'] {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.modal label {
+  font-size: 0.85rem;
+}
+
+.modal button {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.modal button:first-of-type {
+  background-color: #1976d2;
+  color: white;
+}
+
+.modal button:last-of-type {
+  background-color: #bdbdbd;
+  color: black;
+}
+
+.confirmar-boton {
+  display: block;
+  margin: 1.5rem auto;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  background-color: #388e3c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.confirmar-boton:hover {
+  background-color: #2e7d32;
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.confirmar-boton:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.errores-box {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 1rem;
+  border: 1px solid #ffeeba;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  font-size: 0.9rem;
+  max-width: 300px;
+  z-index: 9999;
+}
+
+.lista-profesores-scroll {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.boton-errores {
+  margin-top: 10px;
+  margin-left: 10px;
+  background-color: #ff4d4f;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.lista-errores {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+}
+
+.lista-errores h4 {
+  margin-top: 16px;
+  color: #333;
+}
+
+.lista-errores li {
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.bloque-asignatura.asignatura-agendada {
+  background-color: #c0e8c0;
+  transition: background-color 0.3s ease;
+}
+
+.bloque-asignatura.asignatura-agendada.error-grave {
+  background-color: #f44336;
+  color: white;
+}
+
+.bloque-asignatura.asignatura-agendada.error-moderado {
+  background-color: #ffeb3b;
+  color: black;
+}
+
+.bloque-asignatura.asignatura-agendada.error-leve {
+  background-color: #ff9800;
+  color: white;
+}
+
+
