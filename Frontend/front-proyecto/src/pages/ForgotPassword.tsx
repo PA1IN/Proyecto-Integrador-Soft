@@ -23,8 +23,8 @@ export const ForgotPassword = () => {
     e.preventDefault();
     setErrorMsg('');
     setExitoMsg('');
-    recuperarPassword.mutate({correo});
-    navigate('/CambiarPassword')
+    recuperarPassword.mutate({email: correo});
+    navigate('/recuperar-contraseña')
       
   };
 

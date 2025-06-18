@@ -4,26 +4,31 @@ import { AxiosError } from 'axios';
 
 
 interface Forgotdata {
-    correo: string;
+    email: string;
 }
 
 interface Reemplazo {
-    correo: string;
-    password: string;
+    email: string;
+    newPassword: string;
 }
 
-interface Forgotresponse{
-    message: string                     //revisar back para modificar esta interfaz
+interface Forgotresponse {
+    message: string;
 }
 
-interface respuestaCambiarPassword{
-    message: string                     //revisar back para modificar esta interfaz
+interface respuestaCambiarPassword {
+    message: string;
+}
+
+interface VerificacionResponse {
+    email: string;
 }
 
 export function useForgotPassword(onSuccess: () => void,onFail: (error: string) => void) {
+    const clienteQuery = useQueryClient();
     return useMutation<Forgotresponse,AxiosError,Forgotdata>({
-        mutationFn: async ({correo}:Forgotdata): Promise<Forgotresponse> => {
-            const respuesta = await api.post('/api/v1/auth/forgotpassword',{correo});
+        mutationFn: async ({email}:Forgotdata): Promise<Forgotresponse> => {
+            const respuesta = await api.patch('/auth/enviarCorreo',{email});
             return respuesta.data;
         },
         onSuccess: () => {
@@ -36,24 +41,34 @@ export function useForgotPassword(onSuccess: () => void,onFail: (error: string) 
     })
 }
 
-export function useRecibirVerificacion() {    
-    return useQuery({
-        queryKey: ['verificacion'],
-        queryFn: async () => {
-            const respuesta = await api.get('/api/v1/auth/forgotpassword');
+export function useRecibirVerificacion() {
+    const verifyToken = useMutation<VerificacionResponse, AxiosError, string>({
+        mutationFn: async (token: string) => {
+            const respuesta = await api.get(`user/user/${token}`);
             return respuesta.data;
         }
     });
+    
+    return {
+        mutate: verifyToken.mutate,
+        isPending: verifyToken.isPending,
+        error: verifyToken.error,
+        data: verifyToken.data
+    };
 }
 
 export function useCambiarPassword() {
-    const clienteQuery = useQueryClient();
-    return useMutation({
-        mutationFn: async ({correo, password}:Reemplazo) => {
-            await api.patch(`/api/v1/auth/forgotpassword`, {correo,password})
-        },
-        onSuccess: () => {
-            clienteQuery.invalidateQueries({queryKey:['verificacion']});
-        }                        
+    const mutation = useMutation<respuestaCambiarPassword, AxiosError, Reemplazo>({
+        mutationFn: async ({ email, newPassword }: Reemplazo) => {
+            const respuesta = await api.patch(`/auth/recuperarContrasena`, { email, newPassword });
+            return respuesta.data;
+        }
     });
+    
+    return {
+        mutate: mutation.mutate,
+        isPending: mutation.isPending, 
+        error: mutation.error,
+        data: mutation.data
+    };
 }
