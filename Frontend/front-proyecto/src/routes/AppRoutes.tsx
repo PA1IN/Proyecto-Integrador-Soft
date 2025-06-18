@@ -10,6 +10,7 @@ import { Profesores } from '../pages/Profesores';
 import { Salas } from '../pages/Salas';
 import { Asignaturas } from '../pages/Asignaturas';
 import { CalendariosDashboard } from '../pages/CalendariosDashboard';
+import CambiarPassword from '../pages/recuperar-contraseña';
 
 
 export const AppRoutes = () => {
@@ -18,6 +19,8 @@ export const AppRoutes = () => {
       <Route path = '/Login' element = {<Login/>}/>
       <Route path = '/Register' element = {<Register/>}/>
       <Route path = '/ForgotPassword' element={<ForgotPassword/>}/>
+      <Route path = '/recuperar-contraseña' element={<CambiarPassword/>}/>
+
       <Route path='/Home'element={<PrivateRoute> <Home/> </PrivateRoute>}/>
       <Route path='/Calendar/:id'element={<PrivateRoute> <Calendar/> </PrivateRoute>}/>
       <Route path='/Calendar'element={<PrivateRoute> <Calendar/> </PrivateRoute>}/>

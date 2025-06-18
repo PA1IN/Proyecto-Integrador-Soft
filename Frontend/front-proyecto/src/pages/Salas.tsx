@@ -2,7 +2,7 @@ import React, {SyntheticEvent,useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useUserProfile } from '../hooks/useUserProfile';
-import { useSalas,useCrearSala,useEliminarSala } from '../hooks/useSalas';
+import { useSalas,useCrearSala,useEliminarSala, useSalasCreadas } from '../hooks/useSalas';
 
 export const Salas = () => 
 {
@@ -11,6 +11,7 @@ export const Salas = () =>
     const {data: user, isLoading: cargauser, isError} = useUserProfile();
     const navigate = useNavigate();
     const {data: salas,isLoading: cargaSalas} = useSalas();
+    const {data: salasCreadas,isLoading: cargaSalasCreadas} = useSalasCreadas();
     const eliminarSala = useEliminarSala();
     const crearSala = useCrearSala();
     const [name, setNombre] = useState('');
@@ -42,12 +43,31 @@ export const Salas = () =>
     return (
         <div>
             <h1>Menú de Salas</h1>
-
+            <button onClick={()=> navigate('/Home')}>Volver al menú principal</button>
             <h3>Agregar sala: </h3>
             <form onSubmit={crear}>
                 <input type = "text" placeholder="Ingrese número de la sala (ej: 29)." value={name} onChange={(e)=> setNombre(e.target.value)} required />
                 <button type="submit">Agregar</button>
             </form>
+
+            {cargaSalasCreadas ? (<p>Cargando salas...</p>)
+            : (
+            <>
+                <h2>Tus salas agregadas: </h2>
+                {salasCreadas?.length > 0 ? (
+                    <ul>
+                        {salasCreadas.map((sala: any) => (
+                            <li key = {sala.id}>
+                                {sala.nombre}
+                                <button onClick={() => eliminarSala.mutate(sala.id)}>Eliminar sala del sistema</button>
+                                <p>-------</p>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (<p>No hay salas creadas por ti.</p>)
+                }
+            </>
+            )}
 
             {cargaSalas ? (<p>Cargando salas...</p>)
             : (
@@ -58,17 +78,14 @@ export const Salas = () =>
                         {salas.map((s: any) => (
                             <li key = {s.id}>
                                 {s.nombre}
-                                <button onClick={() => eliminarSala.mutate(s.id)}>Eliminar sala del sistema</button>
                                 <p>-------</p>
                             </li>
                         ))}
                     </ul>
-                ) : (<p>No hay salas</p>)
+                ) : (<p>No hay salas en el sistema.</p>)
                 }
             </>
             )}
-        
-            <button onClick={()=> navigate('/Home')}>Volver al menú principal</button>
         </div>
   );
 };
