@@ -178,12 +178,12 @@ private async  contarErroresModerados(pruebas: PruebaDto[]) {
 }
 private contarErroresLeves(pruebas: PruebaDto[]) {
   const detalles = pruebas
-    .filter(p => p.profesor_error)
+    .filter(p => Array.isArray(p.profesor_error) && p.profesor_error.some(e => e)) // Verifica si algún error es true
     .map(p => ({
       id_asignatura: p.id_asignatura,
       celdaid: `${p.celdaid}`,
       tipo: 'leve',
-      mensaje: 'Profesor tiene conflicto o no fue asignado correctamente.',
+      mensaje: 'Profesor distinto al de catedra.',
     }));
 
   return { errores: detalles.length, detalles };

@@ -70,7 +70,7 @@ export class EvaluacionService {
 
         prueba.horario = dto.horario;
         prueba.dia = dto.dia;
-        prueba.profesorError = dto.profesor_error || false;
+        prueba.profesorError = dto.profesor_error || [];
         prueba.eliminado = dto.eliminado || false;
         prueba.celdaid = dto.celdaid || 'prodiccion ignorar esta prueba'; // Default value if not provided
         

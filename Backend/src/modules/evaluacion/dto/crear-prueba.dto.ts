@@ -21,8 +21,9 @@ export class PruebaDto{
     horario: string;
     @IsNumber()
     dia: number;
-    @IsBoolean()
-    profesor_error: boolean;
+    @IsArray()
+    @IsBoolean({ each: true })
+    profesor_error?: boolean[];
     @IsBoolean()
     eliminado: boolean;
     @IsString()
