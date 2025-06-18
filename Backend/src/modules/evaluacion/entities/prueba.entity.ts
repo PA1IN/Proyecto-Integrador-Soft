@@ -34,7 +34,7 @@ export class Prueba {
 
   @Column()
   dia: number;
-  @Column({ name: 'profesor_error' })
+  @Column({ name: 'profesor_error', type: 'boolean', array:true, nullable:true })
   profesorError: boolean [];
   @Column({ default: false })
   eliminado: boolean;
