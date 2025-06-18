@@ -3,6 +3,8 @@ import { AuthService } from './auth.service';
 import { RegistroDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from './guard/auth.guard';
+import { RecuperarContrasenaDto } from './dto/recuperar-contraseña.dto';
+import { EnviarCorreoDto } from './dto/enviarcorreo.dto';
 
 
 @Controller('auth')
@@ -29,6 +31,14 @@ export class AuthController {
         @Request() req
     ) {
      return req.user; 
+    }
+    @Post('enviarCorreo')
+    async enviarCorreo(@Body() dto: EnviarCorreoDto) {
+        return this.authService.enviarCorreoRecuperacion(dto);
+    }
+    @Post('recuperarContrasena')
+    async recuperarContrasena(@Body() dto: RecuperarContrasenaDto) {
+        return this.authService.recoverPassword(dto);
     }
     
     
