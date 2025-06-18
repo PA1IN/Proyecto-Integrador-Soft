@@ -13,12 +13,17 @@ export class MailService {
   async sendPasswordRecovery(dto : EnviarMailDto) {
     const url = `http://localhost:3000/recuperar-contrasena`;
 
-    await this.mailerService.sendMail({
-      to: dto.email,
-      subject: 'Recuperación de contraseña',
-      text: `Hola, haz clic en el siguiente enlace para restablecer tu contraseña: ${url}, su token es: ${dto.token}` ,
-      html: `<b>Hola</b>,<br><p>Haz clic en este <a href="${url}">enlace</a> para restablecer tu contraseña.</p>`,
-    });
+   await this.mailerService.sendMail({
+  to: dto.email,
+  subject: 'Código de verificación para restablecer contraseña',
+  text: `Hola, este es tu código de verificación para restablecer tu contraseña: ${dto.token}`,
+  html: `
+    <p><b>Hola,</b></p>
+    <p>Este es tu <b>código de verificación</b> para restablecer tu contraseña:</p>
+    <h2 style="color: #2d89ef;">${dto.token}</h2>
+    <p>Ingresa este código en la aplicación para continuar con el proceso.</p>
+  `,
+});
   }
 }
 

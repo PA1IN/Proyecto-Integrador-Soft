@@ -12,14 +12,14 @@ export class UserController {
     console.log(name);
     return this.userService.createUser({name, rut, correo, password});
   }
-  @Get("user/:rut") 
+  @Get(":rut") 
     getUser(@Param("rut") rut: string):Promise<ApiResponse<any>> {
     return this.userService.dataUserByRut(rut);
 }
 
- @Get("user/:token") 
-    getuserbytoken(@Param("token") token: string):Promise<ApiResponse<any>> {
-    return this.userService.dataUserByRut(token);
+ @Get("token/:token") 
+    getuserbytoken(@Param("token") token: string): Promise<String | null> {
+    return this.userService.getUserByToken(token);
 }
 
 

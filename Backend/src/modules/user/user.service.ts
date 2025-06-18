@@ -67,12 +67,8 @@ export class UserService {
   async getUserByEmail(email: string): Promise<User | null> {
     const user = await this.userRepository.findOne({ where: { correo: email } });
 
-    if (!user) {
-      throw new HttpException(
-        CreateResponse('No hay usuario registrado con ese correo', null, 'NOT_FOUND'),
-        HttpStatus.NOT_FOUND,
-      );
-    }
+    
+    
 
     return user;
   }
@@ -83,6 +79,7 @@ export class UserService {
 
 
   async getUserByToken(token: string) {
+    console.log("Token recibido:", token);
     const user = await this.userRepository.findOne({ where: { recoverToken: token } });
 
     if (!user) {
@@ -94,6 +91,9 @@ export class UserService {
 
     return user.correo;
   }
+
+
+
   async updateUser(user: User): Promise<User> {
     return await this.userRepository.save(user);
   }

@@ -28,7 +28,7 @@ export function useForgotPassword(onSuccess: () => void,onFail: (error: string) 
     const clienteQuery = useQueryClient();
     return useMutation<Forgotresponse,AxiosError,Forgotdata>({
         mutationFn: async ({correo}:Forgotdata): Promise<Forgotresponse> => {
-            const respuesta = await api.patch('/auth/enviarCorreo',{correo});
+            const respuesta = await api.patch('/auth/enviarCorreo',{email:correo});
             return respuesta.data;
         },
         onSuccess: () => {
@@ -44,7 +44,7 @@ export function useForgotPassword(onSuccess: () => void,onFail: (error: string) 
 export function useRecibirVerificacion() {
     const verifyToken = useMutation<VerificacionResponse, AxiosError, string>({
         mutationFn: async (token: string) => {
-            const respuesta = await api.get(`user/user/${token}`);
+            const respuesta = await api.get(`user/token/${token}`);
             return respuesta.data;
         }
     });

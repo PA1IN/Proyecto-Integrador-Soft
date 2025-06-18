@@ -7,6 +7,7 @@ import { LoginDto } from './dto/login.dto';
 import { MailService } from '../mail/mail.service';
 import { v4 } from 'uuid';
 import { RecuperarContrasenaDto } from './dto/recuperar-contraseña.dto';
+import { EnviarCorreoDto } from './dto/enviarcorreo.dto';
 @Injectable()
 export class AuthService {
     constructor(
@@ -58,19 +59,19 @@ export class AuthService {
         
     }
 
-    async enviarCorreoRecuperacion(email: string) {
+    async enviarCorreoRecuperacion(dto: EnviarCorreoDto) {
     const token = v4(); 
-    const user = await this.userService.getUserByEmail(email);
+    const user = await this.userService.getUserByEmail(dto.email);
     if (!user) {
         throw new BadRequestException('Usuario no encontrado');
     }
      await this.userService.añadirTokenRecuperacion(user, token);
-
-     const dto = {
+    const email = dto.email;
+     const dto2 = {
         email,
         token,
     };
-     await this.mailService.sendPasswordRecovery(dto);
+     await this.mailService.sendPasswordRecovery(dto2);
     }
     async recoverPassword(dto :RecuperarContrasenaDto) {
         const user = await this.userService.getUserByEmail(dto.email);
@@ -79,7 +80,8 @@ export class AuthService {
         }
         user.password = await bcryptjs.hash(dto.newPassword, 10);
         user.recoverToken = null; // Clear the recovery token
-        return await this.userService.updateUser(user);
+        await this.userService.updateUser(user)
+        return true;
     }
     
     

@@ -21,7 +21,7 @@ import { MailController } from './mail.controller';
     },
       },
       defaults: {
-        from: '"ramos te hablo desde nuestra aplicacion de calendarios" <soporte@tuapp.com>',
+        from: '"Soporte" <soporte@tuapp.com>',
       },
     }),
   ],
