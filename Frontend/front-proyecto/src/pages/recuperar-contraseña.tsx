@@ -8,7 +8,7 @@ export const CambiarPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
-  const [email, setEmail] = useState<string | null>(null); 
+  const [mail, setEmail] = useState(''); 
   const navigate = useNavigate();
 
   const { mutate: verifyToken, isPending: isVerifying, error: verifyError, data: verifyData } = useRecibirVerificacion();
@@ -27,7 +27,9 @@ export const CambiarPassword = () => {
         
         verifyToken(token, {
             onSuccess: (data) => {
+                console.log(data.correo);
                 setEmail(data.correo);
+                console.log(mail);
                 setSuccessMsg('Código verificado correctamente');
             },
             onError: (error: any) => {
@@ -40,7 +42,7 @@ export const CambiarPassword = () => {
   const handlePasswordSubmit = (e: SyntheticEvent) => {
         e.preventDefault();
         
-        if (!email) {
+        if (!mail) {
             setErrorMsg('No se encontró el correo asociado');
             return;
         }
@@ -57,13 +59,16 @@ export const CambiarPassword = () => {
         
         setErrorMsg('');
         
-        cambiarContra({ email: email, newPassword: password }, {
+        cambiarContra({ email: mail, newPassword: password }, {
             onSuccess: () => {
                 setSuccessMsg('Contraseña cambiada exitosamente!. Cierra esta pestaña');
+                setEmail('');
             },
             onError: (error: any) => {
                 setErrorMsg(error.response?.data?.message || 'Error al cambiar la contraseña');
+                setEmail('');
             }
+            
         });
     };
 
@@ -74,7 +79,7 @@ export const CambiarPassword = () => {
           <img src= "images/Escudo-UCN-Full-Color.png" alt="Escudo-UCN-Full-Color" className = "escudo-ucn"/>
           <img src = "images/eic-w-m-modified.png" alt="eic-w-m" className = "logo-eic"/>
       </div>
-            {!email && (
+            {!mail && (
                 <div className="token-form">
                     <h1>Ingresa tu código de verificación</h1>
                     <form onSubmit={handleTokenSubmit}>
@@ -91,9 +96,9 @@ export const CambiarPassword = () => {
                     </form>
                 </div>
             )}
-            {email && (
+            {mail && (
                 <div className="password-form">
-                    <h1>Cambiar contraseña para {email}</h1>
+                    <h1>Cambiar contraseña para {mail}</h1>
                     <form onSubmit={handlePasswordSubmit}>
                         <input
                             type="password"
