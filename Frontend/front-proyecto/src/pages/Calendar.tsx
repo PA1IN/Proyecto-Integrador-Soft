@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { useCargarColumnas } from '../hooks/useColumna';
-import {useAsignaturas} from '../hooks/useAsignaturas';
+import {useAsignaturas, useCarreras, useAsignaturasPorCarrera} from '../hooks/useAsignaturas';
 import '../styles/calendar.css';
 import { useProfesores } from '../hooks/useProfesores';
 import { useSalas } from '../hooks/useSalas';
@@ -28,14 +28,21 @@ export const Calendar = () => {
     const [idCalendarioLocal, setIdCalendarioLocal] = useState<number | null>(null);
     const evitarCargabackend = id_actual === 0 && idCalendarioLocal === null;
     const {data: user } = useUserProfile(); 
+    const [ idCarreraSeleccionada, setIdCarreraSeleccionada ] = useState<number | null>(null);
+    const [semestreSeleccionado, setSemestreseleccionado] = useState(0);
+
+
     const {data: columnas, isLoading: cargandoColumnas} = useCargarColumnas(evitarCargabackend ? undefined : (idCalendarioLocal ?? id_actual ));
     const {data: calendarioData } = useCargarCalendario(evitarCargabackend ? undefined : (idCalendarioLocal ?? id_actual ));
     //const actualizarColumna = useActualizarColumna();
     const confirmarCalendario = useConfirmarCalendario();
     const calcularErrores = useCalcularErrores();
-    const {data: subjects} = useAsignaturas();
-    const asignaturasFijas = subjects?.filter((a:any) => !a.creada);
-    const asignaturasCreadas = subjects?.filter((a:any)=> a.creada);
+
+    const {data: carreras } = useCarreras();
+    const {data: subjectsCarrera} = useAsignaturasPorCarrera(idCarreraSeleccionada ?? undefined);
+    const asignaturasFijas = subjectsCarrera?.filter((a:any) => !a.creada);
+    const asignaturasCreadas = subjectsCarrera?.filter((a:any)=> a.creada);
+
     const {data: profesores} = useProfesores();
     const {data: salas} = useSalas();
     const location = useLocation();
@@ -71,7 +78,6 @@ export const Calendar = () => {
     const [horaFin, setHoraFin] = useState<Dayjs | null>(null);
 
     const [mostrarErrores,setMostrarErrores] = useState(false);
-    const [semestreSeleccionado, setSemestreseleccionado] = useState(0);
     const [errores, setErrores] = useState<{
       errores_graves: number;
       errores_moderados: number;
@@ -168,6 +174,11 @@ export const Calendar = () => {
         setNombrecalendario(calendarioData.nombre ?? '');
       }
     },[calendarioData]);*/
+
+    useEffect(()=>{
+      setSemestreseleccionado(0)
+    },[idCarreraSeleccionada]);
+
 
     useEffect(() => {
       if (!calendarioData || !calendarioData.pruebas || !calendarioData.columnas) {
@@ -454,13 +465,13 @@ export const Calendar = () => {
         }
 
 
-        if (dragid === null || !subjects)
+        if (dragid === null || !subjectsCarrera)
         {
             return;
         }
 
-        const asignatura = subjects.find((subject:any) => subject.id_asignatura === dragid);
-        //console.log(subjects);
+        const asignatura = subjectsCarrera.find((subject:any) => subject.id_asignatura === dragid);
+        //console.log(subjectsCarrera);
         if (!asignatura)
         {
             return;
@@ -786,26 +797,39 @@ export const Calendar = () => {
         <aside className="panel-asignaturas-flotante">
           <div className="categorias">
             <h3>Asignaturas</h3>
-            <label>Filtrar por semestre: </label>
-            <select onChange={(e) => setSemestreseleccionado(Number(e.target.value))}>
-              {[1,2,3,4,5,6,7,8].map((sem) => (
-                <option key={sem} value={sem}>Semestre {sem}</option>
+
+            <label>Seleccionar Carrera:</label>
+            <select onChange={(e) => setIdCarreraSeleccionada(Number(e.target.value))} value={idCarreraSeleccionada ?? ''}>
+              <option value="">-- eliga la carrera --</option>
+              {carreras?.map((carrera:any) => (
+                <option key={carrera.id_carrera} value={carrera.id_carrera}>
+                  {carrera.nombre}
+                </option>
               ))}
             </select>
-            {(asignaturasFijas || []).concat(asignaturasCreadas || []).filter((s:any) => semestreSeleccionado === 0 || s.nivel === semestreSeleccionado).map((s:any) => (
-              <div key={s.id_asignatura} draggable className="bloque-asignatura" onDragStart={() => drag(s.id_asignatura)}>{s.nombre}</div>
-            ))}
+
+            {idCarreraSeleccionada && (
+              <>
+                <label>Filtrar por semestre: </label>
+                <select onChange={(e)=> setSemestreseleccionado(Number(e.target.value))} value={semestreSeleccionado}>
+                  <option value={0}>Todos los semestres</option>
+                  {[1,2,3,4,5,6,7,8,9,10].map((sem)=> (
+                    <option key={sem} value={sem}> Semestre {sem}</option>
+                  ))}
+                </select>
+
+                {(subjectsCarrera || []).filter((s: any) => semestreSeleccionado === 0 || s.nivel === semestreSeleccionado)
+                .map((s: any) => (
+                  <div key={s.id_asignatura} draggable className="bloque-asignatura" onDragStart={()=> drag(s.id_asignatura)}>
+                    {s.nombre}
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         </aside>
 
-      {true && (
-      <div className="errores-box">
-        <p><strong>Errores graves: </strong>{errores?.errores_graves}</p>
-        <p><strong>Errores moderados: </strong>{errores?.errores_moderados}</p>
-        <p><strong>Errores leves: </strong>{errores?.errores_leves}</p>
-        <p><strong>Calidad: </strong>{errores?.calidad}</p>
-      </div>
-    )}
+      
       
 
     <div className="calendar-container">
@@ -1059,6 +1083,14 @@ export const Calendar = () => {
 
     <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={true} closeOnClick pauseOnFocusLoss draggable pauseOnHover />
     </div>
+    {true && (
+      <div className="errores-box">
+        <p><strong>Errores graves: </strong>{errores?.errores_graves}</p>
+        <p><strong>Errores moderados: </strong>{errores?.errores_moderados}</p>
+        <p><strong>Errores leves: </strong>{errores?.errores_leves}</p>
+        <p><strong>Calidad: </strong>{errores?.calidad}</p>
+      </div>
+    )}
   </div>
    )
 };

@@ -354,7 +354,7 @@
 */
 
 
-.page-wrapper {
+/*.page-wrapper {
   background-color: #3f6fd8;
   min-height: 100vh;
   padding: 2rem;
@@ -364,9 +364,24 @@
   gap: 2rem;
   box-sizing: border-box;
   overflow-x: auto;
+  position: relative;
   min-width: fit-content;
   
+}*/
+
+.page-wrapper {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 2rem;
+  box-sizing: border-box;
+  background-color: #3f6fd8;
+  min-height: 100vh;
+  overflow-x: auto;
+  position: relative;
 }
+
 
 /*.calendar-container {
   flex: 1;
@@ -406,7 +421,7 @@
   gap: 1rem;
 }
 
-.panel-asignaturas-flotante {
+/*.panel-asignaturas-flotante {
   width: 260px;
   background-color: #ffffff;
   border-radius: 12px;
@@ -417,6 +432,20 @@
   overflow-y: auto;
   position: sticky;
   top: 2rem;
+}*/
+
+.panel-asignaturas-flotante {
+  width: 260px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.1);
+  padding: 1rem;
+  position: sticky;
+  top: 2rem;
+  height: fit-content;
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: 10;
 }
 
 .categorias {
@@ -634,7 +663,7 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
-.errores-box {
+/*.errores-box {
   position: fixed;
   top: 20px;
   right: 20px;
@@ -647,6 +676,22 @@
   font-size: 0.9rem;
   max-width: 300px;
   z-index: 9999;
+}*/
+
+.errores-box {
+  width: 200px;
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 1rem;
+  border: 1px solid #ffeeba;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  font-size: 0.9rem;
+  position: sticky;
+  top: 2rem;
+  align-self: flex-start;
+  height: fit-content;
+  z-index: 10;
 }
 
 .lista-profesores-scroll {
@@ -698,13 +743,13 @@
 }
 
 .bloque-asignatura.asignatura-agendada.error-moderado {
-  background-color: #ffeb3b;
-  color: black;
+  background-color: #ff9800;
+  color: white;
 }
 
 .bloque-asignatura.asignatura-agendada.error-leve {
-  background-color: #ff9800;
-  color: white;
+  background-color: #ffeb3b;
+  color: black;
 }
 
 

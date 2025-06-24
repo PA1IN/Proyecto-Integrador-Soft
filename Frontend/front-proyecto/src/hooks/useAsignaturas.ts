@@ -21,6 +21,29 @@ export function useAsignaturas(){
     });
 }
 
+export function useAsignaturasPorCarrera(idCarrera?: number) {
+    return useQuery({
+        queryKey: ['asignaturas', idCarrera],
+        queryFn: async() => {
+            const respuesta = await api.get('/asignatura', {params:{id_carrera: idCarrera}});
+            return respuesta.data
+        },
+        enabled: !!idCarrera
+    })
+}
+
+export function useAsignaturasCreadasPorCarrera(idCarrera?: number) {
+    return useQuery({
+        queryKey: ['asignaturasCreadas', idCarrera],
+        queryFn: async() => {
+            const respuesta = await api.get('/asignatura/creada', {params:{id_carrera: idCarrera}});
+            return respuesta.data
+        },
+        enabled: !!idCarrera
+    })
+}
+
+
 export function useCarreras(){
     return useQuery({
         queryKey:['carreras'],
@@ -48,8 +71,8 @@ export function useCrearAsignatura() {
             const respuesta = await api.post('/asignatura',{nrc,nivel,nombre, creado, id_carrera});
             return respuesta.data;
         },
-        onSuccess: () => {
-            clienteQuery.invalidateQueries({queryKey:['asignaturasCreadas']});
+        onSuccess: (_data, variables) => {
+            clienteQuery.invalidateQueries({queryKey:['asignaturasCreadas', variables.id_carrera]});
             clienteQuery.invalidateQueries({queryKey:['carreras']});
         },
     });
@@ -58,11 +81,11 @@ export function useCrearAsignatura() {
 export function useEliminarAsignatura(){   //pa "eliminar" una asignatura creada
     const clienteQuery = useQueryClient();
     return useMutation({
-        mutationFn: async (id: number) => {
+        mutationFn: async ({id, id_carrera}:{id: number; id_carrera: number}) => {
             await api.patch(`/asignatura/${id}`)
         },
-        onSuccess: () => {
-            clienteQuery.invalidateQueries({queryKey:['asignaturaCreadas']});
+        onSuccess: (_data, variables) => {
+            clienteQuery.invalidateQueries({queryKey:['asignaturasCreadas', variables.id_carrera]});
             clienteQuery.invalidateQueries({queryKey:['carreras']});
         }                        
     });

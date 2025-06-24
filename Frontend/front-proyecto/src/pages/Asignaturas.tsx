@@ -2,7 +2,7 @@ import React, {SyntheticEvent,useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useUserProfile } from '../hooks/useUserProfile';
-import { useAsignaturas, useAsignaturasCreadas, useCrearAsignatura, useEliminarAsignatura, useCarreras} from '../hooks/useAsignaturas';
+import { useAsignaturas,useAsignaturasCreadasPorCarrera, useAsignaturasCreadas, useCrearAsignatura, useEliminarAsignatura, useCarreras} from '../hooks/useAsignaturas';
 
 
 export const Asignaturas = () => 
@@ -12,15 +12,15 @@ export const Asignaturas = () =>
     const {data: user, isLoading: cargauser, isError} = useUserProfile();
     const navigate = useNavigate();
     const {data: asignaturas,isLoading: cargaAsignaturas} = useAsignaturas();
-    const {data: asignaturasCreadas,isLoading: cargaAsignaturasCreadas} = useAsignaturasCreadas();
     const {data: carreras,isLoading: cargaCarreras} = useCarreras();
+    const [carrera, setCarrera] = useState('');
+    const {data: asignaturasCreadas,isLoading: cargaAsignaturasCreadas} = useAsignaturasCreadasPorCarrera(Number(carrera));
     const eliminarAsignatura = useEliminarAsignatura();
     const crearAsignatura = useCrearAsignatura();
 
     const [codigoNrc, setNrc] = useState('');
     const [niv, setNivel] = useState('');
     const [name, setNombre] = useState('');
-    const [carrera, setCarrera] = useState('');
 
     if(!token)
     {
@@ -70,7 +70,7 @@ export const Asignaturas = () =>
                         </option>
                     ))}
                 </select>
-                <button type="submit">Agregar</button>
+                <button type="submit" disabled={!carrera}>Agregar</button>
             </form>
 
             {cargaAsignaturasCreadas ? (<p>Cargando tus asignaturas...</p>)
@@ -79,12 +79,12 @@ export const Asignaturas = () =>
                 <h2>Tus asignaturas agregadas: </h2>
                 {asignaturasCreadas?.length > 0 ? (
                     <ul>
-                        {asignaturasCreadas.map((ac: any) => (
+                        {asignaturasCreadas.filter((ac: any) => !carrera || ac.id_carrera === Number(carrera)).map((ac: any) => (
                             <li key = {ac.id}>
                                 <p>NRC: </p> {ac.nrc}
                                 <p>Nombre de asignatura: </p> {ac.nombre}
                                 <p>Nivel/Número de Semestre: </p> {ac.nivel}
-                                <button onClick={() => eliminarAsignatura.mutate(ac.id)}>Eliminar asignatura</button>
+                                <button onClick={() => eliminarAsignatura.mutate({id: ac.id, id_carrera: ac.id_carrera})}>Eliminar asignatura</button>
                                 <p>-------</p>
                             </li>
                         ))}
@@ -100,7 +100,7 @@ export const Asignaturas = () =>
                 <h2>Asignaturas en el sistema: </h2>
                 {asignaturas?.length > 0 ? (
                     <ul>
-                        {asignaturas.map((a: any) => (
+                        {asignaturas.filter((a: any) => a.creado !== true).map((a: any) => (
                             <li key = {a.id}>
                                 <p>NRC: </p> {a.nrc}
                                 <p>Nombre de asignatura: </p> {a.nombre}
