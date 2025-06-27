@@ -57,9 +57,9 @@ export const Salas = () =>
                 {salasCreadas?.length > 0 ? (
                     <ul>
                         {salasCreadas.map((sala: any) => (
-                            <li key = {sala.id}>
+                            <li key = {sala.id_sala}>
                                 {sala.nombre}
-                                <button onClick={() => eliminarSala.mutate(sala.id)}>Eliminar sala del sistema</button>
+                                <button onClick={() => eliminarSala.mutate(sala.id_sala)}>Eliminar sala del sistema</button>
                                 <p>-------</p>
                             </li>
                         ))}

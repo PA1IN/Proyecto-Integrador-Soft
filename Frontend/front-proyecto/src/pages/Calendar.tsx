@@ -2,13 +2,13 @@ import React, {useEffect, useState} from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { useCargarColumnas } from '../hooks/useColumna';
-import {useAsignaturas, useCarreras, useAsignaturasPorCarrera} from '../hooks/useAsignaturas';
+import { useCarreras, useAsignaturasPorCarrera} from '../hooks/useAsignaturas';
 import '../styles/calendar.css';
-import { useProfesores } from '../hooks/useProfesores';
-import { useSalas } from '../hooks/useSalas';
+import { useProfesoresGenerales } from '../hooks/useProfesores';
+import { useSalasGenerales } from '../hooks/useSalas';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { useConfirmarCalendario } from '../hooks/useConfirmarCalendario';
-import { Pruebahorario, Resultadoerrores, useCalcularErrores } from '../hooks/useCalcularErrores';
+import { Pruebahorario, useCalcularErrores } from '../hooks/useCalcularErrores';
 import { useCargarCalendario } from '../hooks/useCargarCalendario';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import VistaPDF from '../components/VistaPdf';
@@ -40,11 +40,11 @@ export const Calendar = () => {
 
     const {data: carreras } = useCarreras();
     const {data: subjectsCarrera} = useAsignaturasPorCarrera(idCarreraSeleccionada ?? undefined);
-    const asignaturasFijas = subjectsCarrera?.filter((a:any) => !a.creada);
-    const asignaturasCreadas = subjectsCarrera?.filter((a:any)=> a.creada);
+    //const asignaturasFijas = subjectsCarrera?.filter((a:any) => !a.creada);
+    //const asignaturasCreadas = subjectsCarrera?.filter((a:any)=> a.creada);
 
-    const {data: profesores} = useProfesores();
-    const {data: salas} = useSalas();
+    const {data: profesores} = useProfesoresGenerales();
+    const {data: salas} = useSalasGenerales();
     const location = useLocation();
     const nuevoCalendario = location.state?.nuevoCalendario ?? false;
 
@@ -800,7 +800,7 @@ export const Calendar = () => {
 
             <label>Seleccionar Carrera:</label>
             <select onChange={(e) => setIdCarreraSeleccionada(Number(e.target.value))} value={idCarreraSeleccionada ?? ''}>
-              <option value="">-- eliga la carrera --</option>
+              <option value="">-- Elija la carrera --</option>
               {carreras?.map((carrera:any) => (
                 <option key={carrera.id_carrera} value={carrera.id_carrera}>
                   {carrera.nombre}

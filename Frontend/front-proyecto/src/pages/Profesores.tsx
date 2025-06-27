@@ -58,9 +58,9 @@ export const Profesores = () =>
                 {profesoresCreados?.length > 0 ? (
                     <ul>
                         {profesoresCreados.map((profe: any) => (
-                            <li key = {profe.id}>
+                            <li key = {profe.id_profesor}>
                                 {profe.nombre}
-                                <button onClick={() => eliminarProfe.mutate(profe.id)}>Eliminar profesor del sistema</button>
+                                <button onClick={() => eliminarProfe.mutate(profe.id_profesor)}>Eliminar profesor del sistema</button>
                                 <p>-------</p>
                             </li>
                         ))}
