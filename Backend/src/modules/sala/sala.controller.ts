@@ -11,12 +11,12 @@ export class SalaController {
     }
 
     @Post()
-    crearSala(@Body() dto: crearSalaDto) { // Replace 'any' with the actual DTO type
-        return this.salaService.crearSala(dto); // Call the service method to create a room
+    crearSala(@Body() dto: crearSalaDto) { 
+        return this.salaService.crearSala(dto); 
     }
     @Post('prod')
-    crearSalaprod(@Body() dto: crearSalaDto) { // Replace 'any' with the actual DTO type
-        return this.salaService.crearSalaprod(dto); // Call the service method to create a room
+    crearSalaprod(@Body() dto: crearSalaDto) { 
+        return this.salaService.crearSalaprod(dto); 
     }
 
     @Get()

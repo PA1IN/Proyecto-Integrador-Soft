@@ -12,14 +12,14 @@ constructor(
 async crearProfesor(dto: ProfesorDto): Promise<Profesor> {
     const eliminado = false; // Default value for eliminada
     const nuevoProfesor = this.profesorRepository.create({
-        nombre: dto.nombre,Eliminado: eliminado,});
+        nombre: dto.nombre,Eliminado: eliminado, creado: true,});
     return await this.profesorRepository.save(nuevoProfesor);
 }   
 
 async crearProfesorProd(dto: ProfesorDto) {
     const eliminado = false; // Default value for eliminada
     const nuevoProfesor = this.profesorRepository.create({
-        nombre: dto.nombre, Eliminado: eliminado, creado: true,
+        nombre: dto.nombre, Eliminado: eliminado, creado: false,
     });
     return await this.profesorRepository.save(nuevoProfesor);
 }
@@ -36,6 +36,14 @@ async obtenerProfesores() {
 }
 async obtenerProfesoresCreado() {
     const profesores = await this.profesorRepository.find({ where: { Eliminado: false, creado: true } });
+    return profesores.map((p) => ({
+        id_profesor: p.id,
+        nombre: p.nombre,
+        creado: p.creado,
+    }));
+}
+async todosProfesores() {
+    const profesores = await this.profesorRepository.find({ where: { Eliminado: false } });
     return profesores.map((p) => ({
         id_profesor: p.id,
         nombre: p.nombre,
