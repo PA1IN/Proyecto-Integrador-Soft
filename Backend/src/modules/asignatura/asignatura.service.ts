@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository} from 'typeorm';
+import { In, Repository} from 'typeorm';
 
 import { CreateAsignaturaDto } from './dto/create-asignatura.dto';
 import { HorarioAsignaturaDto } from './dto/horario-asignatura.dto';
@@ -53,28 +53,25 @@ export class AsignaturaService {
         
          const asignaturaguardada = await this.asignaturaCrepository.save(asignatura)
         
-         const carrera = await this.carreraRepository.findOne({
-        where: { id: createAsignaturaDto.id_carrera },
+        const carreras = await this.carreraRepository.findBy({
+        id: In(createAsignaturaDto.id_carreras),
         });
-        if (!carrera) {
-        throw new Error('Carrera no encontrada');
-             }
         
-        const carreraAsignatura = this.carreraAsignaturaRepository.create({
-            carrera,
-            asignatura: asignaturaguardada,
-            });
-
-        await this.carreraAsignaturaRepository.save(carreraAsignatura);
-
-
+        const relaciones = carreras.map((carrera) =>
+        this.carreraAsignaturaRepository.create({
+        carrera,
+        asignatura: asignaturaguardada,
+        })
+        );
+        await this.carreraAsignaturaRepository.save(relaciones);
 
         return{
             id_asignatura: asignaturaguardada.id, 
             nrc: asignaturaguardada.nrc,
             nivel: asignaturaguardada.nivel,
             nombre: asignaturaguardada.nombre,
-            eliminada: asignaturaguardada.eliminada
+            eliminada: asignaturaguardada.eliminada,
+            carreras: relaciones.map(ca => ca.carrera.id)
         } ; // Save the new asignatura to the database
     }
 
@@ -90,26 +87,25 @@ export class AsignaturaService {
         const asignaturaguardada = await this.asignaturaCrepository.save(asignatura)
 
 
-        const carrera = await this.carreraRepository.findOne({
-        where: { id: dto.id_carrera },
+        const carreras = await this.carreraRepository.findBy({
+        id: In(dto.id_carreras),
         });
-        if (!carrera) {
-        throw new Error('Carrera no encontrada');
-             }
         
-        const carreraAsignatura = this.carreraAsignaturaRepository.create({
-            carrera,
-            asignatura: asignaturaguardada,
-            });
-
-        await this.carreraAsignaturaRepository.save(carreraAsignatura);
+        const relaciones = carreras.map((carrera) =>
+        this.carreraAsignaturaRepository.create({
+        carrera,
+        asignatura: asignaturaguardada,
+        })
+        );
+        await this.carreraAsignaturaRepository.save(relaciones);
 
         return{
             id_asignatura: asignaturaguardada.id, 
             nrc: asignaturaguardada.nrc,
             nivel: asignaturaguardada.nivel,
             nombre: asignaturaguardada.nombre,
-            eliminada: asignaturaguardada.eliminada
+            eliminada: asignaturaguardada.eliminada,
+            carreras: relaciones.map(ca => ca.carrera.id)
         } ;
 
     }
