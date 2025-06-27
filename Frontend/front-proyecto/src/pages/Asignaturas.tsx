@@ -2,7 +2,7 @@ import React, {SyntheticEvent,useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useUserProfile } from '../hooks/useUserProfile';
-import { useAsignaturas,useAsignaturasCreadasPorCarrera, useAsignaturasCreadas, useCrearAsignatura, useEliminarAsignatura, useCarreras} from '../hooks/useAsignaturas';
+import { Carrera, useAsignaturas, useAsignaturasCreadas, useCrearAsignatura, useEliminarAsignatura, useCarreras} from '../hooks/useAsignaturas';
 
 
 export const Asignaturas = () => 
@@ -14,7 +14,7 @@ export const Asignaturas = () =>
     const {data: asignaturas,isLoading: cargaAsignaturas} = useAsignaturas();
     const {data: carreras,isLoading: cargaCarreras} = useCarreras();
     const [carrera, setCarrera] = useState('');
-    const {data: asignaturasCreadas,isLoading: cargaAsignaturasCreadas} = useAsignaturasCreadasPorCarrera(Number(carrera));
+    const {data: asignaturasCreadas,isLoading: cargaAsignaturasCreadas} = useAsignaturasCreadas();
     const eliminarAsignatura = useEliminarAsignatura();
     const crearAsignatura = useCrearAsignatura();
 
@@ -84,7 +84,8 @@ export const Asignaturas = () =>
                                 <p>NRC: </p> {ac.nrc}
                                 <p>Nombre de asignatura: </p> {ac.nombre}
                                 <p>Nivel/Número de Semestre: </p> {ac.nivel}
-                                <button onClick={() => eliminarAsignatura.mutate({id: ac.id_asignatura})}>Eliminar asignatura</button>
+                                <p>Carrera: </p>{carreras?.find((c:Carrera) => c.id === ac.id_carrera)?.nombre}
+                                <button onClick={() => eliminarAsignatura.mutate({id: ac.id})}>Eliminar asignatura</button>
                                 <p>-------</p>
                             </li>
                         ))}

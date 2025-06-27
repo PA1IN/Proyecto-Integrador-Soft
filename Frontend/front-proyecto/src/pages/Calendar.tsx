@@ -732,6 +732,10 @@ export const Calendar = () => {
       });
     }
 
+    const cambiarCarrera = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const valor = e.target.value;
+      setIdCarreraSeleccionada(valor ? parseInt(valor,10): null);
+    };
     /*const calcular = () => {
       const pruebas: Pruebahorario[] = Object.values(calendario).flat();
       calcularErrores.mutate(pruebas, {
@@ -799,10 +803,10 @@ export const Calendar = () => {
             <h3>Asignaturas</h3>
 
             <label>Seleccionar Carrera:</label>
-            <select onChange={(e) => setIdCarreraSeleccionada(Number(e.target.value))} value={idCarreraSeleccionada ?? ''}>
+            <select onChange={cambiarCarrera} value={idCarreraSeleccionada ?? ''}>
               <option value="">-- Elija la carrera --</option>
               {carreras?.map((carrera:any) => (
-                <option key={carrera.id_carrera} value={carrera.id_carrera}>
+                <option key={carrera.id} value={carrera.id}>
                   {carrera.nombre}
                 </option>
               ))}

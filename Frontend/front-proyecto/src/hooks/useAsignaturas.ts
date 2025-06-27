@@ -11,6 +11,11 @@ interface AsignaturaCreadaData
     id_carrera: number;
 }
 
+export interface Carrera {
+    id: number;
+    nombre: string;
+}
+
 export function useAsignaturas(){
     return useQuery({
         queryKey:['asignaturas'],
@@ -25,10 +30,11 @@ export function useAsignaturasPorCarrera(idCarrera?: number) {
     return useQuery({
         queryKey: ['asignaturas', idCarrera],
         queryFn: async() => {
-            const respuesta = await api.get(`/asignatura/carrera${idCarrera}`);
+            const respuesta = await api.get(`/asignatura/carrera/${idCarrera}`);
             return respuesta.data
         },
-        enabled: !!idCarrera
+        enabled: !!idCarrera,
+        retry: false,
     })
 }
 
@@ -36,7 +42,7 @@ export function useAsignaturasCreadasPorCarrera(idCarrera?: number) {
     return useQuery({
         queryKey: ['asignaturasCreadas', idCarrera],
         queryFn: async() => {
-            const respuesta = await api.get(`/asignatura/carrera${idCarrera}`);
+            const respuesta = await api.get(`/asignatura/carrera/${idCarrera}`);
             return respuesta.data
         },
         enabled: !!idCarrera
