@@ -27,6 +27,7 @@ export const CambiarPassword = () => {
         
         verifyToken(token, {
             onSuccess: (data) => {
+                console.log('Código verificado:', data);
                 console.log(data.correo);
                 setEmail(data.correo);
                 console.log(mail);

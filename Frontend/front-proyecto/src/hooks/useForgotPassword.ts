@@ -44,7 +44,9 @@ export function useForgotPassword(onSuccess: () => void,onFail: (error: string) 
 export function useRecibirVerificacion() {
     const verifyToken = useMutation<VerificacionResponse, AxiosError, string>({
         mutationFn: async (token: string) => {
+            console.log('verificando token', token);
             const respuesta = await api.get(`user/token/${token}`);
+           
             return respuesta.data;
         }
     });

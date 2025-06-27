@@ -18,7 +18,7 @@ export class UserController {
 }
 
  @Get("token/:token") 
-    getuserbytoken(@Param("token") token: string): Promise<String | null> {
+    getuserbytoken(@Param("token") token: string) {
     return this.userService.getUserByToken(token);
 }
 

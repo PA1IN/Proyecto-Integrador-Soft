@@ -88,8 +88,8 @@ export class UserService {
         HttpStatus.NOT_FOUND,
       );
     }
-
-    return user.correo;
+    
+    return {correo : user.correo};
   }
 
 
