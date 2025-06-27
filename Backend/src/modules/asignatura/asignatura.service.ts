@@ -159,14 +159,16 @@ export class AsignaturaService {
             throw new NotFoundException(`No se encontraron asignaturas para la carrera con ID ${id_carrera}`);
         }
 
-        return carreraAsignatura.map((ca) => ({
-            id_asignatura: ca.asignatura.id,
-            nrc: ca.asignatura.nrc,
-            nivel: ca.asignatura.nivel,
-            nombre: ca.asignatura.nombre,
-            creada: ca.asignatura.creada,
-            eliminada: ca.asignatura.eliminada,
-        }));
+        return carreraAsignatura
+            .filter((ca) => ca.asignatura && ca.asignatura.eliminada === false)
+            .map((ca) => ({
+                id_asignatura: ca.asignatura.id,
+                nrc: ca.asignatura.nrc,
+                nivel: ca.asignatura.nivel,
+                nombre: ca.asignatura.nombre,
+                creada: ca.asignatura.creada,
+                eliminada: ca.asignatura.eliminada,
+            }));
     }
       
 
