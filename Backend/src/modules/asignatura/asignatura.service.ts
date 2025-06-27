@@ -24,7 +24,7 @@ export class AsignaturaService {
         const asignaturas = await this.asignaturaCrepository.find({where : {creada: true  },
             relations: ['carreraAsignaturas']},
             
-        ); // Fetch all asignaturas from the database
+        ); 
 
         return asignaturas.map((a) => ({
         id_asignatura: a.id,
@@ -35,7 +35,7 @@ export class AsignaturaService {
         eliminado: a.eliminada,
         nrc: a.nrc,
         id_carreras: a.carreraAsignaturas.map(ca => ca.carrera.id)
-    })); // Fetch all asignaturas from the database
+    })); 
     }
     
     
@@ -110,7 +110,10 @@ export class AsignaturaService {
 
     }
     async getcreadasnt(){
-        const asignaturas = await this.asignaturaCrepository.find({where : {creada: false  }}); // Fetch all asignaturas from the database
+        const asignaturas = await this.asignaturaCrepository.find({where : {creada: false  },
+            relations: ['carreraAsignaturas']},
+            
+        ); // Fetch all asignaturas from the database
         return asignaturas.map((a) => ({
         id_asignatura: a.id,
         
@@ -119,6 +122,7 @@ export class AsignaturaService {
         creada: a.creada,
         eliminado: a.eliminada,
         nrc: a.nrc,
+        id_carreras: a.carreraAsignaturas.map(ca => ca.carrera.id)
     })); // Fetch all asignaturas from the database
         
     }
