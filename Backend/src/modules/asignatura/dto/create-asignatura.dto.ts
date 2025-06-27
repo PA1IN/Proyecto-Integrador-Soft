@@ -21,7 +21,7 @@ export class CreateAsignaturaDto {
      @IsArray()
     @IsNumber({}, { each: true }) // valida que cada elemento del array sea un número
     @Type(() => Number) // transforma los elementos a número
-    id_carreras: number[];
+    id_carreras: number[];  
    
 
 }

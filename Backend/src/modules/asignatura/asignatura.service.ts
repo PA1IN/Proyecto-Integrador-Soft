@@ -33,7 +33,7 @@ export class AsignaturaService {
         nombre: a.nombre,
         creada: a.creada,
         eliminado: a.eliminada,
-        NRC: a.nrc,
+        nrc: a.nrc,
         id_carreras: a.carreraAsignaturas.map(ca => ca.carrera.id)
     })); // Fetch all asignaturas from the database
     }
@@ -118,7 +118,7 @@ export class AsignaturaService {
         nombre: a.nombre,
         creada: a.creada,
         eliminado: a.eliminada,
-        NRC: a.nrc,
+        nrc: a.nrc,
     })); // Fetch all asignaturas from the database
         
     }
