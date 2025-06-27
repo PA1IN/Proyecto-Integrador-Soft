@@ -21,7 +21,10 @@ export class AsignaturaService {
     ) {}
 
     async getAsignaturasc(){
-        const asignaturas = await this.asignaturaCrepository.find({where : {creada: true  }}); // Fetch all asignaturas from the database
+        const asignaturas = await this.asignaturaCrepository.find({where : {creada: true  },
+            relations: ['carreraAsignaturas']},
+            
+        ); // Fetch all asignaturas from the database
         return asignaturas.map((a) => ({
         id_asignatura: a.id,
         
@@ -29,6 +32,10 @@ export class AsignaturaService {
         nombre: a.nombre,
         creada: a.creada,
         eliminado: a.eliminada,
+        NRC: a.nrc,
+        carreraAsignatura: a.carreraAsignaturas.map(ca => ({
+            id_carrera: ca.carrera.id,
+        })),
     })); // Fetch all asignaturas from the database
     }
     
