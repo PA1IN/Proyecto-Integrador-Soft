@@ -34,7 +34,7 @@ export class AsignaturaService {
         creada: a.creada,
         eliminado: a.eliminada,
         nrc: a.nrc,
-        id_carreras: a.carreraAsignaturas.map(ca => ca.carrera.id)
+        id_carrera: a.carreraAsignaturas[0]?.carrera.id 
     })); 
     }
     
@@ -53,17 +53,20 @@ export class AsignaturaService {
         
          const asignaturaguardada = await this.asignaturaCrepository.save(asignatura)
         
-        const carreras = await this.carreraRepository.findBy({
-        id: In(createAsignaturaDto.id_carreras),
+        const carrera = await this.carreraRepository.findOne({
+        where: { id: createAsignaturaDto.id_carrera },
         });
+        if (!carrera) {
+        throw new Error('Carrera no encontrada');
+             }
         
-        const relaciones = carreras.map((carrera) =>
-        this.carreraAsignaturaRepository.create({
-        carrera,
-        asignatura: asignaturaguardada,
-        })
-        );
-        await this.carreraAsignaturaRepository.save(relaciones);
+
+         const carreraAsignatura = this.carreraAsignaturaRepository.create({
+            carrera,
+            asignatura: asignaturaguardada,
+            });
+
+        await this.carreraAsignaturaRepository.save(carreraAsignatura);
 
         return{
             id_asignatura: asignaturaguardada.id, 
@@ -71,7 +74,7 @@ export class AsignaturaService {
             nivel: asignaturaguardada.nivel,
             nombre: asignaturaguardada.nombre,
             eliminada: asignaturaguardada.eliminada,
-            carreras: relaciones.map(ca => ca.carrera.id)
+            carreras: carrera
         } ; // Save the new asignatura to the database
     }
 
@@ -87,17 +90,20 @@ export class AsignaturaService {
         const asignaturaguardada = await this.asignaturaCrepository.save(asignatura)
 
 
-        const carreras = await this.carreraRepository.findBy({
-        id: In(dto.id_carreras),
+        const carrera = await this.carreraRepository.findOne({
+        where: { id: dto.id_carrera },
         });
+        if (!carrera) {
+        throw new Error('Carrera no encontrada');
+             }
         
-        const relaciones = carreras.map((carrera) =>
-        this.carreraAsignaturaRepository.create({
-        carrera,
-        asignatura: asignaturaguardada,
-        })
-        );
-        await this.carreraAsignaturaRepository.save(relaciones);
+
+         const carreraAsignatura = this.carreraAsignaturaRepository.create({
+            carrera,
+            asignatura: asignaturaguardada,
+            });
+
+        await this.carreraAsignaturaRepository.save(carreraAsignatura);
 
         return{
             id_asignatura: asignaturaguardada.id, 
@@ -105,7 +111,7 @@ export class AsignaturaService {
             nivel: asignaturaguardada.nivel,
             nombre: asignaturaguardada.nombre,
             eliminada: asignaturaguardada.eliminada,
-            carreras: relaciones.map(ca => ca.carrera.id)
+            carrera: carrera
         } ;
 
     }
@@ -122,7 +128,7 @@ export class AsignaturaService {
         creada: a.creada,
         eliminado: a.eliminada,
         nrc: a.nrc,
-        id_carreras: a.carreraAsignaturas.map(ca => ca.carrera.id)
+        id_carrera: a.carreraAsignaturas[0]?.carrera.id 
     })); // Fetch all asignaturas from the database
         
     }

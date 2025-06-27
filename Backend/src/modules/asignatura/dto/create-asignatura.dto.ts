@@ -18,10 +18,9 @@ export class CreateAsignaturaDto {
     creada: boolean;
     @IsArray()
 
-     @IsArray()
-    @IsNumber({}, { each: true }) // valida que cada elemento del array sea un número
-    @Type(() => Number) // transforma los elementos a número
-    id_carreras: number[];  
+    
+    @IsNumber() // valida que cada elemento del array sea un número
+    id_carrera: number;  
    
 
 }
