@@ -1,6 +1,5 @@
 import {useQuery,useMutation,useQueryClient} from '@tanstack/react-query';
 import api from '../api/axios';
-import { AxiosError } from 'axios';
 
 interface SalaData
 {
@@ -12,17 +11,27 @@ export function useSalas() {    //pa listar las salas.
     return useQuery({
         queryKey: ['salas'],
         queryFn: async () => {
-            const respuesta = await api.get('/sala/creadas');
+            const respuesta = await api.get('/sala');
             return respuesta.data;
         }
     });
+}
+
+export function useSalasGenerales() {
+    return useQuery({
+        queryKey: ['salasGenerales'],
+        queryFn: async () => {
+            const respuesta = await api.get('/sala/todas')
+            return respuesta.data;
+        }
+    })
 }
 
 export function useSalasCreadas() {    //pa listar las salas creadas.
     return useQuery({
         queryKey: ['salasCreadas'],
         queryFn: async () => {
-            const respuesta = await api.get('/sala/creada');
+            const respuesta = await api.get('/sala/creadas');
             return respuesta.data;
         }
     });
@@ -49,6 +58,7 @@ export function useEliminarSala(){   //pa "eliminar" una sala
         },
         onSuccess: () => {
             clienteQuery.invalidateQueries({queryKey:['salasCreadas']});
+
         }                        
     });
 

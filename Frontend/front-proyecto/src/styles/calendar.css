@@ -404,7 +404,7 @@
   border-radius: 12px;
   font-family: sans-serif;
   position: relative;
-  overflow-x: auto;
+  /*overflow-x: auto;*/
   max-width: 100%;
 }
 
@@ -444,7 +444,7 @@
   top: 2rem;
   height: fit-content;
   max-height: 90vh;
-  overflow-y: auto;
+  /*overflow-y: auto;*/
   z-index: 10;
 }
 

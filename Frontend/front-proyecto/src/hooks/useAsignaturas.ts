@@ -25,7 +25,7 @@ export function useAsignaturasPorCarrera(idCarrera?: number) {
     return useQuery({
         queryKey: ['asignaturas', idCarrera],
         queryFn: async() => {
-            const respuesta = await api.get('/asignatura', {params:{id_carrera: idCarrera}});
+            const respuesta = await api.get(`/asignatura/carrera${idCarrera}`);
             return respuesta.data
         },
         enabled: !!idCarrera
@@ -36,7 +36,7 @@ export function useAsignaturasCreadasPorCarrera(idCarrera?: number) {
     return useQuery({
         queryKey: ['asignaturasCreadas', idCarrera],
         queryFn: async() => {
-            const respuesta = await api.get('/asignatura/creada', {params:{id_carrera: idCarrera}});
+            const respuesta = await api.get(`/asignatura/carrera${idCarrera}`);
             return respuesta.data
         },
         enabled: !!idCarrera
@@ -54,11 +54,13 @@ export function useCarreras(){
     });
 }
 
+
+
 export function useAsignaturasCreadas(){
     return useQuery({
         queryKey:['asignaturasCreadas'],
         queryFn: async () => {
-            const respuesta = await api.get('/asignatura/creada');  
+            const respuesta = await api.get('/asignatura/creadas');  
             return respuesta.data;
         }
     });
@@ -81,11 +83,11 @@ export function useCrearAsignatura() {
 export function useEliminarAsignatura(){   //pa "eliminar" una asignatura creada
     const clienteQuery = useQueryClient();
     return useMutation({
-        mutationFn: async ({id, id_carrera}:{id: number; id_carrera: number}) => {
+        mutationFn: async ({id}:{id: number}) => {
             await api.patch(`/asignatura/${id}`)
         },
         onSuccess: (_data, variables) => {
-            clienteQuery.invalidateQueries({queryKey:['asignaturasCreadas', variables.id_carrera]});
+            clienteQuery.invalidateQueries({queryKey:['asignaturasCreadas', variables]});
             clienteQuery.invalidateQueries({queryKey:['carreras']});
         }                        
     });

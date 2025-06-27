@@ -19,6 +19,16 @@ export function useProfesores() {    //pa listar los profesores que no estén el
     });
 }
 
+export function useProfesoresGenerales(){
+    return useQuery({
+        queryKey:['profesoresGenerales'],
+        queryFn: async () => {
+            const respuesta = await api.get('/profesor/todos');
+            return respuesta.data;
+        }
+    });
+}
+
 export function useProfesoresCreados() {    //pa listar los profesores que no estén eliminados.
     return useQuery({
         queryKey: ['profesoresCreados'],
@@ -38,6 +48,7 @@ export function useCrearProfesor(){
         },
         onSuccess: () => {
             clienteQuery.invalidateQueries({queryKey:['profesoresCreados']});
+            clienteQuery.invalidateQueries({queryKey:['profesores']});
         }                          
     });
 }

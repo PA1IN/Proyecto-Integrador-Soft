@@ -80,11 +80,11 @@ export const Asignaturas = () =>
                 {asignaturasCreadas?.length > 0 ? (
                     <ul>
                         {asignaturasCreadas.filter((ac: any) => !carrera || ac.id_carrera === Number(carrera)).map((ac: any) => (
-                            <li key = {ac.id}>
+                            <li key = {ac.id_asignatura}>
                                 <p>NRC: </p> {ac.nrc}
                                 <p>Nombre de asignatura: </p> {ac.nombre}
                                 <p>Nivel/Número de Semestre: </p> {ac.nivel}
-                                <button onClick={() => eliminarAsignatura.mutate({id: ac.id, id_carrera: ac.id_carrera})}>Eliminar asignatura</button>
+                                <button onClick={() => eliminarAsignatura.mutate({id: ac.id_asignatura})}>Eliminar asignatura</button>
                                 <p>-------</p>
                             </li>
                         ))}
