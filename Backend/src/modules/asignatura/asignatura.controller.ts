@@ -25,6 +25,11 @@ export class AsignaturaController {
     createAsignatura(@Body() createAsignaturaDto: CreateAsignaturaDto) {
         return this.asignaturaService.createAsignatura(createAsignaturaDto); 
     }
+    @Post('prod')
+    createAsignaturaProd(@Body() createAsignaturaDto: CreateAsignaturaDto) {
+        return this.asignaturaService.crearasignaturaprod(createAsignaturaDto); // Call the service method to create an asignatura in production
+    }
+
     @Get(':nivel')
     getAsignaturaByNivel(@Param('nivel') nivel: Number) {
         return this.asignaturaService.getbynivel(nivel); 
