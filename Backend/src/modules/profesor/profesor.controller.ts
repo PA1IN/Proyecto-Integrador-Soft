@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
 import { ProfesorService } from './profesor.service';
 import { ProfesorDto } from './dto/profesor.entity';
 
@@ -30,5 +30,9 @@ export class ProfesorController {
     @Get('todos')
     todosProfesores() {
         return this.profesorService.todosProfesores(); // Call the service method to get all professors
+    }
+    @Patch('/:id')
+    eliminarProfesor(@Body('id') id: number) {
+        return this.profesorService.eliminarProfesor(id); // Call the service method to delete a professor by ID
     }
 }

@@ -50,6 +50,14 @@ async todosProfesores() {
         creado: p.creado,
     }));
 }
+async eliminarProfesor(id: number) {
+    const profesor = await this.profesorRepository.findOne({ where: { id } });
+    if (!profesor) {
+        throw new Error('Profesor no encontrado');
+    }
+    profesor.Eliminado = true; // Set Eliminado to true
+    return this.profesorRepository.save(profesor); // Save the updated profesor
+}
 
 }
 
