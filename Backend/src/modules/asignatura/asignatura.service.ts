@@ -25,6 +25,7 @@ export class AsignaturaService {
             relations: ['carreraAsignaturas']},
             
         ); // Fetch all asignaturas from the database
+
         return asignaturas.map((a) => ({
         id_asignatura: a.id,
         
@@ -33,9 +34,7 @@ export class AsignaturaService {
         creada: a.creada,
         eliminado: a.eliminada,
         NRC: a.nrc,
-        carreraAsignatura: a.carreraAsignaturas.map(ca => ({
-            id_carrera: ca.carrera.id,
-        })),
+        id_carreras: a.carreraAsignaturas.map(ca => ca.carrera.id)
     })); // Fetch all asignaturas from the database
     }
     
