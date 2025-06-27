@@ -134,18 +134,19 @@ export class AsignaturaService {
     }
  
     
-    async getbynivel(nivel:Number){
-        return this.asignaturaCrepository.findOneBy({}); // Fetch asignatura by nivel
+    async getbynivel(nivel:number){
+        return this.asignaturaCrepository.find({
+            where: { nivel: nivel },
+        });
     }
-    async getbyNRC(NRC:String){
-        return this.asignaturaCrepository.findOneBy({});
+    
+    async getbyNRC(NRC:string){
+        return this.asignaturaCrepository.findOneBy({nrc: NRC}); // Fetch asignatura by NRC
     }
-    async getbyNombre(nombre:String){
-        return this.asignaturaCrepository.findOneBy({});
+    async getbyNombre(nombre:string){
+        return this.asignaturaCrepository.findOneBy({nombre: nombre}); // Fetch asignatura by name
     }
-    async getbyHorario(Horario:String){
-        return this.asignaturaCrepository.findOneBy({}); 
-    }
+    
 
     async eliminarAsignatura(id: number) {
         const asignatura = await this.asignaturaCrepository.findOneBy({ id });

@@ -31,7 +31,7 @@ export class AsignaturaController {
     }
 
     @Get(':nivel')
-    getAsignaturaByNivel(@Param('nivel') nivel: Number) {
+    getAsignaturaByNivel(@Param('nivel') nivel: number) {
         return this.asignaturaService.getbynivel(nivel); 
     }
     @Get(':NRC')
@@ -42,10 +42,7 @@ export class AsignaturaController {
     getAsignaturaByNombre(@Param('nombre') nombre: string) {
         return this.asignaturaService.getbyNombre(nombre);
     }
-    @Get(':Horario')
-    getAsignaturaByHorario(@Param('Horario') Horario: string) {
-        return this.asignaturaService.getbyHorario(Horario); 
-    }
+    
     @Patch('/eliminar/:id')
     eliminarAsignatura(@Param('id') id: number) {
         return this.asignaturaService.eliminarAsignatura(id); 
