@@ -45,6 +45,11 @@ export class AsignaturaController {
     eliminarAsignatura(@Param('id') id: number) {
         return this.asignaturaService.eliminarAsignatura(id); 
     }
+    @Get('carrera/:carrera')
+    getAsignaturaByCarrera(@Param('carrera') carrera: number) {
+        return this.asignaturaService.getAsignaturaBycarrera(carrera); 
+    }
+    
     
 
   

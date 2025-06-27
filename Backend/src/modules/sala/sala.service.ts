@@ -52,6 +52,15 @@ async salascreadas() {
         }));
     }
 
+async eliminarSala(id: number) {
+    const sala = await this.salaRepository.findOne({ where: { id } });
+    if (!sala) {
+        throw new Error('Sala no encontrada');
+    }
+    sala.eliminada = true; // Set eliminada to true
+    await this.salaRepository.save(sala);
+    return { message: 'Sala eliminada correctamente' };
 
 
+}
 }

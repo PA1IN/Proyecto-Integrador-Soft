@@ -40,12 +40,11 @@ export class AsignaturaService {
             nrc: createAsignaturaDto.nrc,
             nivel: createAsignaturaDto.nivel,
             nombre: createAsignaturaDto.nombre,
+            creada: createAsignaturaDto.creada || true, // Default to false if not provided
             eliminada: false
 
         });
-        if(createAsignaturaDto.creada){
-            asignatura.creada = createAsignaturaDto.creada; 
-        }
+        
          const asignaturaguardada = await this.asignaturaCrepository.save(asignatura)
         
          const carrera = await this.carreraRepository.findOne({
@@ -78,7 +77,7 @@ export class AsignaturaService {
             nrc: dto.nrc,
             nivel: dto.nivel,
             nombre: dto.nombre,
-            creada: true,
+            creada: false,
             eliminada: false
 
         });
@@ -121,7 +120,7 @@ export class AsignaturaService {
  
     
     async getbynivel(nivel:Number){
-        return this.asignaturaCrepository.findOneBy({});
+        return this.asignaturaCrepository.findOneBy({}); // Fetch asignatura by nivel
     }
     async getbyNRC(NRC:String){
         return this.asignaturaCrepository.findOneBy({});
@@ -149,6 +148,25 @@ export class AsignaturaService {
             eliminada: asignatura.eliminada
         };
     
+    }
+    async getAsignaturaBycarrera(id_carrera: number) {
+        const carreraAsignatura = await this.carreraAsignaturaRepository.find({
+            where: { carrera: { id: id_carrera } },
+            relations: ['asignatura'],
+        });
+
+        if (!carreraAsignatura || carreraAsignatura.length === 0) {
+            throw new NotFoundException(`No se encontraron asignaturas para la carrera con ID ${id_carrera}`);
+        }
+
+        return carreraAsignatura.map((ca) => ({
+            id_asignatura: ca.asignatura.id,
+            nrc: ca.asignatura.nrc,
+            nivel: ca.asignatura.nivel,
+            nombre: ca.asignatura.nombre,
+            creada: ca.asignatura.creada,
+            eliminada: ca.asignatura.eliminada,
+        }));
     }
       
 
