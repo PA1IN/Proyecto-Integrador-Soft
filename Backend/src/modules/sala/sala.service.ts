@@ -14,7 +14,7 @@ export class SalaService {
 
     async crearSalaprod(dto: crearSalaDto) {
         const eliminada = false; // Default value for eliminada
-        const nuevaSala = this.salaRepository.create({nombre:dto.nombre, eliminada: eliminada});
+        const nuevaSala = this.salaRepository.create({nombre:dto.nombre, eliminada: eliminada, creada: false});
         const salaCreada = await this.salaRepository.save(nuevaSala);
         return salaCreada.id; // Assuming the entity has an 'id' field
     }
@@ -43,6 +43,15 @@ async salascreadas() {
         creada: s.creada,
     }));
 }
+    async obtenerSalasTodas() {
+        const salas = await this.salaRepository.find({ where: { eliminada: false } });
+        return salas.map((s) => ({
+            id_sala: s.id,
+            nombre: s.nombre,
+            creada: s.creada,
+        }));
+    }
+
 
 
 }
