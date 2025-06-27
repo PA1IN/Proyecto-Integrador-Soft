@@ -1,4 +1,4 @@
-import {Routes , Route} from 'react-router-dom';
+import {Routes , Route, Navigate} from 'react-router-dom';
 import {Login} from '../pages/Login';
 import {Register} from '../pages/Register';
 import {Home} from '../pages/Home';
@@ -16,6 +16,7 @@ import CambiarPassword from '../pages/recuperar-contraseña';
 export const AppRoutes = () => {
   return (
     <Routes>
+      <Route path="/" element={<Navigate to="/Login" replace />} />
       <Route path = '/Login' element = {<Login/>}/>
       <Route path = '/Register' element = {<Register/>}/>
       <Route path = '/ForgotPassword' element={<ForgotPassword/>}/>
