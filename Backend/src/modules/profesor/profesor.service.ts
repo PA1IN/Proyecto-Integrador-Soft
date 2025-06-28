@@ -26,7 +26,7 @@ async crearProfesorProd(dto: ProfesorDto) {
 
 
 async obtenerProfesores() {
-    const profesores = await this.profesorRepository.find({where: { Eliminado: false, creado: false }});
+    const profesores = await this.profesorRepository.find({where: { Eliminado: false, creado: false },order: { creado: 'ASC' } });
 
 
     return profesores.map((p) => ({
@@ -35,7 +35,7 @@ async obtenerProfesores() {
     }))
 }
 async obtenerProfesoresCreado() {
-    const profesores = await this.profesorRepository.find({ where: { Eliminado: false, creado: true }, order: { creado: 'DESC' } });
+    const profesores = await this.profesorRepository.find({ where: { Eliminado: false, creado: true }, order: { creado: 'ASC' } });
     return profesores.map((p) => ({
         id_profesor: p.id,
         nombre: p.nombre,
@@ -43,7 +43,7 @@ async obtenerProfesoresCreado() {
     }));
 }
 async todosProfesores() {
-    const profesores = await this.profesorRepository.find({ where: { Eliminado: false } });
+    const profesores = await this.profesorRepository.find({ where: { Eliminado: false },order: { creado: 'ASC' } });
     return profesores.map((p) => ({
         id_profesor: p.id,
         nombre: p.nombre,

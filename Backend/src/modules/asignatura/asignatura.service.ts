@@ -25,7 +25,7 @@ export class AsignaturaService {
     async getAsignaturasc(){
         const asignaturas = await this.asignaturaCrepository.find({where : {creada: true, eliminada: false  },
             relations: ['carreraAsignaturas'],
-        order: { creada: 'ASC' } },
+        order: { creada: 'DESC' } },
             
         ); 
 
@@ -157,7 +157,9 @@ async crearasignaturaprod(dto: asignaturaprodDto) {
 
     async getcreadasnt(){
         const asignaturas = await this.asignaturaCrepository.find({where : {creada: false, eliminada: false  },
-            relations: ['carreraAsignaturas']},
+            relations: ['carreraAsignaturas'],
+        order: { creada: 'DESC' } },
+            
             
         ); // Fetch all asignaturas from the database
         return asignaturas.map((a) => ({

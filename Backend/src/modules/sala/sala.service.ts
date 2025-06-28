@@ -27,7 +27,7 @@ export class SalaService {
 
 
     async obtenerSalas() {
-        const salas = await this.salaRepository.find({where: { eliminada: false, creada: false }});
+        const salas = await this.salaRepository.find({where: { eliminada: false, creada: false },order: { creada: 'ASC' } });
         return salas.map((s) => ({
             id_sala: s.id,
             nombre: s.nombre,
@@ -36,7 +36,7 @@ export class SalaService {
     
 }
 async salascreadas() {
-    const salas = await this.salaRepository.find({ where: {eliminada: false, creada: true },order: { creada: 'DESC' } });
+    const salas = await this.salaRepository.find({ where: {eliminada: false, creada: true },order: { creada: 'ASC' } });
     return salas.map((s) => ({
         id_sala: s.id,
         nombre: s.nombre,
@@ -44,7 +44,7 @@ async salascreadas() {
     }));
 }
     async obtenerSalasTodas() {
-        const salas = await this.salaRepository.find({ where: { eliminada: false } });
+        const salas = await this.salaRepository.find({ where: { eliminada: false },order: { creada: 'ASC' } });
         return salas.map((s) => ({
             id_sala: s.id,
             nombre: s.nombre,
