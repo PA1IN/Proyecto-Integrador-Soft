@@ -79,8 +79,8 @@ export function useCrearAsignatura() {
             const respuesta = await api.post('/asignatura',{nrc,nivel,nombre, creado, id_carrera});
             return respuesta.data;
         },
-        onSuccess: (_data, variables) => {
-            clienteQuery.invalidateQueries({queryKey:['asignaturasCreadas', variables.id_carrera]});
+        onSuccess: (_data) => {
+            clienteQuery.invalidateQueries({queryKey:['asignaturasCreadas']});
             clienteQuery.invalidateQueries({queryKey:['carreras']});
         },
     });
@@ -90,7 +90,7 @@ export function useEliminarAsignatura(){   //pa "eliminar" una asignatura creada
     const clienteQuery = useQueryClient();
     return useMutation({
         mutationFn: async ({id}:{id: number}) => {
-            await api.patch(`/asignatura/${id}`)
+            await api.patch(`/asignatura/eliminar/${id}`)
         },
         onSuccess: (_data, variables) => {
             clienteQuery.invalidateQueries({queryKey:['asignaturasCreadas', variables]});
