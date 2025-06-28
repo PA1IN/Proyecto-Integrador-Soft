@@ -1,30 +1,23 @@
-import { Transform, Type } from "class-transformer";
-import { ArrayNotEmpty, IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateAsignaturaDto {
     @IsString()
     @IsNotEmpty()
     nrc: string;
 
-    @IsString()
     @IsNotEmpty()
-    @Transform(({ obj }) => obj.curso) // Mapeamos "curso" del JSON a "nombre"
+    @IsString()
     nombre: string;
     
-    @IsArray()
-    @ArrayNotEmpty()
-    @IsNumber({}, { each: true })
-    @Transform(({ obj }) => obj.carreras.map((c: any) => c.semestre))
-    niveles: number[];
+    @IsNumber()
+    nivel: number;
 
     @IsOptional()
     @IsBoolean()
     creada: boolean; 
-    @IsArray()
-    @ArrayNotEmpty()
-    @IsNumber({}, { each: true })
-    @Transform(({ obj }) => obj.carreras.map((c: any) => c.id))
-    id_carreras: number[]; 
+    @IsNumber() // valida que cada elemento del array sea un número
+    id_carrera: number;  
    
 
 }

@@ -8,6 +8,7 @@ import { Asignatura } from './entities/asignatura-creada.entity';
 import { Carrera } from '../carrera/entities/carrera.entity';
 import { CarreraAsignatura } from '../carrera/entities/Carrera-Asignatura.entity';
 import { create } from 'domain';
+import { asignaturaprodDto } from './dto/asignaturaprod.dto';
 
 @Injectable()
 export class AsignaturaService {
@@ -41,76 +42,45 @@ export class AsignaturaService {
     
     
 
-    async createAsignatura(dto: CreateAsignaturaDto) {
-    const asignaturasGuardadas: {
-    id_asignatura: number;
-    nrc: string;
-    nivel: number;
-    nombre: string;
-    eliminada: boolean;
-    carrera: string;
-    }[] = [];
+    async createAsignatura(createAsignaturaDto: CreateAsignaturaDto) {
+        
+        const asignatura = this.asignaturaCrepository.create({
+            nrc: createAsignaturaDto.nrc,
+            nivel: createAsignaturaDto.nivel,
+            nombre: createAsignaturaDto.nombre,
+            creada: createAsignaturaDto.creada || true, // Default to false if not provided
+            eliminada: false
 
-  
-
-    for (let i = 0; i < dto.id_carreras.length; i++) {
-        const idCarrera = dto.id_carreras[i];
-        const nivel = dto.niveles[i];
-        const nombreLimpio = limpiarNombre(dto.nombre);
-
-        const carrera = await this.carreraRepository.findOne({
-        where: { id: idCarrera },
         });
-
+        
+         const asignaturaguardada = await this.asignaturaCrepository.save(asignatura)
+        
+        const carrera = await this.carreraRepository.findOne({
+        where: { id: createAsignaturaDto.id_carrera },
+        });
         if (!carrera) {
-        throw new Error(`Carrera con ID ${idCarrera} no encontrada`);
-        }
+        throw new Error('Carrera no encontrada');
+             }
+        
 
-    // Verificar si ya existe una asignatura con ese nombre base
-    const existe = await this.asignaturaCrepository
-      .createQueryBuilder('asignatura')
-      .where('LOWER(asignatura.nombre) LIKE :nombre', {
-        nombre: `${nombreLimpio.toLowerCase()}%`,
-      })
-      .getOne();
+         const carreraAsignatura = this.carreraAsignaturaRepository.create({
+            carrera,
+            asignatura: asignaturaguardada,
+            });
 
-    if (existe) {
-      console.log(`Asignatura con nombre base "${nombreLimpio}" ya existe, omitiendo creación.`);
-      continue;
+        await this.carreraAsignaturaRepository.save(carreraAsignatura);
+
+        return{
+            id_asignatura: asignaturaguardada.id, 
+            nrc: asignaturaguardada.nrc,
+            nivel: asignaturaguardada.nivel,
+            nombre: asignaturaguardada.nombre,
+            eliminada: asignaturaguardada.eliminada,
+            carreras: carrera
+        } ; // Save the new asignatura to the database
     }
 
-    // Crear asignatura
-    const nuevaAsignatura = this.asignaturaCrepository.create({
-      nrc: dto.nrc,
-      nombre: dto.nombre, // se guarda con el nombre completo
-      nivel,
-      creada: dto.creada ?? true,
-      eliminada: false,
-    });
-
-    const asignaturaGuardada = await this.asignaturaCrepository.save(nuevaAsignatura);
-
-    const carreraAsignatura = this.carreraAsignaturaRepository.create({
-      carrera,
-      asignatura: asignaturaGuardada,
-    });
-
-    await this.carreraAsignaturaRepository.save(carreraAsignatura);
-
-    asignaturasGuardadas.push({
-      id_asignatura: asignaturaGuardada.id,
-      nrc: asignaturaGuardada.nrc,
-      nivel: asignaturaGuardada.nivel,
-      nombre: asignaturaGuardada.nombre,
-      eliminada: asignaturaGuardada.eliminada,
-      carrera: carrera.nombre,
-    });
-  }
-
-  return asignaturasGuardadas;
-}
-
-async crearasignaturaprod(dto: CreateAsignaturaDto) {
+async crearasignaturaprod(dto: asignaturaprodDto) {
     const asignaturasGuardadas: {
     id_asignatura: number;
     nrc: string;
