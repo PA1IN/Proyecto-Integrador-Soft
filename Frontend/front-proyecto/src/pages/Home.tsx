@@ -39,7 +39,7 @@ export const Home = () => {
     return (
         <div className="home-container">
             <div className="home-content">
-                <h2 className="home-title">Bienvenid@: {user?.name}</h2>
+                <h2 className="home-title">Bienvenido/a {user?.name}</h2>
                 
                 <div className="menu-buttons">
                     <button className="menu-button" onClick={() => navigate('/Calendar')}>
