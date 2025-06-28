@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsString, MinLength } from "class-validator";
 import { IsRut } from "src/decorators/rut-validator.decorator";
 import { Transform } from "class-transformer";
 
@@ -19,6 +19,7 @@ export class RegistroDto {
 
     @Transform(({ value }) => value.trim())
     @IsString({ message: "La contraseña debe ser una cadena de texto." })
+    @MinLength(8, {message: "La contraseña debe tener al menos 8 caracteres."})
     @IsNotEmpty({ message: "La contraseña no puede estar vacía." })
     password: string;
 }   
