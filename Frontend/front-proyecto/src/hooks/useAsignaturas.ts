@@ -92,8 +92,8 @@ export function useEliminarAsignatura(){   //pa "eliminar" una asignatura creada
         mutationFn: async ({id}:{id: number}) => {
             await api.patch(`/asignatura/eliminar/${id}`)
         },
-        onSuccess: (_data, variables) => {
-            clienteQuery.invalidateQueries({queryKey:['asignaturasCreadas', variables]});
+        onSuccess: (_data) => {
+            clienteQuery.invalidateQueries({queryKey:['asignaturasCreadas']});
             clienteQuery.invalidateQueries({queryKey:['carreras']});
         }                        
     });
