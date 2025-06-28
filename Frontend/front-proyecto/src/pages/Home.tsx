@@ -1,16 +1,15 @@
 import React from 'react';
 import { useUserProfile } from '../hooks/useUserProfile';
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
+import '../styles/Home.css';
 
 export const Home = () => {
-    const {token, setToken} = useAuth();
+    const { token, setToken } = useAuth();
     const navigate = useNavigate();
-    const { data: user, isLoading: cargauser, isError} = useUserProfile();
+    const { data: user, isLoading: cargauser, isError } = useUserProfile();
     
-
-    if(!token)
-    {
+    if (!token) {
         navigate('/Login');
         return null;
     }
@@ -21,33 +20,51 @@ export const Home = () => {
         navigate('/Login');
     }
 
-
-    if(cargauser)
-    {
-        return <div> Cargando... </div>;
+    if (cargauser) {
+        return (
+            <div className="home-container">
+                <div className="home-content">
+                    <div className="loading-message">Cargando...</div>
+                </div>
+            </div>
+        );
     }
     
-    if(isError)
-    {
+    if (isError) {
         setToken(null);
         navigate('/login');
         return null;
     }
 
     return (
-    <div> 
-        <h2> Bienvenido: {user?.name}, tu correo es: {user?.correo} </h2>
-        <button onClick={()=> navigate('/Calendar')}>Armar calendario</button>
-        <button onClick={()=> navigate('/Asignaturas')}>Administrar Asignaturas en el sistema</button>
-        <button onClick={()=> navigate('/Profesores')}>Administrar Profesores en el sistema</button>
-        <button onClick={()=> navigate('/Salas')}>Administrar Salas en el sistema</button>
-        <button onClick={()=> navigate('/CalendariosDashboard')}>Administrar calendarios en el sistema</button>
-
-
-        <button onClick={logout}>Cerrar la sesion</button>
-    </div>
+        <div className="home-container">
+            <div className="home-content">
+                <h2 className="home-title">Bienvenid@: {user?.name}</h2>
+                
+                <div className="menu-buttons">
+                    <button className="menu-button" onClick={() => navigate('/Calendar')}>
+                        Armar calendario
+                    </button>
+                    <button className="menu-button" onClick={() => navigate('/Asignaturas')}>
+                        Administrar Asignaturas
+                    </button>
+                    <button className="menu-button" onClick={() => navigate('/Profesores')}>
+                        Administrar Profesores
+                    </button>
+                    <button className="menu-button" onClick={() => navigate('/Salas')}>
+                        Administrar Salas
+                    </button>
+                    <button className="menu-button" onClick={() => navigate('/CalendariosDashboard')}>
+                        Administrar calendarios
+                    </button>
+                </div>
+                
+                <button className="logout-button" onClick={logout}>
+                    Cerrar sesión
+                </button>
+            </div>
+        </div>
     );
-    
 };
 
 export default Home;

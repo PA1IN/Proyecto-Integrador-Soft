@@ -34,7 +34,7 @@ export function useProfesoresCreados() {    //pa listar los profesores que no es
         queryKey: ['profesoresCreados'],
         queryFn: async () => {
             const respuesta = await api.get('/profesor/creado');
-            return respuesta.data;
+            return respuesta.data.reverse();
         }
     });
 }

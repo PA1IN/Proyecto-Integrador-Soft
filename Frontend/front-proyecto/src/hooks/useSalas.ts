@@ -32,7 +32,7 @@ export function useSalasCreadas() {    //pa listar las salas creadas.
         queryKey: ['salasCreadas'],
         queryFn: async () => {
             const respuesta = await api.get('/sala/creadas');
-            return respuesta.data;
+            return respuesta.data.reverse();
         }
     });
 }

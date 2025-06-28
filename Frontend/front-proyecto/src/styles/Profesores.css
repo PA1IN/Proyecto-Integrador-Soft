@@ -1,0 +1,121 @@
+.profesores-container {
+    background-color: #4871ca;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.profesores-content {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 90%;
+    max-width: 800px;
+}
+
+.profesores-title {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.back-button {
+    background-color: #7f8c8d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #95a5a6;
+}
+
+.form-title {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.profesor-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.form-input {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.submit-button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.submit-button:hover {
+    background-color: #2980b9;
+}
+
+.profesores-list-title {
+    color: #2c3e50;
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+.profesores-list {
+    list-style: none;
+    padding: 0;
+}
+
+.profesor-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding: 15px 0;
+}
+
+.profesor-info {
+    font-size: 16px;
+}
+
+.delete-button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.delete-button:hover {
+    background-color: #c0392b;
+}
+
+.loading-message {
+    text-align: center;
+    color: #7f8c8d;
+    font-size: 16px;
+    margin: 20px 0;
+}
+
+.no-profesores {
+    text-align: center;
+    color: #7f8c8d;
+    font-style: italic;
+}

@@ -67,7 +67,7 @@ export function useAsignaturasCreadas(){
         queryKey:['asignaturasCreadas'],
         queryFn: async () => {
             const respuesta = await api.get('/asignatura/creadas');  
-            return respuesta.data;
+            return respuesta.data.reverse();
         }
     });
 }

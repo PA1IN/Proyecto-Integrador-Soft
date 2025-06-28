@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { useCalendarios } from '../hooks/useCalendarios';
+import '../styles/CalendariosDashboard.css';
 
 export const CalendariosDashboard = () => {
     const {token, setToken} = useAuth();
@@ -16,7 +17,13 @@ export const CalendariosDashboard = () => {
     }
 
     if(cargandoUser){
-        return <div>Cargando Usuario...</div>;
+        return (
+            <div className="calendarios-container">
+                <div className="calendarios-content">
+                    <div className="loading-message">Cargando Usuario...</div>
+                </div>
+            </div>
+        );
     }
 
     if(isError){
@@ -25,32 +32,49 @@ export const CalendariosDashboard = () => {
         return null;
     }
 
+    const handleViewCalendar = (calendarioId: string) => {
+        localStorage.setItem("carga_calendario_id", calendarioId);
+        window.open(`/Calendar/${calendarioId}`, '_blank');
+    };
+
     return (
-        <div>
-            <h1>Calendarios creados</h1>
+        <div className="calendarios-container">
+            <div className="calendarios-content">
+                <h1 className="calendarios-title">Calendarios creados</h1>
+                <button 
+                    className="back-button" 
+                    onClick={() => navigate('/Home')}
+                >
+                    Volver al menú principal
+                </button>
 
-            {cargandoCalendarios ? (
-                <p>Cargando los calendarios creados...</p>
-            ):(
-                <>
-                    {calendarios?.length > 0 ? (
-                        <ul>
-                            {calendarios.map((cal:any) => (
-                                <li key={cal.id}>
-                                    <strong>{cal.nombre}</strong> - Creado el: {cal.fecha_creacion}
-                                    <br />
-                                    <button onClick={() =>{ localStorage.setItem("carga_calendario_id", cal.id); window.open(`/Calendar/${cal.id}`,'_blank')} }> Ver Calendario </button>
-                                    <p>---------</p>
-                                </li>
-                            ))}
-                        </ul>
-                    ):(
-                        <p>No hay calendarios disponibles</p>
-                    )}
-                </>
-            )}
-
-            <button onClick={()=> navigate('/Home')}>Volver al menu principal</button>
+                {cargandoCalendarios ? (
+                    <p className="loading-message">Cargando los calendarios creados...</p>
+                ):(
+                    <>
+                        {calendarios?.length > 0 ? (
+                            <ul className="calendarios-list">
+                                {calendarios.map((cal:any) => (
+                                    <li className="calendario-item" key={cal.id}>
+                                        <div className="calendario-header">
+                                            <span className="calendario-name">{cal.nombre}</span>
+                                            <span className="calendario-date">Creado el: {cal.fecha_creacion.split('T')[0]}</span>
+                                        </div>
+                                        <button 
+                                            className="view-button"
+                                            onClick={() => handleViewCalendar(cal.id)}
+                                        >
+                                            Ver Calendario
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        ):(
+                            <p className="no-calendarios">No hay calendarios disponibles</p>
+                        )}
+                    </>
+                )}
+            </div>
         </div> 
     );
 };

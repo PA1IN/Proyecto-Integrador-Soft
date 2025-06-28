@@ -843,7 +843,7 @@ export const Calendar = () => {
         <input type="checkbox" checked={mostrarClmnaextra} onChange={()=> setMostrarClmnextra((prev)=> !prev)}/>
         Columna adicional (dia 7)
       </label>
-      
+      <p className = "form-regis"><a href="/Home">Volver al menú</a></p>
 
       {formVisible && datosForm && (
         <div className="modal-overlay">
@@ -1042,7 +1042,7 @@ export const Calendar = () => {
       
 
       
-
+      <p>Nombra tu calendario <strong>(Obligatorio): </strong></p>
       <div className="confirmar-section">
           <input type = "text" placeholder="Nombre del calendario" value={nombreCalendario} onChange={(e)=> setNombrecalendario(e.target.value)} />
           <button onClick={confirmar} className="confirmar-boton">Confirmar calendario</button>
