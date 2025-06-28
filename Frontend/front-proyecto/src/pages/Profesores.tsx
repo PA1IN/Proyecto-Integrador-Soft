@@ -58,9 +58,15 @@ export const Profesores = () =>
                 {profesoresCreados?.length > 0 ? (
                     <ul>
                         {profesoresCreados.map((profe: any) => (
+<<<<<<< Updated upstream
                             <li key = {profe.id}>
                                 {profe.nombre}
                                 <button onClick={() => eliminarProfe.mutate(profe.id)}>Eliminar profesor del sistema</button>
+=======
+                            <li key = {profe.id_profesor}>
+                                {profe.nombre}<p> </p>
+                                <button onClick={() => eliminarProfe.mutate(profe.id_profesor)}>Eliminar</button>
+>>>>>>> Stashed changes
                                 <p>-------</p>
                             </li>
                         ))}

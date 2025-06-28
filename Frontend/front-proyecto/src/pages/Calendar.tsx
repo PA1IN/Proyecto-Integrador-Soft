@@ -723,11 +723,11 @@ export const Calendar = () => {
    return (
     <div className="calendar-container">
       <h2 className="calendar-titulo">Calendario de pruebas</h2>
-      
       <label>
         <input type="checkbox" checked={mostrarClmnaextra} onChange={()=> setMostrarClmnextra((prev)=> !prev)}/>
-        Columna adicional (dia 7)
+        Columna adicional (dia 7) 
       </label>
+<<<<<<< Updated upstream
       {true && (
         <div className="errores-box">
           <p><strong>Errores graves: </strong>{errores?.errores_graves}</p>
@@ -736,6 +736,9 @@ export const Calendar = () => {
           <p><strong>Calidad: </strong>{errores?.calidad}</p>
         </div>
       )}
+=======
+      <button onClick={()=> navigate('/Home')}>Volver al menú</button>
+>>>>>>> Stashed changes
       
 
       {formVisible && datosForm && (
@@ -872,8 +875,7 @@ export const Calendar = () => {
         </div>
       </div>
 
-      
-
+      <p>Guardar con nombre <strong>(obligatorio):</strong> </p>
       <div className="confirmar-section">
           <input type = "text" placeholder="Nombre del calendario" value={nombreCalendario} onChange={(e)=> setNombrecalendario(e.target.value)} />
           <button onClick={confirmar} className="confirmar-boton">Confirmar calendario</button>

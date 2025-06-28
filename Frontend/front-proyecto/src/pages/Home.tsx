@@ -36,7 +36,7 @@ export const Home = () => {
 
     return (
     <div> 
-        <h2> Bienvenido: {user?.name}, tu correo es: {user?.correo} </h2>
+        <h2> Bienvenid@: {user?.name}</h2>
         <button onClick={()=> navigate('/Calendar')}>Armar calendario</button>
         <button onClick={()=> navigate('/Asignaturas')}>Administrar Asignaturas en el sistema</button>
         <button onClick={()=> navigate('/Profesores')}>Administrar Profesores en el sistema</button>

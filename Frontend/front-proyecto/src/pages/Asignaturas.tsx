@@ -80,11 +80,18 @@ export const Asignaturas = () =>
                 {asignaturasCreadas?.length > 0 ? (
                     <ul>
                         {asignaturasCreadas.map((ac: any) => (
+<<<<<<< Updated upstream
                             <li key = {ac.id}>
                                 <p>NRC: </p> {ac.nrc}
                                 <p>Nombre de asignatura: </p> {ac.nombre}
                                 <p>Nivel/Número de Semestre: </p> {ac.nivel}
                                 <button onClick={() => eliminarAsignatura.mutate(ac.id)}>Eliminar asignatura</button>
+=======
+                            <li key = {ac.id_asignatura}>
+                                <p>NRC: {ac.nrc} - Nombre de asignatura: {ac.nombre} </p>
+                                <p>Carrera: {carreras?.find((c:Carrera) => c.id === ac.id_carrera)?.nombre} - Nivel/Número de Semestre: {ac.nivel}</p>
+                                <button onClick={() => eliminarAsignatura.mutate({id: ac.id_asignatura})}>Eliminar asignatura</button>
+>>>>>>> Stashed changes
                                 <p>-------</p>
                             </li>
                         ))}
