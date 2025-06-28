@@ -68,24 +68,6 @@ export const Salas = () =>
                 }
             </>
             )}
-
-            {cargaSalas ? (<p>Cargando salas...</p>)
-            : (
-            <>
-                <h2>Salas en el sistema: </h2>
-                {salas?.length > 0 ? (
-                    <ul>
-                        {salas.map((s: any) => (
-                            <li key = {s.id}>
-                                {s.nombre}
-                                <p>-------</p>
-                            </li>
-                        ))}
-                    </ul>
-                ) : (<p>No hay salas en el sistema.</p>)
-                }
-            </>
-            )}
         </div>
   );
 };

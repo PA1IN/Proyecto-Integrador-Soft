@@ -81,10 +81,8 @@ export const Asignaturas = () =>
                     <ul>
                         {asignaturasCreadas.filter((ac: any) => !carrera || ac.id_carrera === Number(carrera)).map((ac: any) => (
                             <li key = {ac.id_asignatura}>
-                                <p>NRC: </p> {ac.nrc}
-                                <p>Nombre de asignatura: </p> {ac.nombre}
-                                <p>Nivel/Número de Semestre: </p> {ac.nivel}
-                                <p>Carrera: </p>{carreras?.find((c:Carrera) => c.id === ac.id_carrera)?.nombre}
+                                <p>NRC: {ac.nrc} - Nombre de asignatura: {ac.nombre} </p>
+                                <p>Carrera: {carreras?.find((c:Carrera) => c.id === ac.id_carrera)?.nombre} - Nivel/Número de Semestre: </p> {ac.nivel}
                                 <button onClick={() => eliminarAsignatura.mutate({id: ac.id})}>Eliminar asignatura</button>
                                 <p>-------</p>
                             </li>
@@ -93,28 +91,7 @@ export const Asignaturas = () =>
                 ) : (<p>No creaste ninguna asignatura.</p>)
                 }
             </>
-            )}
-
-            {cargaAsignaturas ? (<p>Cargando las asignaturas...</p>)
-            : (
-            <>
-                <h2>Asignaturas en el sistema: </h2>
-                {asignaturas?.length > 0 ? (
-                    <ul>
-                        {asignaturas.filter((a: any) => a.creado !== true).map((a: any) => (
-                            <li key = {a.id}>
-                                <p>NRC: </p> {a.nrc}
-                                <p>Nombre de asignatura: </p> {a.nombre}
-                                <p>Nivel/Número de Semestre: </p> {a.nivel}
-                                <p>-------</p>
-                            </li>
-                        ))}
-                    </ul>
-                ) : (<p>No hay asignaturas.</p>)
-                }
-            </>
-            )}
-        
+            )}        
             <button onClick={()=> navigate('/Home')}>Volver al menú principal</button>
         </div>
   );

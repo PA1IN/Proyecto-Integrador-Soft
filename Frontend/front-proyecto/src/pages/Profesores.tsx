@@ -69,25 +69,6 @@ export const Profesores = () =>
                 }
             </>
             )}
-
-            {cargaProfes ? (<p>Cargando profesores...</p>)
-            : (
-            <>
-                <h2>Profesores en el sistema: </h2>
-                {profesores?.length > 0 ? (
-                    <ul>
-                        {profesores.map((p: any) => (
-                            <li key = {p.id}>
-                                {p.nombre}
-                                <p>-------</p>
-                            </li>
-                        ))}
-                    </ul>
-                ) : (<p>No hay profesores</p>)
-                }
-            </>
-            )}
-
         </div>
   );
 };
