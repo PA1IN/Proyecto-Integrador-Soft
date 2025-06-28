@@ -35,7 +35,7 @@ async obtenerProfesores() {
     }))
 }
 async obtenerProfesoresCreado() {
-    const profesores = await this.profesorRepository.find({ where: { Eliminado: false, creado: true }, order: { creado: 'DESC' } });
+    const profesores = await this.profesorRepository.find({ where: { Eliminado: false, creado: true }, order: { creado: 'ASC' } });
     return profesores.map((p) => ({
         id_profesor: p.id,
         nombre: p.nombre,

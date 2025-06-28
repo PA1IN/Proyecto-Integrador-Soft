@@ -25,7 +25,7 @@ export class AsignaturaService {
     async getAsignaturasc(){
         const asignaturas = await this.asignaturaCrepository.find({where : {creada: true, eliminada: false  },
             relations: ['carreraAsignaturas'],
-        order: { creada: 'DESC' } },
+        order: { creada: 'ASC' } },
             
         ); 
 

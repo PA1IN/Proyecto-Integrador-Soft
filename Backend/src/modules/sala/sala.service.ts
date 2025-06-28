@@ -36,7 +36,7 @@ export class SalaService {
     
 }
 async salascreadas() {
-    const salas = await this.salaRepository.find({ where: {eliminada: false, creada: true },order: { creada: 'DESC' } });
+    const salas = await this.salaRepository.find({ where: {eliminada: false, creada: true },order: { creada: 'ASC' } });
     return salas.map((s) => ({
         id_sala: s.id,
         nombre: s.nombre,
