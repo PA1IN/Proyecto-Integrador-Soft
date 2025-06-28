@@ -82,7 +82,7 @@ export const Asignaturas = () =>
                         {asignaturasCreadas.map((ac: any) => (
                             <li key = {ac.id_asignatura}>
                                 <p>NRC: {ac.nrc} - Nombre de asignatura: {ac.nombre} </p>
-                                <p>Carrera: {carreras?.find((c:Carrera) => c.id === ac.id_carrera)?.nombre} - Nivel/Número de Semestre: </p> {ac.nivel}
+                                <p>Carrera: {carreras?.find((c:Carrera) => c.id === ac.id_carrera)?.nombre} - Nivel/Número de Semestre: {ac.nivel}</p>
                                 <button onClick={() => eliminarAsignatura.mutate({id: ac.id_asignatura})}>Eliminar asignatura</button>
                                 <p>-------</p>
                             </li>
