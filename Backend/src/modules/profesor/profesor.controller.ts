@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ProfesorService } from './profesor.service';
 import { ProfesorDto } from './dto/profesor.entity';
+import { crearprofesormasaDto } from './dto/crearprofesormasa.dto';
 
 @Controller('profesor')
 export class ProfesorController {
@@ -15,7 +16,7 @@ export class ProfesorController {
         return this.profesorService.crearProfesor(dto); 
     }
     @Post('prod')
-    crearProfesorProd(@Body() dto: ProfesorDto) { 
+    crearProfesorProd(@Body() dto: string) { 
         return this.profesorService.crearProfesorProd(dto); // Call the service method to create a professor in production
     }
 
@@ -34,5 +35,10 @@ export class ProfesorController {
     @Patch('/:id')
     eliminarProfesor(@Param('id') id: number) {
         return this.profesorService.eliminarProfesor(id); // Call the service method to delete a professor by ID
+    }
+
+    @Post('masivo')
+    crearProfesormasa(@Body() dto: crearprofesormasaDto) { // Adjust the type as needed
+        return this.profesorService.crearProfesormasa(dto); // Call the service method to create multiple professors
     }
 }

@@ -19,6 +19,10 @@ export class SalaService {
         return salaCreada.id; // Assuming the entity has an 'id' field
     }
     async crearSala(dto: crearSalaDto) {
+        const salaExistente = await this.salaRepository.findOne({ where: { nombre: dto.nombre, eliminada: false } });
+        if (salaExistente) {
+            throw new Error('Sala con este nombre ya existe');
+        }
         const eliminada = false; // Default value for eliminada
         const nuevaSala = this.salaRepository.create({nombre:dto.nombre, eliminada: eliminada, creada: true});
         const salaCreada = await this.salaRepository.save(nuevaSala);

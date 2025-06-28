@@ -9,6 +9,7 @@ import { Carrera } from '../carrera/entities/carrera.entity';
 import { CarreraAsignatura } from '../carrera/entities/Carrera-Asignatura.entity';
 import { create } from 'domain';
 import { asignaturaprodDto } from './dto/asignaturaprod.dto';
+import { CrearenmasaDto } from './dto/crearenmasa.dto';
 
 @Injectable()
 export class AsignaturaService {
@@ -83,8 +84,8 @@ export class AsignaturaService {
 
 async crearasignaturaprod(dto: asignaturaprodDto) {
     console.log('Creando asignatura con los siguientes datos:', dto);
-    const datos = mapRawAsignatura(dto);
-    console.log('Datos mapeados:', datos);
+    const datos = dto;
+    
     const asignaturasGuardadas: {
     id_asignatura: number;
     nrc: string;
@@ -107,37 +108,39 @@ async crearasignaturaprod(dto: asignaturaprodDto) {
         
     }
 
-    for (let i = 0; i < datos.id_carreras.length; i++) {
-        const idCarrera = datos.id_carreras[i];
+
+    for (let i = 0; i < datos.carrera_nombres.length; i++) {
+        if( datos.carrera_nombres[i] === undefined || datos.carrera_nombres[i] === null){
+            continue; // Skip if carrera_nombres is undefined or null
+        }
+
+        
         const nivel = datos.niveles[i];
+        const nombre_de_Carrera = nombreCarrera(datos.carrera_nombres[i])
+        
         
 
         const carrera = await this.carreraRepository.findOne({
-        where: { id: idCarrera },
+        where: { nombre: nombre_de_Carrera },
         });
 
         if (!carrera) {
-        throw new Error(`Carrera con ID ${idCarrera} no encontrada`);
+        continue; // Skip if carrera not found
         }
-
-   
-
     // Crear asignatura
     const nuevaAsignatura = this.asignaturaCrepository.create({
       nrc: datos.nrc,
       nombre: nombreLimpio, // se guarda con el nombre completo
       nivel,
-      creada: datos.creada ?? false,
+      creada: false,
       eliminada: false,
     });
-
     const asignaturaGuardada = await this.asignaturaCrepository.save(nuevaAsignatura);
 
     const carreraAsignatura = this.carreraAsignaturaRepository.create({
       carrera,
       asignatura: asignaturaGuardada,
     });
-
     await this.carreraAsignaturaRepository.save(carreraAsignatura);
 
     asignaturasGuardadas.push({
@@ -152,7 +155,6 @@ async crearasignaturaprod(dto: asignaturaprodDto) {
 
   return asignaturasGuardadas;
 }
-
 
 
     async getcreadasnt(){
@@ -228,8 +230,16 @@ async crearasignaturaprod(dto: asignaturaprodDto) {
                 eliminada: ca.asignatura.eliminada,
             }));
     }
-      
-    
+
+    async cargaAsignaturaProd(dto: CrearenmasaDto) {
+        console.log('Iniciando carga masiva de asignaturas:', dto);
+        const asignaturas = dto.asignaturas
+        .map((data) => mapRawAsignatura(data))
+        .filter((a) => a !== null);
+        for (const asignatura of asignaturas) {
+        await this.crearasignaturaprod(asignatura);
+        }
+    }   
 
 }
 function limpiarNombre(nombre: string): string {
@@ -237,12 +247,32 @@ function limpiarNombre(nombre: string): string {
   return idx !== -1 ? nombre.substring(0, idx).trim() : nombre.trim();
 }
 
-function mapRawAsignatura(data: any): asignaturaprodDto {
-  return {
+function mapRawAsignatura(data: any): any {
+    const carrerasRaw = data.carreras;
+     const carreras = Array.isArray(carrerasRaw)
+    ? carrerasRaw
+    : carrerasRaw
+    ? [carrerasRaw]
+    : [];
+  
+    if (carreras.length === 0) return null;
+    if (!data.nrc || !data.curso) return null;
+    return {
     nrc: data.nrc,
     nombre: data.curso,
-    niveles: data.carreras.map((c: any) => c.semestre),
-    id_carreras: data.carreras.map((c: any) => c.id),
-    creada: true, // o false según tu lógica
+    niveles: carreras.map((c: any) => c.semestre),
+    carrera_nombres: data.carreras.map((c: any) => c.nombre),
+    creada: false, 
   };
+}
+
+
+
+
+
+
+function nombreCarrera(nombre: string): string {
+    const idx = nombre.indexOf('_');
+    return idx !== -1 ? nombre.substring(0, idx).trim() : nombre.trim();
+  
 }

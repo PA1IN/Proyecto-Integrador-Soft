@@ -15,10 +15,11 @@ export class asignaturaprodDto {
   @IsNumber({}, { each: true }) // cada elemento del array debe ser número
   niveles: number[];
 
+  
   @IsArray()
   @ArrayNotEmpty()
-  @IsNumber({}, { each: true })
-  id_carreras: number[];
+  @IsString()
+  carrera_nombres: string[];
 
   @IsOptional()
   @IsBoolean()

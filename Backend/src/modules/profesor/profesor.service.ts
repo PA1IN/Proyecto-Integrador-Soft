@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Profesor } from './entities/profesor.entity';
 import { Repository } from 'typeorm';
 import { ProfesorDto } from './dto/profesor.entity';
+import { crearprofesormasaDto } from './dto/crearprofesormasa.dto';
 @Injectable()
 export class ProfesorService {
 constructor(
@@ -16,10 +17,10 @@ async crearProfesor(dto: ProfesorDto): Promise<Profesor> {
     return await this.profesorRepository.save(nuevoProfesor);
 }   
 
-async crearProfesorProd(dto: ProfesorDto) {
+async crearProfesorProd(dto: string) {
     const eliminado = false; // Default value for eliminada
     const nuevoProfesor = this.profesorRepository.create({
-        nombre: dto.nombre, Eliminado: eliminado, creado: false,
+        nombre: dto, Eliminado: eliminado, creado: false,
     });
     return await this.profesorRepository.save(nuevoProfesor);
 }
@@ -27,15 +28,13 @@ async crearProfesorProd(dto: ProfesorDto) {
 
 async obtenerProfesores() {
     const profesores = await this.profesorRepository.find({where: { Eliminado: false, creado: false },order: { creado: 'ASC' } });
-
-
     return profesores.map((p) => ({
         id_profesor: p.id,
         nombre: p.nombre,
     }))
 }
 async obtenerProfesoresCreado() {
-    const profesores = await this.profesorRepository.find({ where: { Eliminado: false, creado: true }, order: { creado: 'ASC' } });
+    const profesores = await this.profesorRepository.find({ where: { Eliminado: false, creado: true }, order: { creado: 'DESC' } });
     return profesores.map((p) => ({
         id_profesor: p.id,
         nombre: p.nombre,
@@ -57,6 +56,14 @@ async eliminarProfesor(id: number) {
     }
     profesor.Eliminado = true; // Set Eliminado to true
     return this.profesorRepository.save(profesor); // Save the updated profesor
+}
+
+async crearProfesormasa(dto: crearprofesormasaDto) {
+    const profesores =dto.profesores
+    for (const p of profesores) {
+        const nombre = p.name;
+        this.crearProfesorProd(nombre );
+    }
 }
 
 }

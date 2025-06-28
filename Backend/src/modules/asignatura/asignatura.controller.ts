@@ -4,6 +4,7 @@ import { CreateAsignaturaDto } from './dto/create-asignatura.dto';
 import { HorarioAsignaturaDto } from './dto/horario-asignatura.dto';
 import { AgregarProfesorDto } from './dto/agregarprofesor.dto';
 import { asignaturaprodDto } from './dto/asignaturaprod.dto';
+import { CrearenmasaDto } from './dto/crearenmasa.dto';
 
 @Controller('asignatura')
 export class AsignaturaController {
@@ -52,7 +53,13 @@ export class AsignaturaController {
     getAsignaturaByCarrera(@Param('carrera') carrera: number) {
         return this.asignaturaService.getAsignaturaBycarrera(carrera); 
     }
+
     
+    @Post('masivo')
+    cargaAsignaturaProd(@Body() datos: CrearenmasaDto) {
+        console.log(datos)
+        return this.asignaturaService.cargaAsignaturaProd(datos); 
+    }
     
 
   
