@@ -15,10 +15,7 @@ export class CreateAsignaturaDto {
 
     @IsOptional()
     @IsBoolean()
-    creada: boolean;
-    @IsArray()
-
-    
+    creada: boolean; 
     @IsNumber() // valida que cada elemento del array sea un número
     id_carrera: number;  
    

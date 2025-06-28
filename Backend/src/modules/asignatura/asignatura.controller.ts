@@ -3,6 +3,7 @@ import { AsignaturaService } from './asignatura.service';
 import { CreateAsignaturaDto } from './dto/create-asignatura.dto';
 import { HorarioAsignaturaDto } from './dto/horario-asignatura.dto';
 import { AgregarProfesorDto } from './dto/agregarprofesor.dto';
+import { asignaturaprodDto } from './dto/asignaturaprod.dto';
 
 @Controller('asignatura')
 export class AsignaturaController {
@@ -26,12 +27,12 @@ export class AsignaturaController {
         return this.asignaturaService.createAsignatura(createAsignaturaDto); 
     }
     @Post('prod')
-    createAsignaturaProd(@Body() createAsignaturaDto: CreateAsignaturaDto) {
-        return this.asignaturaService.crearasignaturaprod(createAsignaturaDto); // Call the service method to create an asignatura in production
+    createAsignaturaProd(@Body() dto: asignaturaprodDto) {
+        return this.asignaturaService.crearasignaturaprod(dto); // Call the service method to create an asignatura in production
     }
 
     @Get(':nivel')
-    getAsignaturaByNivel(@Param('nivel') nivel: Number) {
+    getAsignaturaByNivel(@Param('nivel') nivel: number) {
         return this.asignaturaService.getbynivel(nivel); 
     }
     @Get(':NRC')
@@ -42,10 +43,7 @@ export class AsignaturaController {
     getAsignaturaByNombre(@Param('nombre') nombre: string) {
         return this.asignaturaService.getbyNombre(nombre);
     }
-    @Get(':Horario')
-    getAsignaturaByHorario(@Param('Horario') Horario: string) {
-        return this.asignaturaService.getbyHorario(Horario); 
-    }
+    
     @Patch('/eliminar/:id')
     eliminarAsignatura(@Param('id') id: number) {
         return this.asignaturaService.eliminarAsignatura(id); 
