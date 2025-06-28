@@ -222,7 +222,7 @@ async analizarErrores({ caledarioId, pruebas }:  CheckErroresDto) {
 
   async findAll() {
     const calendarios = await this.calendarioRepository.find({
-      relations: ['usuario', 'relaciones', 'columnas'], order: { fecha: 'DESC' }});
+      relations: ['usuario', 'relaciones', 'columnas'], order: { fecha: 'ASC' }});
     
    return calendarios.map((calendario) => {
     return {
