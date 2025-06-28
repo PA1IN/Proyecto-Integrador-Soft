@@ -81,6 +81,7 @@ export class AsignaturaService {
     }
 
 async crearasignaturaprod(dto: asignaturaprodDto) {
+    console.log('Creando asignatura con los siguientes datos:', dto);
     const asignaturasGuardadas: {
     id_asignatura: number;
     nrc: string;
